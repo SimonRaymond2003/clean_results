@@ -1,0 +1,465 @@
+---
+title: "Third Down Analysis with Regular and Starter Players"
+output: html_document
+---
+
+```{r, include=FALSE}
+# Ensure required packages are loaded
+  require(data.table)
+  require(sandwich)
+  require(lmtest)
+  require(car)
+  require(caret)
+```
+
+
+```{r}
+analyze_third_down <- function(data_path) {
+ctd1 <- fread(data_path)
+  
+  # Remove my_id if it exists
+  if("my_id" %in% colnames(ctd1)) {
+    ctd1$my_id <- NULL
+  }
+  
+  # Remove year2017_team_ARI if it exists (or similar columns)
+  year_team_cols <- grep("^year\\d{4}_team_", colnames(ctd1), value = TRUE)
+  if(length(year_team_cols) > 0) {
+    ctd1[, (year_team_cols) := NULL]
+  }
+  
+  # Identify player columns
+  all_cols <- colnames(ctd1)
+  
+  # Create regex patterns to identify regular and starter player variables
+  offense_player_pattern <- "^offense_player_\\d+_"
+  defense_player_pattern <- "^defense_player_\\d+_"
+  starter_offense_pattern <- "^starter_offense_player_\\d+_"
+  starter_defense_pattern <- "^starter_defense_player_\\d+_"
+  
+  # Get columns for each type
+  offense_player_cols <- grep(offense_player_pattern, all_cols, value = TRUE)
+  defense_player_cols <- grep(defense_player_pattern, all_cols, value = TRUE)
+  starter_offense_cols <- grep(starter_offense_pattern, all_cols, value = TRUE)
+  starter_defense_cols <- grep(starter_defense_pattern, all_cols, value = TRUE)
+  
+  # All player columns
+  regular_player_cols <- c(offense_player_cols, defense_player_cols)
+  starter_player_cols <- c(starter_offense_cols, starter_defense_cols)
+  all_player_cols <- c(regular_player_cols, starter_player_cols)
+  
+  # Non-player columns (common to both datasets)
+  common_cols <- setdiff(all_cols, all_player_cols)
+  
+  # Check if we have enough columns to create separate datasets
+  has_regular_players <- length(regular_player_cols) > 0
+  has_starter_players <- length(starter_player_cols) > 0
+  
+  # Results to return
+  results <- list()
+  
+  # Function to detect and handle aliased variables
+  handle_aliased_variables <- function(dataset, model_formula = conversion ~ .) {
+    # First attempt to fit the model
+    model <- tryCatch({
+      lm(model_formula, data = dataset)
+    }, error = function(e) {
+      cat("Error in initial model fitting:", e$message, "\n")
+      return(NULL)
+    })
+    
+    if(is.null(model)) return(list(dataset = dataset, aliased = NULL))
+    
+    # Check for aliased coefficients
+    alias_check <- alias(model)
+    has_aliased <- !is.null(alias_check$Complete)
+    
+    if(has_aliased) {
+      aliased_vars <- rownames(alias_check$Complete)
+      cat("Detected", length(aliased_vars), "aliased variables:", 
+          paste(head(aliased_vars, 5), collapse=", "), 
+          ifelse(length(aliased_vars) > 5, "...", ""), "\n")
+      
+      # Remove aliased variables from dataset
+      dataset <- dataset[, !(names(dataset) %in% aliased_vars), with = FALSE]
+      cat("Removed aliased variables, remaining columns:", ncol(dataset), "\n")
+    }
+    
+    # Check for additional linear dependencies
+    X <- tryCatch({
+      model.matrix(update(model_formula, . ~ . - 1), data = dataset)
+    }, error = function(e) {
+      cat("Error creating model matrix:", e$message, "\n")
+      return(NULL)
+    })
+    
+    if(!is.null(X)) {
+      lin_combos <- findLinearCombos(X)
+      
+      if(!is.null(lin_combos$remove) && length(lin_combos$remove) > 0) {
+        cols_to_remove <- colnames(X)[lin_combos$remove]
+        cat("Detected", length(cols_to_remove), "linearly dependent columns:", 
+            paste(head(cols_to_remove, 5), collapse=", "), 
+            ifelse(length(cols_to_remove) > 5, "...", ""), "\n")
+        
+        # Remove problematic columns
+        dataset <- dataset[, !(names(dataset) %in% cols_to_remove), with = FALSE]
+        cat("After removing linearly dependent columns, remaining:", ncol(dataset), "\n")
+      }
+    }
+    
+    # Make final check for perfect multicollinearity
+    final_model <- tryCatch({
+      lm(model_formula, data = dataset)
+    }, error = function(e) {
+      cat("Error in final model after preprocessing:", e$message, "\n")
+      return(NULL)
+    })
+    
+    # If we still have problems, try more aggressive variable reduction
+    if(is.null(final_model) || any(is.na(coef(final_model)))) {
+      cat("Model still has issues after initial preprocessing. Attempting more aggressive cleanup.\n")
+      
+      # Try to identify remaining problematic variables
+      if(!is.null(final_model)) {
+        # Check for NA coefficients
+        na_coefs <- names(which(is.na(coef(final_model))))
+        if(length(na_coefs) > 0) {
+          cat("Removing", length(na_coefs), "variables with NA coefficients\n")
+          dataset <- dataset[, !(names(dataset) %in% na_coefs), with = FALSE]
+        }
+      }
+      
+      # Last resort: use correlation filtering
+      if(ncol(dataset) > 3) {  # Need at least conversion and 2 predictors
+        # Convert factors to dummy variables for correlation calculation
+        numeric_data <- model.matrix(~ . - 1, data = dataset)
+        
+        # Remove columns with zero variance
+        var_check <- apply(numeric_data, 2, var)
+        zero_var <- names(which(var_check == 0 | is.na(var_check)))
+        
+        if(length(zero_var) > 0) {
+          cat("Removing", length(zero_var), "zero-variance variables\n")
+          cols_to_keep <- setdiff(colnames(numeric_data), zero_var)
+          dataset <- dataset[, intersect(names(dataset), cols_to_keep), with = FALSE]
+        }
+        
+        # Ensure conversion column still exists
+        if(!"conversion" %in% names(dataset)) {
+          cat("Error: Lost the response variable during processing\n")
+          return(list(dataset = NULL, aliased = TRUE))
+        }
+      }
+    }
+    
+    return(list(dataset = dataset, aliased = has_aliased))
+  }
+  
+  # Create and process regular player dataset
+  if(has_regular_players) {
+    regular_data <- ctd1[, c(common_cols, regular_player_cols), with = FALSE]
+    
+    cat("\nPreprocessing regular players dataset...\n")
+    regular_processed <- handle_aliased_variables(regular_data)
+    regular_data <- regular_processed$dataset
+    
+    if(!is.null(regular_data) && ncol(regular_data) > 1) {
+      # Run OLS with regular players
+      tryCatch({
+        cat("Running OLS with regular players...\n")
+        ols_regular <- lm(conversion ~ ., data = regular_data)
+        
+        # Create robust statistics (with explicit namespace if needed)
+        robust_regular_test <- lmtest::coeftest(ols_regular, vcov = sandwich::vcovHC(ols_regular, type = "HC0"))
+        
+        # Calculate VIFs
+        vifs_regular <- tryCatch({
+          vif(ols_regular)
+        }, error = function(e) {
+          cat("Error calculating VIFs for regular data:", e$message, "\n")
+          return(NULL)
+        })
+        
+        high_vifs_regular <- if(!is.null(vifs_regular)) vifs_regular[vifs_regular > 5] else NULL
+        
+        # Run probit with regular players
+        cat("Running probit with regular players...\n")
+        probit_regular <- glm(conversion ~ ., data = regular_data, family = binomial(link = "probit"))
+        robust_probit_regular <- lmtest::coeftest(probit_regular, vcov = sandwich::vcovHC(probit_regular, type = "HC0"))
+        
+        # Store results
+        results$regular_ols <- ols_regular
+        results$regular_ols_robust <- robust_regular_test
+        results$regular_vifs <- vifs_regular
+        results$regular_high_vifs <- high_vifs_regular
+        results$regular_probit <- probit_regular
+        results$regular_probit_robust <- robust_probit_regular
+      }, error = function(e) {
+        cat("Error in regular players analysis:", e$message, "\n")
+      })
+    } else {
+      cat("Unable to create valid regular players dataset after preprocessing\n")
+    }
+  }
+  
+  # Create and process starter player dataset
+  if(has_starter_players) {
+    starter_data <- ctd1[, c(common_cols, starter_player_cols), with = FALSE]
+    
+    cat("\nPreprocessing starter players dataset...\n")
+    starter_processed <- handle_aliased_variables(starter_data)
+    starter_data <- starter_processed$dataset
+    
+    if(!is.null(starter_data) && ncol(starter_data) > 1) {
+      # Run OLS with starter players
+      tryCatch({
+        cat("Running OLS with starter players...\n")
+        ols_starter <- lm(conversion ~ ., data = starter_data)
+        
+        # Create robust statistics
+        robust_starter_test <- lmtest::coeftest(ols_starter, vcov = sandwich::vcovHC(ols_starter, type = "HC0"))
+        
+        # Calculate VIFs
+        vifs_starter <- tryCatch({
+          vif(ols_starter)
+        }, error = function(e) {
+          cat("Error calculating VIFs for starter data:", e$message, "\n")
+          return(NULL)
+        })
+        
+        high_vifs_starter <- if(!is.null(vifs_starter)) vifs_starter[vifs_starter > 5] else NULL
+        
+        # Run probit with starter players
+        cat("Running probit with starter players...\n")
+        probit_starter <- glm(conversion ~ ., data = starter_data, family = binomial(link = "probit"))
+        robust_probit_starter <- lmtest::coeftest(probit_starter, vcov = sandwich::vcovHC(probit_starter, type = "HC0"))
+        
+        # Store results
+        results$starter_ols <- ols_starter
+        results$starter_ols_robust <- robust_starter_test
+        results$starter_vifs <- vifs_starter
+        results$starter_high_vifs <- high_vifs_starter
+        results$starter_probit <- probit_starter
+        results$starter_probit_robust <- robust_probit_starter
+      }, error = function(e) {
+        cat("Error in starter players analysis:", e$message, "\n")
+      })
+    } else {
+      cat("Unable to create valid starter players dataset after preprocessing\n")
+    }
+  }
+  
+  # Calculate model comparison statistics if both models exist
+  if(!is.null(results$regular_ols) && !is.null(results$starter_ols)) {
+    results$comparison <- list(
+      ols_regular_rsquared = summary(results$regular_ols)$r.squared,
+      ols_starter_rsquared = summary(results$starter_ols)$r.squared,
+      ols_regular_adj_rsquared = summary(results$regular_ols)$adj.r.squared,
+      ols_starter_adj_rsquared = summary(results$starter_ols)$adj.r.squared,
+      probit_regular_aic = results$regular_probit$aic,
+      probit_starter_aic = results$starter_probit$aic,
+      probit_regular_mcfadden = 1 - results$regular_probit$deviance/results$regular_probit$null.deviance,
+      probit_starter_mcfadden = 1 - results$starter_probit$deviance/results$starter_probit$null.deviance
+    )
+  }
+  
+  # Return results
+  return(results)
+}
+
+# The rest of the functions remain the same as in the original code
+format_results <- function(model_results, model_name) {
+  cat(sprintf("\n%s Model Results (Robust Statistics)\n", model_name))
+  cat(sprintf("%-30s %12s %12s %6s\n", "Variable", "Coefficient", "t-value", "Sig"))
+  cat(paste(rep("-", 65), collapse = ""), "\n")
+  
+  for(i in 1:nrow(model_results)) {
+    p_val <- model_results[i, "Pr(>|t|)"]
+    stars <- ifelse(p_val < 0.01, "***",
+              ifelse(p_val < 0.05, "**",
+              ifelse(p_val < 0.1, "*",
+              ifelse(p_val < 0.15, ".", ""))))
+    
+    var_name <- rownames(model_results)[i]
+    if (nchar(var_name) > 60) {
+      var_name <- paste0(substr(var_name, 1, 57), "...")
+    }
+    
+    cat(sprintf("%-30s %12.4f %12.4f %6s\n",
+        var_name,
+        model_results[i, "Estimate"],
+        model_results[i, "t value"],
+        stars))
+  }
+  cat("\nSignificance codes: 0 '***' 0.01 '**' 0.05 '*' 0.1 '.' 0.15\n")
+}
+
+format_probit_results <- function(model_results, model_name) {
+  cat(sprintf("\n%s Model Results (Robust Statistics)\n", model_name))
+  cat(sprintf("%-30s %12s %12s %6s\n", "Variable", "Coefficient", "z-value", "Sig"))
+  cat(paste(rep("-", 65), collapse = ""), "\n")
+  
+  for(i in 1:nrow(model_results)) {
+    p_val <- model_results[i, "Pr(>|z|)"]
+    stars <- ifelse(p_val < 0.01, "***",
+              ifelse(p_val < 0.05, "**",
+              ifelse(p_val < 0.1, "*",
+              ifelse(p_val < 0.15, ".", ""))))
+    
+    var_name <- rownames(model_results)[i]
+    if (nchar(var_name) > 60) {
+      var_name <- paste0(substr(var_name, 1, 57), "...")
+    }
+    
+    cat(sprintf("%-30s %12.4f %12.4f %6s\n",
+        var_name,
+        model_results[i, "Estimate"],
+        model_results[i, "z value"],
+        stars))
+  }
+  cat("\nSignificance codes: 0 '***' 0.01 '**' 0.05 '*' 0.1 '.' 0.15\n")
+}
+
+print_analysis_summary <- function(results) {
+  # Print OLS results if available
+  if(!is.null(results$regular_ols_robust)) {
+    format_results(results$regular_ols_robust, "Regular Players OLS")
+  }
+  
+  if(!is.null(results$starter_ols_robust)) {
+    format_results(results$starter_ols_robust, "Starter Players OLS")
+  }
+  
+  # Print VIF results if available
+  if(!is.null(results$regular_high_vifs) && length(results$regular_high_vifs) > 0) {
+    cat("\nRegular Players: Variables with VIF > 5:\n")
+    print(results$regular_high_vifs)
+  }
+  
+  if(!is.null(results$starter_high_vifs) && length(results$starter_high_vifs) > 0) {
+    cat("\nStarter Players: Variables with VIF > 5:\n")
+    print(results$starter_high_vifs)
+  }
+  
+  # Print probit results if available
+  if(!is.null(results$regular_probit_robust)) {
+    format_probit_results(results$regular_probit_robust, "Regular Players Probit")
+  }
+  
+  if(!is.null(results$starter_probit_robust)) {
+    format_probit_results(results$starter_probit_robust, "Starter Players Probit")
+  }
+  
+  # Print comparison if available
+  if(!is.null(results$comparison)) {
+    comp <- results$comparison
+    cat("\n\n--- Model Comparison Summary ---\n")
+    cat("OLS Regular Players R-squared:", round(comp$ols_regular_rsquared, 4), "\n")
+    cat("OLS Starter Players R-squared:", round(comp$ols_starter_rsquared, 4), "\n")
+    cat("OLS Regular Players Adj R-squared:", round(comp$ols_regular_adj_rsquared, 4), "\n")
+    cat("OLS Starter Players Adj R-squared:", round(comp$ols_starter_adj_rsquared, 4), "\n\n")
+    
+    cat("Probit Regular Players AIC:", round(comp$probit_regular_aic, 2), "\n")
+    cat("Probit Starter Players AIC:", round(comp$probit_starter_aic, 2), "\n")
+    cat("Probit Regular Players McFadden's Pseudo R²:", round(comp$probit_regular_mcfadden, 4), "\n")
+    cat("Probit Starter Players McFadden's Pseudo R²:", round(comp$probit_starter_mcfadden, 4), "\n")
+  }
+}
+
+# Function to run analysis on multiple datasets
+run_third_down_analysis <- function(file_paths) {
+  results_list <- list()
+  
+  for(i in seq_along(file_paths)) {
+    file_path <- file_paths[i]
+    cat("\n\n=================================================================\n")
+    cat("Analyzing dataset:", file_path, "\n")
+    cat("=================================================================\n\n")
+    
+    results <- analyze_third_down(file_path)
+    print_analysis_summary(results)
+    
+    # Store results for later use if needed
+    results_list[[basename(file_path)]] <- results
+  }
+  
+  return(results_list)
+}
+```
+
+```{r}
+# List of CTD1 datasets to analyze
+ctd1_datasets <- c(
+  "processed_predict_cctd1_starters_off_grades.csv_predict_cctd1_players_off_grades.csv.csv.gz",
+  "processed_predict_cctd1_starters_off_yards.csv_predict_cctd1_players_off_yards.csv.csv.gz",
+  "processed_predict_cctd1_starters_off_tds.csv_predict_cctd1_players_off_tds.csv.csv.gz",
+  "processed_predict_cctd1_starters_off_specifics.csv_predict_cctd1_players_off_specifics.csv.csv.gz",
+  "processed_predict_cctd1_starters_off_first_downs.csv_predict_cctd1_players_off_first_downs.csv.csv.gz",
+  "processed_predict_cctd1_starters_def_stops.csv_predict_cctd1_players_def_stops.csv.csv.gz",
+  "processed_predict_cctd1_starters_def_grades.csv_predict_cctd1_players_def_grades.csv.csv.gz",
+  "processed_predict_cctd1_starters_def_specifics.csv_predict_cctd1_players_def_specifics.csv.csv.gz",
+  "processed_predict_cctd1_starters_def_tackles.csv_predict_cctd1_players_def_tackles.csv.csv.gz",
+  "processed_predict_cctd1_starters_def_pressure.csv_predict_cctd1_players_def_pressure.csv.csv.gz"
+)
+
+# Run the analysis on all datasets
+results <- run_third_down_analysis(ctd1_datasets)
+
+# Generate a summary comparing the model performance across all datasets
+cat("\n\n=================================================================\n")
+cat("SUMMARY OF MODEL PERFORMANCE ACROSS ALL DATASETS\n")
+cat("=================================================================\n\n")
+
+summary_df <- data.frame(
+  Dataset = character(),
+  Regular_OLS_R2 = numeric(),
+  Starter_OLS_R2 = numeric(),
+  Regular_OLS_Adj_R2 = numeric(),
+  Starter_OLS_Adj_R2 = numeric(),
+  Regular_Probit_AIC = numeric(),
+  Starter_Probit_AIC = numeric(),
+  Regular_Probit_McFadden = numeric(),
+  Starter_Probit_McFadden = numeric(),
+  stringsAsFactors = FALSE
+)
+
+for(dataset_name in names(results)) {
+  result <- results[[dataset_name]]
+  if(!is.null(result$comparison)) {
+    comp <- result$comparison
+    summary_df <- rbind(summary_df, data.frame(
+      Dataset = dataset_name,
+      Regular_OLS_R2 = comp$ols_regular_rsquared,
+      Starter_OLS_R2 = comp$ols_starter_rsquared,
+      Regular_OLS_Adj_R2 = comp$ols_regular_adj_rsquared,
+      Starter_OLS_Adj_R2 = comp$ols_starter_adj_rsquared,
+      Regular_Probit_AIC = comp$probit_regular_aic,
+      Starter_Probit_AIC = comp$probit_starter_aic,
+      Regular_Probit_McFadden = comp$probit_regular_mcfadden,
+      Starter_Probit_McFadden = comp$probit_starter_mcfadden
+    ))
+  }
+}
+
+# Print summary table
+if(nrow(summary_df) > 0) {
+  # Format the summary data frame
+  summary_df_formatted <- summary_df
+  summary_df_formatted$Regular_OLS_R2 <- round(summary_df_formatted$Regular_OLS_R2, 4)
+  summary_df_formatted$Starter_OLS_R2 <- round(summary_df_formatted$Starter_OLS_R2, 4)
+  summary_df_formatted$Regular_OLS_Adj_R2 <- round(summary_df_formatted$Regular_OLS_Adj_R2, 4)
+  summary_df_formatted$Starter_OLS_Adj_R2 <- round(summary_df_formatted$Starter_OLS_Adj_R2, 4)
+  summary_df_formatted$Regular_Probit_AIC <- round(summary_df_formatted$Regular_Probit_AIC, 2)
+  summary_df_formatted$Starter_Probit_AIC <- round(summary_df_formatted$Starter_Probit_AIC, 2)
+  summary_df_formatted$Regular_Probit_McFadden <- round(summary_df_formatted$Regular_Probit_McFadden, 4)
+  summary_df_formatted$Starter_Probit_McFadden <- round(summary_df_formatted$Starter_Probit_McFadden, 4)
+  
+  print(summary_df_formatted)
+  
+  # Skip the average improvement and top 10 variables sections
+} else {
+  cat("No comparison results available across the datasets.\n")
+}
+```
+

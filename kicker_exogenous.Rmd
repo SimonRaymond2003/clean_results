@@ -1,0 +1,223 @@
+---
+title: "Support for the Kicker Exogenous Aurgument"
+output: html_document
+date: "2025-03-01"
+---
+
+```{r, include=FALSE}
+library(data.table)
+library(lmtest)
+library(sandwich)
+library(car)
+library(caret)
+```
+
+
+```{r}
+# List of CTD1 datasets to analyze
+ctd1_datasets <- c(
+  "processed_predict_cctd1_starters_off_grades.csv_predict_cctd1_players_off_grades.csv.csv.gz",
+  "processed_predict_cctd1_starters_off_yards.csv_predict_cctd1_players_off_yards.csv.csv.gz",
+  "processed_predict_cctd1_starters_off_tds.csv_predict_cctd1_players_off_tds.csv.csv.gz",
+  "processed_predict_cctd1_starters_off_specifics.csv_predict_cctd1_players_off_specifics.csv.csv.gz",
+  "processed_predict_cctd1_starters_off_first_downs.csv_predict_cctd1_players_off_first_downs.csv.csv.gz",
+  "processed_predict_cctd1_starters_def_stops.csv_predict_cctd1_players_def_stops.csv.csv.gz",
+  "processed_predict_cctd1_starters_def_grades.csv_predict_cctd1_players_def_grades.csv.csv.gz",
+  "processed_predict_cctd1_starters_def_specifics.csv_predict_cctd1_players_def_specifics.csv.csv.gz",
+  "processed_predict_cctd1_starters_def_tackles.csv_predict_cctd1_players_def_tackles.csv.csv.gz",
+  "processed_predict_cctd1_starters_def_pressure.csv_predict_cctd1_players_def_pressure.csv.csv.gz"
+)
+
+# For display names
+dataset_names <- c(
+  "off_grades", "off_yards", "off_tds", "off_specifics", "off_first_downs",
+  "def_stops", "def_grades", "def_specifics", "def_tackles", "def_pressure"
+)
+
+# Variables to track across models - using only 12w versions
+tracked_vars <- c(
+  "p_player_26_punting_grades_grades_punter_12w",
+  "k_player_25_field_goals_grades_grades_fgep_kicker_12w"
+)
+
+# Yardline ranges
+yardline_ranges <- c("1_10", "11_20", "21_30", "31_40", "41_50", 
+                   "51_60", "61_70", "71_80", "81_90", "91_100")
+
+# Create empty matrices to store t-values
+punter_matrix <- matrix(NA, nrow = length(dataset_names), ncol = length(yardline_ranges))
+rownames(punter_matrix) <- dataset_names
+colnames(punter_matrix) <- yardline_ranges
+
+kicker_matrix <- matrix(NA, nrow = length(dataset_names), ncol = length(yardline_ranges))
+rownames(kicker_matrix) <- dataset_names
+colnames(kicker_matrix) <- yardline_ranges
+
+# Function to analyze data for one dataset and one yardline
+analyze_yardline <- function(file_path, yardline_var) {
+  #cat("\nAnalyzing", yardline_var, "for", basename(file_path), "\n")
+  
+  # Check if file exists
+  if (!file.exists(file_path)) {
+    #cat("  ERROR: File does not exist:", file_path, "\n")
+    return(NULL)
+  }
+  
+  # Read data
+  tryCatch({
+    #cat("  Reading file:", file_path, "\n")
+    dt <- fread(file_path)
+    #cat("  Successfully read file with", nrow(dt), "rows and", ncol(dt), "columns\n")
+    
+    # Check for yardline column
+    yardline_col <- paste0("yardline_", yardline_var)
+    if (!yardline_col %in% names(dt)) {
+      #cat("  ERROR: Yardline column", yardline_col, "not found in data.\n")
+      return(NULL)
+    }
+    
+    # Basic checks and filtering
+    #cat("  Dataset dimensions:", nrow(dt), "rows,", ncol(dt), "columns\n")
+    dt_filtered <- dt[dt[[yardline_col]] == 1]
+    #cat("  After filtering for", yardline_col, ":", nrow(dt_filtered), "rows\n")
+    
+    if (nrow(dt_filtered) < 50) {
+      #cat("  WARNING: Not enough data (< 50 rows). Skipping.\n")
+      return(NULL)
+    }
+    
+    # Run OLS model
+    tryCatch({
+      # Check if variables are present
+      for (var in tracked_vars) {
+        if (var %in% names(dt_filtered)) {
+          #cat("  Variable", var, "is present\n")
+        } else {
+          #cat("  WARNING: Variable", var, "is not present in data\n")
+          return(NULL)
+        }
+      }
+      
+      # Check if outcome variable exists
+      if (!"conversion" %in% names(dt_filtered)) {
+        #cat("  ERROR: 'conversion' column not found in data.\n")
+        return(NULL)
+      }
+      
+      # Clean data for regression
+      if ("my_id" %in% names(dt_filtered)) dt_filtered[, my_id := NULL]
+      yardline_cols <- grep("^yardline_", names(dt_filtered), value = TRUE)
+      if (length(yardline_cols) > 0) dt_filtered[, (yardline_cols) := NULL]
+      
+      # Run regression
+      ols_model <- lm(conversion ~ ., data = dt_filtered)
+      robust_test <- coeftest(ols_model, vcov = vcovHC(ols_model, type = "HC0"))
+      
+      # Create results list
+      result <- list()
+      for (var in tracked_vars) {
+        if (var %in% rownames(robust_test)) {
+          t_val <- robust_test[var, "t value"]
+          p_val <- robust_test[var, "Pr(>|t|)"]
+          #cat("  ", var, ": t-value =", t_val, ", p-value =", p_val, "\n")
+          result[[var]] <- t_val
+        } else {
+          #cat("  ", var, ": Not in model\n")
+          result[[var]] <- NA
+        }
+      }
+      
+      return(result)
+    }, error = function(e) {
+      #cat("  ERROR in regression:", e$message, "\n")
+      return(NULL)
+    })
+  }, error = function(e) {
+    #cat("  ERROR reading file:", e$message, "\n")
+    return(NULL)
+  })
+}
+
+# Create header
+cat("===========================================\n",
+    "KICKER/PUNTER EXOGENOUS ARGUMENT ANALYSIS\n",
+    "===========================================\n\n",
+    "Analysis Date: ", format(Sys.time(), "%Y-%m-%d %H:%M:%S"), "\n\n")
+
+# Process each dataset
+for (d in 1:length(ctd1_datasets)) {
+  dataset_path <- ctd1_datasets[d]
+  dataset_name <- dataset_names[d]
+  
+  #cat("\nProcessing dataset:", dataset_name, "\n")
+  
+  # Process each yardline range
+  for (yl in 1:length(yardline_ranges)) {
+    yardline_var <- yardline_ranges[yl]
+    
+    # Run analysis
+    result <- analyze_yardline(dataset_path, yardline_var)
+    
+    # Store t-values in matrices
+    if (!is.null(result)) {
+      if (!is.null(result[[tracked_vars[1]]])) {
+        punter_matrix[d, yl] <- result[[tracked_vars[1]]]
+      }
+      if (!is.null(result[[tracked_vars[2]]])) {
+        kicker_matrix[d, yl] <- result[[tracked_vars[2]]]
+      }
+    }
+  }
+}
+
+# Function to print a t-value matrix with significance indicators
+print_t_value_matrix <- function(t_matrix, var_name) {
+  cat("\n\n=============================================\n",
+      "T-VALUES FOR", var_name, "\n",
+      "=============================================\n\n")
+  
+  # Print header row
+  cat(sprintf("%-20s", "Dataset"))
+  for (col in colnames(t_matrix)) {
+    cat(sprintf(" %8s", col))
+  }
+  cat("\n")
+  
+  # Print separator
+  cat(paste(rep("-", 20 + 9 * ncol(t_matrix)), collapse=""), "\n")
+  
+  # Print each dataset row
+  for (i in 1:nrow(t_matrix)) {
+    cat(sprintf("%-20s", rownames(t_matrix)[i]))
+    
+    for (j in 1:ncol(t_matrix)) {
+      t_val <- t_matrix[i, j]
+      
+      # Determine significance level
+      sig <- ""
+      if (!is.na(t_val)) {
+        if (abs(t_val) > 2.58) sig <- "***"
+        else if (abs(t_val) > 1.96) sig <- "**"
+        else if (abs(t_val) > 1.65) sig <- "*"
+        else if (abs(t_val) > 1.44) sig <- "."
+      }
+      
+      # Print the value
+      if (is.na(t_val)) {
+        cat(sprintf(" %8s", "N/A"))
+      } else {
+        cat(sprintf(" %6.2f%s", t_val, sig))
+      }
+    }
+    cat("\n")
+  }
+  
+  cat("\nSignificance codes: 0 '***' 0.01 '**' 0.05 '*' 0.1 '.' 0.15\n")
+}
+
+# Print the results
+print_t_value_matrix(punter_matrix, tracked_vars[1])
+print_t_value_matrix(kicker_matrix, tracked_vars[2])
+
+cat("\nAnalysis complete!\n")
+```

@@ -1,0 +1,40 @@
+name: "4th-downs-nfl"
+output_dir: docs
+navbar:
+  title: "4th Downs in the NFL"
+  left:
+    - text: "Home"
+      href: index.html
+    - text: "Heckman Selection"
+      href: heckman.html
+    - text: "Third Down Analysis"
+      href: thirddown.html
+    - text: "Attempts OLS"
+      href: attempt_ols.html
+    - text: "Robustness Checks"
+      href: robustness_checks.html
+    - text: "Writing"
+      href: Writing.html
+    - text: "Proof of Exogeniety"
+      href: kicker_exogenous.html
+      
+output:
+  html_document:
+    theme: flatly
+    css: styles.css
+    toc: true
+    toc_float: 
+      collapsed: false
+      smooth_scroll: true
+    code_folding: hide
+    code_download: true
+    df_print: paged
+    highlight: tango
+    fig_width: 12
+    fig_height: 8
+    code_chunk:
+      fig.width: 12
+      fig.height: 8
+      out.width: "100%"
+      warning: false
+      message: false

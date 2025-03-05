@@ -1,0 +1,392 @@
+---
+title: "attempt_ols with starter players"
+output: html_document
+date: "2025-02-25"
+---
+
+```{r, include=FALSE}
+library(data.table)
+  library(sandwich)
+  library(lmtest)
+  library(car)
+  library(caret)
+```
+
+
+```{r}
+analyze_attempt_models <- function(select_file) {
+  
+  # Read data file
+  cat("\nReading data:", select_file, "\n")
+  select_data <- fread(select_file)
+  
+  # Remove unwanted columns
+  select_data[, c("attendance_raw", "attendance_pct", "my_id") := NULL]
+  
+  # Remove specific columns if they exist
+  if ("yardline_31_40" %in% names(select_data)) select_data[, yardline_31_40 := NULL]
+  if ("Giff_Smith" %in% names(select_data)) select_data[, Giff_Smith := NULL]
+  
+  # Identify player columns
+  all_cols <- colnames(select_data)
+  
+  # Create regex patterns to identify starter player variables
+  starter_offense_pattern <- "^starter_offense_player_\\d+_"
+  starter_defense_pattern <- "^starter_defense_player_\\d+_"
+  
+  # Get columns for each type
+  starter_offense_cols <- grep(starter_offense_pattern, all_cols, value = TRUE)
+  starter_defense_cols <- grep(starter_defense_pattern, all_cols, value = TRUE)
+  
+  # All starter player columns
+  starter_player_cols <- c(starter_offense_cols, starter_defense_cols)
+  
+  # Non-player columns
+  common_cols <- setdiff(all_cols, c(starter_player_cols, 
+                                     grep("^offense_player_\\d+_", all_cols, value = TRUE),
+                                     grep("^defense_player_\\d+_", all_cols, value = TRUE)))
+  
+  # Create dataset with only starter players
+  starter_data <- select_data[, c(common_cols, starter_player_cols), with = FALSE]
+  
+  # OLS Model with Starter Players
+  ols_starter <- lm(attempt ~ ., data = starter_data)
+  
+  # Get robust statistics for OLS
+  ols_starter_robust <- coeftest(ols_starter, vcov = vcovHC(ols_starter, type = "HC0"))
+  
+  # Function to format results nicely
+  format_results <- function(model_results, model_name) {
+    cat(sprintf("\n%s Model Results (Robust Statistics)\n", model_name))
+    cat(sprintf("%-30s %12s %12s %6s\n", "Variable", "Coefficient", "t-value", "Sig"))
+    cat(paste(rep("-", 65), collapse = ""), "\n")
+    
+    for(i in 1:nrow(model_results)) {
+      p_val <- model_results[i, "Pr(>|t|)"]
+      stars <- ifelse(p_val < 0.01, "***",
+                      ifelse(p_val < 0.05, "**",
+                             ifelse(p_val < 0.1, "*",
+                                    ifelse(p_val < 0.15, ".", ""))))
+      
+      cat(sprintf("%-30s %12.4f %12.4f %6s\n",
+                  substr(rownames(model_results)[i], 1, 60),
+                  model_results[i, "Estimate"],
+                  model_results[i, "t value"],
+                  stars))
+    }
+    cat("\nSignificance codes: 0 '***' 0.01 '**' 0.05 '*' 0.1 '.' 0.15\n")
+  }
+  
+  # Print results
+  format_results(ols_starter_robust, "OLS Starter Players")
+  
+  # Add model fit statistics
+  cat("\nModel Fit Statistics:\n")
+  cat("OLS Starter R-squared:", round(summary(ols_starter)$r.squared, 4), "\n")
+  cat("OLS Starter Adj R-squared:", round(summary(ols_starter)$adj.r.squared, 4), "\n")
+  
+  # Calculate VIFs for the starter model
+  cat("\nVIFs for Starter Players Model (showing only VIF > 5):\n")
+  starter_vifs <- vif(ols_starter)
+  high_vifs <- starter_vifs[starter_vifs > 5]
+  if(length(high_vifs) > 0) {
+    for(var_name in names(high_vifs)) {
+      cat(sprintf("%-50s  %7.2f\n", var_name, high_vifs[var_name]))
+    }
+  } else {
+    cat("No variables with VIF > 5 found in this model\n")
+  }
+  
+  # Check for linear dependencies in starter data
+  X_starter <- model.matrix(~ . - attempt - 1, data = starter_data)
+  lin_combos_starter <- findLinearCombos(X_starter)
+  if (!is.null(lin_combos_starter$remove)) {
+    cols_to_remove <- colnames(X_starter)[lin_combos_starter$remove]
+    cat("\nRemoved from starter data:", paste(cols_to_remove, collapse=", "), "\n")
+    starter_data <- starter_data[, (cols_to_remove) := NULL, with = FALSE]
+  }
+  
+  # Probit model with starter players
+  probit_starter <- glm(attempt ~ ., data = starter_data, family = binomial(link = "probit"))
+  
+  # Get HC0-adjusted z-values and p-values for starter probit
+  robust_probit_starter <- coeftest(probit_starter, vcov = vcovHC(probit_starter, type = "HC0"))
+  
+  # Extract kicker/punter variables and their significance
+  # First try specific patterns for kicker/punter variables
+  kicker_patterns <- c(
+    "p_player_\\d+_punting",
+    "k_player_\\d+_field_goals",
+    "player_.+_punter",
+    "player_.+_kicker",
+    "starter_offense_player_\\d+_(K|P)_",
+    "starter_.+_(kicker|punter)"
+  )
+  
+  # Find kicker/punter variables in Probit model
+  probit_kicker_vars <- character(0)
+  for (pattern in kicker_patterns) {
+    found_vars <- grep(pattern, rownames(robust_probit_starter), value = TRUE, ignore.case = TRUE)
+    if (length(found_vars) > 0) {
+      probit_kicker_vars <- c(probit_kicker_vars, found_vars)
+    }
+  }
+  
+  # Find kicker/punter variables in OLS model
+  ols_kicker_vars <- character(0)
+  for (pattern in kicker_patterns) {
+    found_vars <- grep(pattern, rownames(ols_starter_robust), value = TRUE, ignore.case = TRUE)
+    if (length(found_vars) > 0) {
+      ols_kicker_vars <- c(ols_kicker_vars, found_vars)
+    }
+  }
+  
+  # Remove duplicates
+  probit_kicker_vars <- unique(probit_kicker_vars)
+  ols_kicker_vars <- unique(ols_kicker_vars)
+  
+  # Store Probit kicker/punter results
+  probit_results <- data.table(
+    Variable = character(),
+    Coefficient = numeric(),
+    Z_Value = numeric(),
+    P_Value = numeric()
+  )
+  
+  if (length(probit_kicker_vars) > 0) {
+    for (var in probit_kicker_vars) {
+      probit_results <- rbindlist(list(probit_results, data.table(
+        Variable = var,
+        Coefficient = robust_probit_starter[var, "Estimate"],
+        Z_Value = robust_probit_starter[var, "z value"],
+        P_Value = robust_probit_starter[var, "Pr(>|z|)"]
+      )))
+    }
+  }
+  
+  # Store OLS kicker/punter results
+  ols_results <- data.table(
+    Variable = character(),
+    Coefficient = numeric(),
+    T_Value = numeric(),
+    P_Value = numeric()
+  )
+  
+  if (length(ols_kicker_vars) > 0) {
+    for (var in ols_kicker_vars) {
+      ols_results <- rbindlist(list(ols_results, data.table(
+        Variable = var,
+        Coefficient = ols_starter_robust[var, "Estimate"],
+        T_Value = ols_starter_robust[var, "t value"],
+        P_Value = ols_starter_robust[var, "Pr(>|t|)"]
+      )))
+    }
+  }
+  
+  # Model summary statistics
+  cat("\n\n--- Model Summary Statistics ---\n")
+  cat("OLS Starter Players R-squared:", round(summary(ols_starter)$r.squared, 4), "\n")
+  cat("OLS Starter Players Adj R-squared:", round(summary(ols_starter)$adj.r.squared, 4), "\n\n")
+  cat("Probit Starter Players AIC:", round(probit_starter$aic, 2), "\n")
+  cat("Probit Starter Players McFadden's Pseudo R²:", round(1 - probit_starter$deviance/probit_starter$null.deviance, 4), "\n")
+  
+  # Return results needed for the summary table
+  return(list(
+    dataset = select_file,
+    ols_r2 = summary(ols_starter)$r.squared,
+    ols_adj_r2 = summary(ols_starter)$adj.r.squared,
+    probit_aic = probit_starter$aic,
+    probit_pseudo_r2 = 1 - probit_starter$deviance/probit_starter$null.deviance,
+    probit_kicker_results = probit_results,  # Changed from kicker_results to probit_kicker_results
+    ols_kicker_results = ols_results  # Added ols_kicker_results
+  ))
+}
+
+# Define the datasets to analyze
+datasets <- c(
+  "processed_predict_ccfd_off_grades.csv_v2.csv.gz",
+  "processed_predict_ccfd_off_yards.csv_v2.csv.gz",
+  "processed_predict_ccfd_off_tds.csv_v2.csv.gz",
+  "processed_predict_ccfd_off_specifics.csv_v2.csv.gz",
+  "processed_predict_ccfd_off_first_downs.csv_v2.csv.gz",
+  "processed_predict_ccfd_def_stops.csv_v2.csv.gz",
+  "processed_predict_ccfd_def_grades.csv_v2.csv.gz", 
+  "processed_predict_ccfd_def_specifics.csv_v2.csv.gz",
+  "processed_predict_ccfd_def_tackles.csv_v2.csv.gz",
+  "processed_predict_ccfd_def_pressure.csv_v2.csv.gz"
+)
+
+# Initialize data.table to store summary results
+summary_results <- data.table(
+  Dataset = character(),
+  OLS_R2 = numeric(),
+  OLS_Adj_R2 = numeric(),
+  Probit_AIC = numeric(),
+  Probit_Pseudo_R2 = numeric()
+)
+
+# Initialize lists to store results
+kicker_punter_probit_results <- list()
+kicker_punter_ols_results <- list()
+
+# Run analysis on each dataset
+for (i in 1:length(datasets)) {
+  dataset_name <- gsub(".csv.gz", "", datasets[i])
+  
+  # Make dataset name more readable
+  display_name <- gsub("processed_predict_ccfd_|_v2", "", dataset_name)
+  display_name <- gsub("_", " ", display_name)
+  display_name <- tools::toTitleCase(display_name)
+  
+  cat("\n\n")
+  cat(paste(rep("=", 100), collapse=""), "\n")
+  cat(sprintf("ANALYZING DATASET %d/%d: %s\n", i, length(datasets), display_name))
+  cat(paste(rep("=", 100), collapse=""), "\n\n")
+  
+  # Run analysis
+  results <- analyze_attempt_models(datasets[i])
+  
+  # Store summary results
+  summary_results <- rbindlist(list(summary_results, data.table(
+    Dataset = display_name,
+    OLS_R2 = results$ols_r2,
+    OLS_Adj_R2 = results$ols_adj_r2,
+    Probit_AIC = results$probit_aic,
+    Probit_Pseudo_R2 = results$probit_pseudo_r2
+  )))
+  
+  # Store kicker/punter results for probit and ols models
+  if (nrow(results$probit_kicker_results) > 0) {  # Changed from kicker_results to probit_kicker_results
+    kicker_punter_probit_results[[display_name]] <- results$probit_kicker_results  # Changed from kicker_results to probit_kicker_results
+  }
+  
+  if (nrow(results$ols_kicker_results) > 0) {
+    kicker_punter_ols_results[[display_name]] <- results$ols_kicker_results
+  }
+}
+
+# Print summary results
+cat("\n\n", paste(rep("=", 100), collapse=""), "\n")
+cat("MODEL SUMMARY RESULTS\n")
+cat(paste(rep("=", 100), collapse=""), "\n\n")
+
+# Format the summary results
+print(summary_results[, .(
+  Dataset,
+  `OLS R²` = round(OLS_R2, 4),
+  `OLS Adj. R²` = round(OLS_Adj_R2, 4),
+  `Probit AIC` = round(Probit_AIC, 2),
+  `Probit Pseudo R²` = round(Probit_Pseudo_R2, 4)
+)])
+
+# Print OLS results for kickers/punters
+cat("\n\n", paste(rep("=", 100), collapse=""), "\n")
+cat("KICKER & PUNTER SIGNIFICANCE (OLS MODELS)\n")
+cat(paste(rep("=", 100), collapse=""), "\n\n")
+
+# Define column headers
+cat(sprintf("%-25s %-20s %-15s %-10s %-10s\n", "Dataset", "Variable", "Coefficient", "t-value", "p-value"))
+cat(paste(rep("-", 85), collapse=""), "\n")
+
+# Print each dataset's kicker/punter variables for OLS
+for (dataset_name in names(kicker_punter_ols_results)) {
+  results <- kicker_punter_ols_results[[dataset_name]]
+  
+  for (i in 1:nrow(results)) {
+    var_name <- results[i, Variable]
+    
+    # Clean up variable name for display
+    var_display <- gsub("starter_offense_player_\\d+_|starter_", "", var_name)
+    
+    # Identify if this is kicker or punter for clear labeling
+    is_kicker <- grepl("kicker|field_goals|k_player", var_name, ignore.case = TRUE)
+    is_punter <- grepl("punter|punting|p_player", var_name, ignore.case = TRUE)
+    
+    if (is_kicker) {
+      var_display <- "Kicker"
+    } else if (is_punter) {
+      var_display <- "Punter"
+    }
+    
+    # Add more specific info if available
+    if (grepl("field_goals", var_name, ignore.case = TRUE)) {
+      var_display <- paste0(var_display, " (FG)")
+    } else if (grepl("punting", var_name, ignore.case = TRUE)) {
+      var_display <- paste0(var_display, " (Punt)")
+    }
+    
+    # Get significance stars
+    p_val <- results[i, P_Value]
+    stars <- ifelse(p_val < 0.01, "***",
+             ifelse(p_val < 0.05, "**",
+             ifelse(p_val < 0.1, "*",
+             ifelse(p_val < 0.15, ".", ""))))
+    
+    cat(sprintf("%-25s %-20s %9.4f %9.4f%s %9.4f\n",
+        dataset_name,
+        var_display,
+        results[i, Coefficient],
+        results[i, T_Value],
+        stars,
+        p_val))
+  }
+}
+
+cat("\nSignificance codes: 0 '***' 0.01 '**' 0.05 '*' 0.1 '.' 0.15\n")
+
+# Print Probit results for kickers/punters
+cat("\n\n", paste(rep("=", 100), collapse=""), "\n")
+cat("KICKER & PUNTER SIGNIFICANCE (PROBIT MODELS)\n")
+cat(paste(rep("=", 100), collapse=""), "\n\n")
+
+# Define column headers
+cat(sprintf("%-25s %-20s %-15s %-10s %-10s\n", "Dataset", "Variable", "Coefficient", "z-value", "p-value"))
+cat(paste(rep("-", 85), collapse=""), "\n")
+
+# Print each dataset's kicker/punter variables for Probit
+for (dataset_name in names(kicker_punter_probit_results)) {
+  results <- kicker_punter_probit_results[[dataset_name]]
+  
+  for (i in 1:nrow(results)) {
+    var_name <- results[i, Variable]
+    
+    # Clean up variable name for display
+    var_display <- gsub("starter_offense_player_\\d+_|starter_", "", var_name)
+    
+    # Identify if this is kicker or punter for clear labeling
+    is_kicker <- grepl("kicker|field_goals|k_player", var_name, ignore.case = TRUE)
+    is_punter <- grepl("punter|punting|p_player", var_name, ignore.case = TRUE)
+    
+    if (is_kicker) {
+      var_display <- "Kicker"
+    } else if (is_punter) {
+      var_display <- "Punter"
+    }
+    
+    # Add more specific info if available
+    if (grepl("field_goals", var_name, ignore.case = TRUE)) {
+      var_display <- paste0(var_display, " (FG)")
+    } else if (grepl("punting", var_name, ignore.case = TRUE)) {
+      var_display <- paste0(var_display, " (Punt)")
+    }
+    
+    # Get significance stars
+    p_val <- results[i, P_Value]
+    stars <- ifelse(p_val < 0.01, "***",
+             ifelse(p_val < 0.05, "**",
+             ifelse(p_val < 0.1, "*",
+             ifelse(p_val < 0.15, ".", ""))))
+    
+    cat(sprintf("%-25s %-20s %9.4f %9.4f%s %9.4f\n",
+        dataset_name,
+        var_display,
+        results[i, Coefficient],
+        results[i, Z_Value],
+        stars,
+        p_val))
+  }
+}
+
+cat("\nSignificance codes: 0 '***' 0.01 '**' 0.05 '*' 0.1 '.' 0.15\n")
+```
+

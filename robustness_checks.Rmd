@@ -1,0 +1,251 @@
+---
+title: "robustness_checks"
+output: html_document
+date: "2025-02-23"
+---
+
+
+No GIMR
+
+```{r, include=FALSE}
+# Load required libraries
+library(data.table)
+library(sandwich)
+library(lmtest)
+library(car)
+```
+
+
+```{r}
+# Define the datasets to analyze
+datasets <- list(
+  list(outcome = "processed_predict_ccafd_off_grades.csv.csv.gz"),
+  list(outcome = "processed_predict_ccafd_off_yards.csv.csv.gz"),
+  list(outcome = "processed_predict_ccafd_off_tds.csv.csv.gz"),
+  list(outcome = "processed_predict_ccafd_off_specifics.csv.csv.gz"),
+  list(outcome = "processed_predict_ccafd_off_first_downs.csv.csv.gz"),
+  list(outcome = "processed_predict_ccafd_def_stops.csv.csv.gz"),
+  list(outcome = "processed_predict_ccafd_def_grades.csv.csv.gz"),
+  list(outcome = "processed_predict_ccafd_def_specifics.csv.csv.gz"),
+  list(outcome = "processed_predict_ccafd_def_tackles.csv.csv.gz"),
+  list(outcome = "processed_predict_ccafd_def_pressure.csv.csv.gz")
+)
+
+# Function to process and analyze a dataset
+analyze_dataset <- function(outcome_file) {
+  cat("\n\n", paste(rep("#", 80), collapse=""), "\n")
+  cat("ANALYZING DATASET:", outcome_file, "\n")
+  cat(paste(rep("#", 80), collapse=""), "\n\n")
+  
+  # Read data
+  cat("Reading data from:", outcome_file, "\n")
+  outcome_data <- tryCatch({
+    fread(outcome_file)
+  }, error = function(e) {
+    cat("ERROR reading file:", e$message, "\n")
+    return(NULL)
+  })
+  
+  if(is.null(outcome_data) || nrow(outcome_data) == 0) {
+    cat("No data available for", outcome_file, "\n")
+    return(NULL)
+  }
+  
+  # Extract dependent variable - specifically the conversion column
+  dependent_var <- "conversion"
+  cat("Using dependent variable:", dependent_var, "\n")
+  
+  # Create copies for different models
+  outcome_data_player_no_gimr <- copy(outcome_data)
+  outcome_data_starter_no_gimr <- copy(outcome_data)
+  
+  # Remove specific columns - treating attendance as regular variables, not special
+  cols_to_remove <- c("my_id", "yardline_31_40", "year2022_team_CLE", "vegas_wp_posteam")
+  
+  for (dt in list(outcome_data_player_no_gimr, outcome_data_starter_no_gimr)) {
+    # Remove columns if they exist
+    for(col in cols_to_remove) {
+      if(col %in% names(dt)) dt[, (col) := NULL]
+    }
+  }
+  
+  # Remove present columns if they exist
+  present_cols <- grep("_present", names(outcome_data_player_no_gimr), value = TRUE)
+  for (col in present_cols) {
+    outcome_data_player_no_gimr[, (col) := NULL]
+    outcome_data_starter_no_gimr[, (col) := NULL]
+  }
+  
+  # For player model, remove starter columns
+  player_cols <- grep("^starter_", names(outcome_data_player_no_gimr), value = TRUE)
+  for (col in player_cols) {
+    outcome_data_player_no_gimr[, (col) := NULL]
+  }
+  
+  # For starter model, remove player columns
+  starter_cols <- grep("^(offense|defense)_player_", names(outcome_data_starter_no_gimr), value = TRUE)
+  for (col in starter_cols) {
+    outcome_data_starter_no_gimr[, (col) := NULL]
+  }
+  
+  # Ensure outcome variable is numeric
+  for (dt in list(outcome_data_player_no_gimr, outcome_data_starter_no_gimr)) {
+    dt[, (dependent_var) := as.numeric(as.character(get(dependent_var)))]
+  }
+  
+  # Create formula for the model
+  formula_text <- paste(dependent_var, "~ .")
+  formula_obj <- as.formula(formula_text)
+  
+  # Run models
+  cat("Running player model...\n")
+  ols_model_player_no_gimr <- tryCatch({
+    lm(formula_obj, data = outcome_data_player_no_gimr)
+  }, error = function(e) {
+    cat("ERROR in player model:", e$message, "\n")
+    return(NULL)
+  })
+  
+  cat("Running starter model...\n")
+  ols_model_starter_no_gimr <- tryCatch({
+    lm(formula_obj, data = outcome_data_starter_no_gimr)
+  }, error = function(e) {
+    cat("ERROR in starter model:", e$message, "\n")
+    return(NULL)
+  })
+  
+  # Function to format and analyze model results
+  analyze_model <- function(model, model_name) {
+    if(is.null(model)) {
+      cat("\nModel", model_name, "failed to run.\n")
+      return(NA)
+    }
+    
+    # Get robust statistics
+    robust_test <- tryCatch({
+      coeftest(model, vcov = vcovHC(model, type = "HC0"))
+    }, error = function(e) {
+      cat("ERROR in robust statistics for", model_name, ":", e$message, "\n")
+      return(NULL)
+    })
+    
+    if(is.null(robust_test)) {
+      return(NA)
+    }
+    
+    # Format results consistently
+    format_results <- function(model_results, model_name) {
+      cat(sprintf("\n%s Model Results (Robust Statistics)\n", model_name))
+      cat(sprintf("%-30s %12s %12s %6s\n", "Variable", "Coefficient", "t-value", "Sig"))
+      cat(paste(rep("-", 65), collapse = ""), "\n")
+      
+      for(i in 1:nrow(model_results)) {
+          p_val <- model_results[i, "Pr(>|t|)"]
+          stars <- ifelse(p_val < 0.01, "***",
+                  ifelse(p_val < 0.05, "**",
+                  ifelse(p_val < 0.1, "*",
+                  ifelse(p_val < 0.15, ".", ""))))
+          
+          var_name <- rownames(model_results)[i]
+          if (nchar(var_name) > 60) {
+              var_name <- paste0(substr(var_name, 1, 57), "...")
+          }
+          
+          cat(sprintf("%-30s %12.4f %12.4f %6s\n",
+              var_name,
+              model_results[i, "Estimate"],
+              model_results[i, "t value"],
+              stars))
+      }
+      cat("\nSignificance codes: 0 '***' 0.01 '**' 0.05 '*' 0.1 '.' 0.15\n")
+    }
+    
+    # Print model results
+    cat("\n\n", paste(rep("=", 80), collapse=""), "\n")
+    cat("MODEL:", model_name, "\n")
+    cat(paste(rep("=", 80), collapse=""), "\n\n")
+    
+    format_results(robust_test, model_name)
+    
+    # Print R-squared
+    r_squared <- summary(model)$adj.r.squared
+    cat("\nAdjusted R-squared:", r_squared, "\n")
+    
+    # Calculate and display VIFs
+    tryCatch({
+      vifs <- vif(model)
+      high_vifs <- vifs[vifs > 5]
+      if(length(high_vifs) > 0) {
+        cat("\nVariables with VIF > 5:\n")
+        for(var_name in names(high_vifs)) {
+          cat(sprintf("%-50s  %7.2f\n", var_name, high_vifs[var_name]))
+        }
+      } else {
+        cat("\nNo variables with VIF > 5 found in this model\n")
+      }
+    }, error = function(e) {
+      cat("ERROR calculating VIFs:", e$message, "\n")
+    })
+    
+    return(r_squared)
+  }
+  
+  # Analyze models
+  cat("\nAnalyzing Player Model...\n")
+  r2_player_no_gimr <- analyze_model(ols_model_player_no_gimr, "Player Model without GIMR")
+  
+  cat("\nAnalyzing Starter Model...\n")
+  r2_starter_no_gimr <- analyze_model(ols_model_starter_no_gimr, "Starter Model without GIMR")
+  
+  # Compare R-squared values
+  cat("\n\n", paste(rep("=", 80), collapse=""), "\n")
+  cat("MODEL COMPARISON - Adjusted R-squared values\n")
+  cat(paste(rep("=", 80), collapse=""), "\n\n")
+  cat("Player Model without GIMR:", r2_player_no_gimr, "\n")
+  cat("Starter Model without GIMR:", r2_starter_no_gimr, "\n")
+  
+  return(list(
+    dataset = outcome_file,
+    dependent_var = dependent_var,
+    r2_player = r2_player_no_gimr,
+    r2_starter = r2_starter_no_gimr
+  ))
+}
+
+# Loop through all datasets and analyze
+results_summary <- list()
+
+for(dataset in datasets) {
+  cat("\n\nProcessing dataset:", dataset$outcome, "\n")
+  result <- analyze_dataset(dataset$outcome)
+  
+  if(!is.null(result)) {
+    results_summary[[length(results_summary) + 1]] <- result
+  }
+}
+
+# Print overall summary of R-squared values for all datasets
+cat("\n\n", paste(rep("#", 80), collapse=""), "\n")
+cat("OVERALL RESULTS SUMMARY\n")
+cat(paste(rep("#", 80), collapse=""), "\n\n")
+
+cat(sprintf("%-50s %-20s %-15s %-15s\n", 
+            "Dataset", "Dependent Variable", "Player R²", "Starter R²"))
+cat(paste(rep("-", 100), collapse=""), "\n")
+
+for(result in results_summary) {
+  if(!is.null(result) && !is.na(result$r2_player) && !is.na(result$r2_starter)) {
+    cat(sprintf("%-50s %-20s %-15.4f %-15.4f\n", 
+                result$dataset, 
+                result$dependent_var,
+                result$r2_player, 
+                result$r2_starter))
+  } else {
+    cat(sprintf("%-50s %-20s %-15s %-15s\n", 
+                result$dataset, 
+                result$dependent_var,
+                ifelse(is.na(result$r2_player), "ERROR", result$r2_player),
+                ifelse(is.na(result$r2_starter), "ERROR", result$r2_starter)))
+  }
+}
+```

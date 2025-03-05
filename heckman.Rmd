@@ -1,0 +1,431 @@
+---
+title: "Heckman Selection Model Analysis"
+output: html_document
+---
+
+
+
+
+
+```{r, include=FALSE}
+# Heckman Selection Model Analysis for All Datasets
+# This script runs Heckman selection models on all processed datasets
+
+library(data.table)
+library(xgboost)
+library(ROCR)
+library(parallel)
+library(sandwich)
+library(lmtest)
+library(car)
+
+# Options for better output
+options(max.print=10000)
+
+```
+
+```{r}
+run_heckman <- function(select_data, outcome_data, n_validation = 1, n_test = 2) {
+  
+  # Data preparation
+  select_data[, attempt := as.numeric(as.character(attempt))]
+  
+  # Prepare the XGBoost matrices
+  xs <- model.matrix(~ . - 1 - attempt - my_id, data = select_data)
+  y <- as.numeric(as.character(select_data$attempt))
+  
+  # Create parameter grid
+  grid <- expand.grid(
+    eta = seq(0.001, 0.03, by = 0.01),
+    max_depth = seq(5, 5, by = 2),
+    min_child_weight = seq(1, 1, by = 1),        
+    subsample = seq(1, 1, by = 0.2),
+    colsample_bytree = seq(1, 1, by = 0.2),
+    lambda = seq(1, 1, by = 1),                
+    alpha = seq(0, 0, by = 1),                  
+    gamma = seq(0, 0, by = 0.1),               
+    nrounds = seq(100, 250, by = 50)
+  )
+  
+  # Sample grid points
+  conf_lev <- .95
+  num_max <- 5
+  n <- ceiling(log(1-conf_lev)/log(1-num_max/nrow(grid)))
+  ind <- sample(nrow(grid), n, replace = FALSE)
+  rgrid <- grid[ind, ]
+  
+  # Set up parallel processing
+  nc <- detectCores() - 1
+  
+  # Calculate scale_pos_weight for imbalanced dataset
+  scale_pos_weight <- sum(y == 0) / sum(y == 1)
+  
+  # Validation phase
+  cat("\nPhase 1: Validation Phase\n")
+  validation_results <- matrix(nrow = nrow(rgrid), ncol = n_validation)
+  
+  for (j in 1:nrow(rgrid)) {
+    #cat("\nTesting parameter set", j, "of", nrow(rgrid), "\n")
+    
+    for (i in 1:n_validation) {
+      #cat("\nValidation iteration", i, "of", n_validation, "\n")             
+      # Create validation split
+      idx <- unique(sample(nrow(xs), nrow(xs), TRUE))
+      train_x <- xs[idx, ]
+      train_y <- y[idx]
+      val_x <- xs[-idx, ]
+      val_y <- y[-idx]
+      
+      prm <- list(
+        booster = "gbtree",
+        objective = "binary:logistic",
+        max_depth = rgrid[j, "max_depth"],
+        eta = rgrid[j, "eta"],
+        subsample = rgrid[j, "subsample"],
+        colsample_bytree = rgrid[j, "colsample_bytree"],
+        gamma = rgrid[j, "gamma"],
+        min_child_weight = rgrid[j, "min_child_weight"],
+        alpha = rgrid[j, "alpha"],
+        lambda = rgrid[j, "lambda"],
+        scale_pos_weight = scale_pos_weight,
+        nthread = nc
+      )
+      
+      dm_train <- xgb.DMatrix(data = train_x, label = train_y)
+      mdl <- xgb.train(
+        params = prm,
+        data = dm_train,
+        nrounds = rgrid[j, "nrounds"],
+        verbose = FALSE
+      )
+      
+      p <- predict(mdl, xgb.DMatrix(data = val_x))
+      pred <- prediction(p, val_y)
+      validation_results[j, i] <- performance(pred, "auc")@y.values[[1]]
+    }
+  }
+  
+  # Run test iterations with best parameters
+  cat("\nRunning", n_test, "test iterations with best parameters...\n")
+  test_aucs <- c()
+  
+  best_params_idx <- which.max(rowMeans(validation_results))
+  best_params <- rgrid[best_params_idx,]
+  
+  # Train final model with best parameters
+  best_params_list <- as.list(best_params[-which(names(best_params) == "nrounds")])
+  best_params_list$booster <- "gbtree"
+  best_params_list$objective <- "binary:logistic"
+  best_params_list$scale_pos_weight <- scale_pos_weight
+  best_params_list$nthread <- nc
+  
+  for(i in 1:n_test) {
+    # Create test split
+    idx <- unique(sample(nrow(xs), nrow(xs), T))
+    train_x <- xs[idx, ]
+    train_y <- y[idx]
+    test_x <- xs[-idx, ]
+    test_y <- y[-idx]
+    
+    # Train model on full unbalanced dataset
+    dm_train <- xgb.DMatrix(data = train_x, label = train_y)
+    mdl <- xgb.train(
+      params = best_params_list,
+      data = dm_train,
+      nrounds = best_params[["nrounds"]],
+      verbose = FALSE
+    )
+    
+    # Test on unbalanced test set
+    p <- predict(mdl, xgb.DMatrix(data = test_x))
+    pred <- prediction(p, test_y)
+    test_aucs[i] <- performance(pred, "auc")@y.values[[1]]
+  }
+  
+  # Print results
+  cat("\nTest Results over", n_test, "iterations:\n")
+  cat("Mean AUC:", mean(test_aucs), "\n")
+  cat("SD AUC:", sd(test_aucs), "\n")
+  cat("95% CI:", mean(test_aucs) - 1.96 * sd(test_aucs), 
+      "to", mean(test_aucs) + 1.96 * sd(test_aucs), "\n")
+  
+  # Now train final model on full data for z scores
+  dm_full <- xgb.DMatrix(data = xs, label = y)
+  final_model <- xgb.train(
+    params = best_params_list,
+    data = dm_full,
+    nrounds = best_params[["nrounds"]],
+    verbose = FALSE
+  )
+  
+  # Get probability predictions (z) for ALL data
+  z <- predict(final_model, xgb.DMatrix(data = xs))
+  
+  # Calculate residuals for XGBoost predictions
+  residuals <- y - z
+  
+  # Calculate GIMR (lambda) - Generalized inverse mills ratio
+  GIMR <- dnorm(qnorm(z)) / (1 - pnorm(qnorm(z)))
+  
+  # Add GIMR to the data
+  select_data[, GIMR := GIMR]
+  
+  # Create a data.table with just my_id and GIMR from select_data
+  GIMR_dt <- data.table(my_id = select_data$my_id, GIMR = GIMR)
+  
+  # Add GIMR to outcome_data by matching on my_id
+  outcome_data[GIMR_dt, GIMR := i.GIMR, on = "my_id"]
+  
+  # Data preparation for outcome models
+  # Create copies for different models
+  outcome_data_player <- copy(outcome_data)
+  outcome_data_starter <- copy(outcome_data)
+  
+  # Clean data for both models
+  for (dt in list(outcome_data_player, outcome_data_starter)) {
+    dt[, my_id := NULL]
+    dt[, yardline_31_40 := NULL]
+    dt[, year2022_team_CLE := NULL]
+    
+    # Remove attendance variables
+    dt[, attendance_pct := NULL]
+    dt[, attendance_raw := NULL]
+
+    # Remove all columns with "_present" in the name
+    present_cols <- grep("_present", names(dt), value = TRUE)
+    for (col in present_cols) {
+      dt[, (col) := NULL]
+    }
+  }
+  
+  # For player models, remove starter columns
+  player_cols <- grep("^starter_", names(outcome_data_player), value = TRUE)
+  for (col in player_cols) {
+    outcome_data_player[, (col) := NULL]
+  }
+  
+  # For starter models, remove player columns
+  starter_cols <- grep("^(offense|defense)_player_", names(outcome_data_starter), value = TRUE)
+  for (col in starter_cols) {
+    outcome_data_starter[, (col) := NULL]
+  }
+  
+  # Ensure conversion is numeric
+  for (dt in list(outcome_data_player, outcome_data_starter)) {
+    dt[, conversion := as.numeric(as.character(conversion))]
+  }
+  
+  # MODEL 1: Player model with GIMR
+  ols_model_player <- lm(conversion ~ ., data = outcome_data_player)
+  
+  # MODEL 2: Starter model with GIMR
+  ols_model_starter <- lm(conversion ~ ., data = outcome_data_starter)
+  
+  # Function to format and analyze model results
+  analyze_model <- function(model, model_name) {
+    # Get robust statistics
+    robust_test <- coeftest(model, vcov = vcovHC(model, type = "HC0"))
+    
+    # Format results consistently
+    format_results <- function(model_results, model_name) {
+      cat(sprintf("\n%s Model Results (Robust Statistics)\n", model_name))
+      cat(sprintf("%-30s %12s %12s %6s\n", "Variable", "Coefficient", "t-value", "Sig"))
+      cat(paste(rep("-", 65), collapse = ""), "\n")
+      
+      for(i in 1:nrow(model_results)) {
+        p_val <- model_results[i, "Pr(>|t|)"]
+        stars <- ifelse(p_val < 0.01, "***",
+                 ifelse(p_val < 0.05, "**",
+                 ifelse(p_val < 0.1, "*",
+                 ifelse(p_val < 0.15, ".", ""))))
+        
+        var_name <- rownames(model_results)[i]
+        if (nchar(var_name) > 60) {
+          var_name <- paste0(substr(var_name, 1, 57), "...")
+        }
+        
+        cat(sprintf("%-30s %12.4f %12.4f %6s\n",
+            var_name,
+            model_results[i, "Estimate"],
+            model_results[i, "t value"],
+            stars))
+      }
+      cat("\nSignificance codes: 0 '***' 0.01 '**' 0.05 '*' 0.1 '.' 0.15\n")
+    }
+    
+    # Print model results
+    cat("\n\n", paste(rep("=", 80), collapse=""), "\n")
+    cat("MODEL:", model_name, "\n")
+    cat(paste(rep("=", 80), collapse=""), "\n\n")
+    
+    format_results(robust_test, model_name)
+    
+    # Print R-squared
+    r_squared <- summary(model)$adj.r.squared
+    cat("\nAdjusted R-squared:", r_squared, "\n")
+    
+    # Calculate and display VIFs
+    vifs <- vif(model)
+    high_vifs <- vifs[vifs > 5]
+    if(length(high_vifs) > 0) {
+      cat("\nVariables with VIF > 5:\n")
+      for(var_name in names(high_vifs)) {
+        cat(sprintf("%-50s  %7.2f\n", var_name, high_vifs[var_name]))
+      }
+    } else {
+      cat("\nNo variables with VIF > 5 found in this model\n")
+    }
+    
+    return(r_squared)
+  }
+  
+  # Analyze models with GIMR only
+  r2_player <- analyze_model(ols_model_player, "Player Model with GIMR")
+  r2_starter <- analyze_model(ols_model_starter, "Starter Model with GIMR")
+  
+  # Compare R-squared values
+  cat("\n\n", paste(rep("=", 80), collapse=""), "\n")
+  cat("MODEL COMPARISON - Adjusted R-squared values\n")
+  cat(paste(rep("=", 80), collapse=""), "\n\n")
+  cat("Player Model with GIMR:", r2_player, "\n")
+  cat("Starter Model with GIMR:", r2_starter, "\n")
+  
+  # Return results as a list
+  results <- list(
+    xgb_model = final_model,
+    z_scores = z,
+    gimr = GIMR,
+    player_model = ols_model_player,
+    starter_model = ols_model_starter,
+    test_aucs = test_aucs,
+    best_params = best_params,
+    r2_player = r2_player,
+    r2_starter = r2_starter
+  )
+  
+  return(results)
+}
+
+# Define the datasets to analyze
+datasets <- list(
+  list(outcome = "processed_predict_ccafd_off_grades.csv.csv.gz", select = "processed_predict_ccfd_off_grades.csv.csv.gz"),
+  list(outcome = "processed_predict_ccafd_off_yards.csv.csv.gz", select = "processed_predict_ccfd_off_yards.csv.csv.gz"),
+  list(outcome = "processed_predict_ccafd_off_tds.csv.csv.gz", select = "processed_predict_ccfd_off_tds.csv.csv.gz"),
+  list(outcome = "processed_predict_ccafd_off_specifics.csv.csv.gz", select = "processed_predict_ccfd_off_specifics.csv.csv.gz"),
+  list(outcome = "processed_predict_ccafd_off_first_downs.csv.csv.gz", select = "processed_predict_ccfd_off_first_downs.csv.csv.gz"),
+  list(outcome = "processed_predict_ccafd_def_stops.csv.csv.gz", select = "processed_predict_ccfd_def_stops.csv.csv.gz"),
+  list(outcome = "processed_predict_ccafd_def_grades.csv.csv.gz", select = "processed_predict_ccfd_def_grades.csv.csv.gz"),
+  list(outcome = "processed_predict_ccafd_def_specifics.csv.csv.gz", select = "processed_predict_ccfd_def_specifics.csv.csv.gz"),
+  list(outcome = "processed_predict_ccafd_def_tackles.csv.csv.gz", select = "processed_predict_ccfd_def_tackles.csv.csv.gz"),
+  list(outcome = "processed_predict_ccafd_def_pressure.csv.csv.gz", select = "processed_predict_ccfd_def_pressure.csv.csv.gz")
+)
+
+# Initialize a data.table to store GIMR results
+gimr_results <- data.table(
+  Dataset = character(),
+  Player_GIMR_coef = numeric(),
+  Player_GIMR_tval = numeric(),
+  Player_GIMR_pval = numeric(),
+  Player_R2 = numeric(),
+  Starter_GIMR_coef = numeric(),
+  Starter_GIMR_tval = numeric(),
+  Starter_GIMR_pval = numeric(),
+  Starter_R2 = numeric()
+)
+
+# Process each dataset pair
+for (i in 1:length(datasets)) {
+  # Clean up dataset name for display
+  dataset_path <- datasets[[i]]$outcome
+  dataset_name <- gsub("processed_predict_ccafd_|.csv.csv.gz", "", dataset_path)
+  
+  # Make dataset name more readable
+  dataset_name <- gsub("_", " ", dataset_name)
+  dataset_name <- gsub("off", "Offense", dataset_name)
+  dataset_name <- gsub("def", "Defense", dataset_name)
+  dataset_name <- tools::toTitleCase(dataset_name)
+  
+  cat("\n\n")
+  cat(paste(rep("=", 100), collapse=""), "\n")
+  cat(sprintf("ANALYZING DATASET %d/%d: %s\n", i, length(datasets), dataset_name))
+  cat(paste(rep("=", 100), collapse=""), "\n\n")
+  
+  # Read the data
+  cat(sprintf("Reading data: %s\n", datasets[[i]]$outcome))
+  outcome_data <- fread(datasets[[i]]$outcome)
+  
+  cat(sprintf("Reading data: %s\n", datasets[[i]]$select))
+  select_data <- fread(datasets[[i]]$select)
+  
+  # Run the analysis with our function
+  results <- run_heckman(
+    select_data = select_data, 
+    outcome_data = outcome_data,
+    n_validation = 1,  # Using fewer iterations for faster processing
+    n_test = 2         # Using fewer iterations for faster processing
+  )
+  
+  # Extract GIMR info from models
+  player_gimr_coef <- coef(results$player_model)["GIMR"]
+  player_gimr_tval <- summary(results$player_model)$coefficients["GIMR", "t value"]
+  player_gimr_pval <- summary(results$player_model)$coefficients["GIMR", "Pr(>|t|)"]
+  
+  starter_gimr_coef <- coef(results$starter_model)["GIMR"]
+  starter_gimr_tval <- summary(results$starter_model)$coefficients["GIMR", "t value"]
+  starter_gimr_pval <- summary(results$starter_model)$coefficients["GIMR", "Pr(>|t|)"]
+  
+  # Add to results table
+  gimr_results <- rbindlist(list(gimr_results, data.table(
+    Dataset = dataset_name,
+    Player_GIMR_coef = player_gimr_coef,
+    Player_GIMR_tval = player_gimr_tval,
+    Player_GIMR_pval = player_gimr_pval,
+    Player_R2 = results$r2_player,
+    Starter_GIMR_coef = starter_gimr_coef,
+    Starter_GIMR_tval = starter_gimr_tval,
+    Starter_GIMR_pval = starter_gimr_pval,
+    Starter_R2 = results$r2_starter
+  )))
+}
+
+# Display GIMR results in a nicely formatted table
+cat("\n\n", paste(rep("=", 120), collapse=""), "\n")
+cat("GIMR SELECTION BIAS RESULTS SUMMARY\n")
+cat(paste(rep("=", 120), collapse=""), "\n\n")
+
+# Format the GIMR results table for pretty printing
+fmt_gimr <- function(coef, tval, pval) {
+  stars <- ifelse(pval < 0.01, "***",
+           ifelse(pval < 0.05, "**",
+           ifelse(pval < 0.1, "*",
+           ifelse(pval < 0.15, ".", ""))))
+  
+  return(sprintf("%.4f (t=%.2f%s)", coef, tval, stars))
+}
+
+# Add formatted columns for display
+gimr_results[, Player_GIMR_fmt := mapply(fmt_gimr, Player_GIMR_coef, Player_GIMR_tval, Player_GIMR_pval)]
+gimr_results[, Starter_GIMR_fmt := mapply(fmt_gimr, Starter_GIMR_coef, Starter_GIMR_tval, Starter_GIMR_pval)]
+
+# Print header
+cat(sprintf("%-30s %-25s %-10s %-25s %-10s\n", 
+    "Dataset", "Player GIMR", "Player R²", "Starter GIMR", "Starter R²"))
+cat(paste(rep("-", 105), collapse=""), "\n")
+
+# Print each row
+for(i in 1:nrow(gimr_results)) {
+  cat(sprintf("%-30s %-25s %-10.4f %-25s %-10.4f\n",
+      gimr_results[i, Dataset],
+      gimr_results[i, Player_GIMR_fmt],
+      gimr_results[i, Player_R2],
+      gimr_results[i, Starter_GIMR_fmt],
+      gimr_results[i, Starter_R2]))
+}
+
+cat("\nSignificance codes: 0 '***' 0.01 '**' 0.05 '*' 0.1 '.' 0.15\n")
+cat("\nNote: GIMR values are shown as coefficient (t-value). A significant GIMR coefficient indicates\n")
+cat("the presence of selection bias. All models control for multiple relevant variables as shown\n")
+cat("in the detailed model outputs above.\n")
+```
+
+
