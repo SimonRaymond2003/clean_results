@@ -3,6 +3,10 @@ title: "Results of 4th Down Predictive and Causal 4th Down Analysis"
 output: html_document
 ---
 
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo=FALSE)
+```
+
 
 This section is for notes. The interpretation will be as I go but I want this to be a general outline.
 

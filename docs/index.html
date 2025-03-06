@@ -33,8 +33,6 @@
 <link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
 <script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
-<script src="site_libs/navigation-1.1/codefolding.js"></script>
-<script src="site_libs/navigation-1.1/sourceembed.js"></script>
 <link href="site_libs/pagedtable-1.1/css/pagedtable.css" rel="stylesheet" />
 <script src="site_libs/pagedtable-1.1/js/pagedtable.js"></script>
 
@@ -51,11 +49,6 @@
 
 
 
-<style type="text/css">
-#rmd-source-code {
-  display: none;
-}
-</style>
 
 
 <link rel="stylesheet" href="styles.css" type="text/css" />
@@ -217,9 +210,6 @@ $(document).ready(function () {
 </style>
 
 <!-- code folding -->
-<style type="text/css">
-.code-folding-btn { margin-bottom: 4px; }
-</style>
 
 
 
@@ -356,16 +346,6 @@ div.tocify {
 
 <div id="header">
 
-<div class="btn-group pull-right float-right">
-<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
-<ul class="dropdown-menu dropdown-menu-right" style="min-width: 50px;">
-<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
-<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
-<li role="separator" class="divider"></li>
-<li><a id="rmd-download-source" href="#">Download Rmd</a></li>
-</ul>
-</div>
-
 
 
 <h1 class="title toc-ignore">Results of 4th Down Predictive and Causal
@@ -400,7 +380,6 @@ linebackers (OLB).</p></li>
 safeties (FS) and strong safeties (SS).</p></li>
 </ul>
 
-<div id="rmd-source-code">LS0tDQp0aXRsZTogIlJlc3VsdHMgb2YgNHRoIERvd24gUHJlZGljdGl2ZSBhbmQgQ2F1c2FsIDR0aCBEb3duIEFuYWx5c2lzIg0Kb3V0cHV0OiBodG1sX2RvY3VtZW50DQotLS0NCg0KDQpUaGlzIHNlY3Rpb24gaXMgZm9yIG5vdGVzLiBUaGUgaW50ZXJwcmV0YXRpb24gd2lsbCBiZSBhcyBJIGdvIGJ1dCBJIHdhbnQgdGhpcyB0byBiZSBhIGdlbmVyYWwgb3V0bGluZS4NCg0KUExBWUVSUyBBUkUgUFVUIElOVE8gVEhFSVIgU0xPVFMgQkFTRUQgT04gREVQVEggQ0hBUlQgREFUQQ0KDQoNCiogKipRQiAoU2xvdHMgMS0zKToqKiBRdWFydGVyYmFja3MuIE1vc3QgcGxheXMgd2lsbCBvbmx5IGhhdmUgb25lIFFCIG9uIHRoZSBmaWVsZCAoc2xvdCAxKQ0KKiAqKkJBQ0tTIChTbG90cyA0LTcpOioqIFJ1bm5pbmcgYmFja3MgKFJCKSBhbmQgZnVsbGJhY2tzIChGQikuDQoqICoqV1IgKFNsb3RzIDgtMTMpOioqIFdpZGUgcmVjZWl2ZXJzLiBUZWFtcyB0eXBpY2FsbHkgdXNlIDItNCBXUnMgb24gYSBnaXZlbiBwbGF5Lg0KKiAqKlRFIChTbG90cyAxNC0xNik6KiogVGlnaHQgZW5kcy4gVGhlc2UgcGxheWVycyBjYW4gYWN0IGFzIGJvdGggcmVjZWl2ZXJzIGFuZCBibG9ja2Vycy4NCiogKipPTCAoU2xvdHMgMTctMjQpOioqIE9mZmVuc2l2ZSBsaW5lLiBUaGlzIGluY2x1ZGVzIHRoZSBjZW50ZXIgKEMpLCBndWFyZHMgKEcpLCBhbmQgdGFja2xlcyAoVCkuIFRoZXJlIGFyZSB1c3VhbGx5IDUgT0wgb24gdGhlIGZpZWxkLg0KDQoNCiogKipETCAoU2xvdHMgMS04KToqKiBEZWZlbnNpdmUgbGluZS4gVGhpcyBpbmNsdWRlcyBkZWZlbnNpdmUgZW5kcyAoREUpLCBkZWZlbnNpdmUgdGFja2xlcyAoRFQpLCBhbmQgbm9zZSB0YWNrbGVzIChOVCkuIA0KKiAqKkxCIChTbG90cyA5LTE0KToqKiBMaW5lYmFja2Vycy4gVGhpcyBjYW4gaW5jbHVkZSBtaWRkbGUgbGluZWJhY2tlcnMgKE1MQiksIGluc2lkZSBsaW5lYmFja2VycyAoSUxCKSwgYW5kIG91dHNpZGUgbGluZWJhY2tlcnMgKE9MQikuDQoqICoqQ0IgKFNsb3RzIDE1LTE5KToqKiBDb3JuZXJiYWNrcy4NCiogKipTIChTbG90cyAyMC0yMyk6KiogU2FmZXRpZXMuIFRoaXMgaW5jbHVkZXMgZnJlZSBzYWZldGllcyAoRlMpIGFuZCBzdHJvbmcgc2FmZXRpZXMgKFNTKS4NCg==</div>
 
 
 </div>
@@ -436,12 +415,6 @@ $(document).ready(function () {
 </script>
 
 <!-- code folding -->
-<script>
-$(document).ready(function () {
-  window.initializeSourceEmbed("index.Rmd");
-  window.initializeCodeFolding("hide" === "show");
-});
-</script>
 
 <script>
 $(document).ready(function ()  {

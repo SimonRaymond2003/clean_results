@@ -7,7 +7,8 @@ date: "2025-02-23"
 
 No GIMR
 
-```{r, include=FALSE}
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo=FALSE)
 # Load required libraries
 library(data.table)
 library(sandwich)

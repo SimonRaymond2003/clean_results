@@ -4,7 +4,8 @@ output: html_document
 date: "2025-03-01"
 ---
 
-```{r, include=FALSE}
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo=FALSE)
 library(data.table)
 library(lmtest)
 library(sandwich)
@@ -193,20 +194,11 @@ print_t_value_matrix <- function(t_matrix, var_name) {
     for (j in 1:ncol(t_matrix)) {
       t_val <- t_matrix[i, j]
       
-      # Determine significance level
-      sig <- ""
-      if (!is.na(t_val)) {
-        if (abs(t_val) > 2.58) sig <- "***"
-        else if (abs(t_val) > 1.96) sig <- "**"
-        else if (abs(t_val) > 1.65) sig <- "*"
-        else if (abs(t_val) > 1.44) sig <- "."
-      }
-      
       # Print the value
       if (is.na(t_val)) {
         cat(sprintf(" %8s", "N/A"))
       } else {
-        cat(sprintf(" %6.2f%s", t_val, sig))
+        cat(sprintf(" %6.2f", t_val))
       }
     }
     cat("\n")

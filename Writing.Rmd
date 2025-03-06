@@ -1,6 +1,14 @@
 ---
 title: "Writing"
 output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo=FALSE)
+```
+
+title: "Writing"
+output: html_document
 date: "2025-02-25"
 ---
 

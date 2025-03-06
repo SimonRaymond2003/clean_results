@@ -3,7 +3,8 @@ title: "Third Down Analysis with Regular and Starter Players"
 output: html_document
 ---
 
-```{r, include=FALSE}
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo=FALSE)
 # Ensure required packages are loaded
   require(data.table)
   require(sandwich)
@@ -462,4 +463,3 @@ if(nrow(summary_df) > 0) {
   cat("No comparison results available across the datasets.\n")
 }
 ```
-

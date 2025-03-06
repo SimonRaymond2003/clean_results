@@ -7,7 +7,8 @@ output: html_document
 
 
 
-```{r, include=FALSE}
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo=FALSE)
 # Heckman Selection Model Analysis for All Datasets
 # This script runs Heckman selection models on all processed datasets
 
@@ -408,18 +409,16 @@ gimr_results[, Player_GIMR_fmt := mapply(fmt_gimr, Player_GIMR_coef, Player_GIMR
 gimr_results[, Starter_GIMR_fmt := mapply(fmt_gimr, Starter_GIMR_coef, Starter_GIMR_tval, Starter_GIMR_pval)]
 
 # Print header
-cat(sprintf("%-30s %-25s %-10s %-25s %-10s\n", 
-    "Dataset", "Player GIMR", "Player R²", "Starter GIMR", "Starter R²"))
-cat(paste(rep("-", 105), collapse=""), "\n")
+cat(sprintf("%-30s %-25s %-25s\n", 
+    "Dataset", "Player GIMR", "Starter GIMR"))
+cat(paste(rep("-", 80), collapse=""), "\n")
 
 # Print each row
 for(i in 1:nrow(gimr_results)) {
-  cat(sprintf("%-30s %-25s %-10.4f %-25s %-10.4f\n",
+  cat(sprintf("%-30s %-25s %-25s\n",
       gimr_results[i, Dataset],
       gimr_results[i, Player_GIMR_fmt],
-      gimr_results[i, Player_R2],
-      gimr_results[i, Starter_GIMR_fmt],
-      gimr_results[i, Starter_R2]))
+      gimr_results[i, Starter_GIMR_fmt]))
 }
 
 cat("\nSignificance codes: 0 '***' 0.01 '**' 0.05 '*' 0.1 '.' 0.15\n")
@@ -427,5 +426,3 @@ cat("\nNote: GIMR values are shown as coefficient (t-value). A significant GIMR 
 cat("the presence of selection bias. All models control for multiple relevant variables as shown\n")
 cat("in the detailed model outputs above.\n")
 ```
-
-

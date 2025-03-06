@@ -26,8 +26,7 @@ output:
     toc_float: 
       collapsed: false
       smooth_scroll: true
-    code_folding: hide
-    code_download: true
+    code_visible: false
     df_print: paged
     highlight: tango
     fig_width: 12
