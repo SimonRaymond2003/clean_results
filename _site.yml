@@ -1,7 +1,7 @@
 name: "4th-downs-nfl"
 output_dir: docs
 navbar:
-  title: "4th Downs in the NFL"
+  title: "Simon Raymond"
   left:
     - text: "Home"
       href: index.html
