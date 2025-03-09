@@ -13,7 +13,7 @@
 
 <title>Writing</title>
 
-<script src="site_libs/header-attrs-2.22/header-attrs.js"></script>
+<script src="site_libs/header-attrs-2.29/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/flatly.min.css" rel="stylesheet" />
@@ -353,36 +353,42 @@ div.tocify {
 </div>
 
 
-<p>title: “Writing” output: html_document date: “2025-02-25” —</p>
-<div id="hook-and-context" class="section level1">
-<h1>hook and context</h1>
-<p>The NFL is a multi-billion dollar industry that has seen rapid growth
-within the American and International. This growth has placed more and
-more importance on the performance of NFL teams as they fight to win
-games to increase the popularity of their team as Davis and End (2010)
-argue that successful NFL franchises have measurable economic impacts on
-their local areas. This revelation has given rise to a age of data
-analytics in the NFL as teams seek to gain competitive advantages over
-their rivals. This had led GMs and coaches to explore different avenues
-of strategies.</p>
-<p>For many years in the NFL there seemed to be a consistent standard
-that when faced with a fourth down your team will kick a field goal or
-punt the ball for better field position. The only exception being the
-dying moments in a game when teams are desperate for a miracle. Many
-diverse data display tools have let us see an increase in the overall
-attempt percentage of teams on fourth down (Raymond, 2024). This is
-signalling a change in culture.</p>
-<p>In the NFL teams are realizing a need to be more aggressive on fourth
-downs. We have seen teams adopt this strategy. Most famously are the
-Detroit Lions. Since the arrival of their current head coach Dan
-Campbell, the lions adopted a aggressive strategy to match their
-aggressive “biting off knee caps” mentality (Birkett, 2023). While the
-lions have seen success for the first time in years, they have also been
-criticized for their aggressive play calling. This was highlighted in
-the 2023-24 playoff divisional round game in which the Lions failed a
-fourth down attempt that was painted as unnecessary (Sporting News,
-2024). After this mid-game failure there seemed to be a shift in
-momentum and the lions lost the game</p>
+<div id="context" class="section level1">
+<h1>context</h1>
+<p>The National Football League is a multi-billion dollar industry that
+has seen rapid growth within the American and International. This growth
+has placed more and more importance on the performance of NFL teams as
+they fight to win games to increase the popularity of their team as
+Davis and End (2010) argue that successful NFL franchises have
+measurable economic impacts on their local areas. This revelation has
+given rise to a age of data analytics in the NFL as teams seek to gain
+competitive advantages over their rivals. This had led GMs and coaches
+to explore different avenues of strategies.</p>
+<p>In the NFL, a team’s offensive possession is structured around a
+series of four “downs” where they attempt to advance the ball at least
+10 yards to earn a new set of downs and maintain possession. When a team
+reaches fourth down without achieving the needed yardage, they face a
+pivotal decision. Teams typically choose between three options: punt the
+ball to establish favorable field position for their defense, attempt a
+field goal if within reasonable range (worth 3 points), or “go for it”
+by running an offensive play to try and gain the required yardage. For
+many years in the NFL there seemed to be a consistent standard that when
+faced with a fourth down your team will kick a field goal or punt the
+ball for better field position. The only exception being the dying
+moments in a game when teams are desperate for a miracle.</p>
+<p>In American Football many teams have shifted to being more aggresive
+on fourth down. Most famously are the Detroit Lions. Since the arrival
+of their current head coach Dan Campbell, the lions adopted a aggressive
+strategy to match their aggressive “biting off knee caps” mentality
+(Birkett, 2023). While the lions have seen success for the first time in
+years, they have also been criticized for their aggressive play calling.
+This was highlighted in the 2023-24 playoff divisional round game in
+which the Lions failed a fourth down attempt that was painted as
+unnecessary (Sporting News, 2024). After this mid-game failure there
+seemed to be a shift in momentum and the lions lost the game.</p>
+</div>
+<div id="glimpse-of-results" class="section level1">
+<h1>glimpse of results</h1>
 </div>
 <div id="research-problem" class="section level1">
 <h1>research problem</h1>
@@ -408,18 +414,17 @@ making in the NFL.</p>
 <div id="research-question" class="section level1">
 <h1>research question</h1>
 <p>This leads us to have a need to answer some key questions about
-fourth downs in the NFL. First, is are there certain key predictable
-signals that can be used to decide if a given team should attempt a
-fourth down? Second, is what key variables about players have predictive
-power in fourth down attempts? In other words, are there players that
-are more important in fourth down situations when compared to other
-situations. Finally, do these key variables about players have a causal
-effect on the outcome of fourth down attempts? Answering these questions
-will allow coaches to look for key signals in fourth down situations and
-to know which players to start on that fourth down if it is decided to
-attempt. This also can be applied in discovering specialty players that
-are overlooked due to poor performances in situations that are not
-similar to fourth down.</p>
+fourth downs in the NFL. First, are coaches in the NFL actually better
+are making these decision then analysts? Second, is what key variables
+about players have predictive power in fourth down attempts? In other
+words, are there players that are more important in fourth down
+situations when compared to other situations. Finally, do these key
+variables about players have a causal effect on the outcome of fourth
+down attempts? Answering these questions will allow coaches to look for
+key signals in fourth down situations and to know which players to start
+on that fourth down if it is decided to attempt. This also can be
+applied in discovering specialty players that are overlooked due to poor
+performances in situations that are not similar to fourth down.</p>
 </div>
 <div id="liturature-review" class="section level1">
 <h1>liturature review</h1>
@@ -472,97 +477,160 @@ was established in a game</p>
 </div>
 <div id="gap-in-the-research" class="section level1">
 <h1>gap in the research</h1>
-<p>The gap in the current research revolves around the lack in quality
-data. Currently we observe many studies include team-aggregated grades
-or summary statistics about teams that are playing against each other.
-This type of generalization is needed for econometric models that cannot
-handle large amounts of variables. However, our non-parametric models
-will be able to handle data with thousands of different variables. To
-take advantage of this, we will have information about every single
-player that is on the field when the ball is snapped. This will allow us
-to have better prediction power then previous researchers. These
+<p>A gap in the current research is caused by the lack in quality data.
+Currently we observe many studies include team-aggregated grades or
+summary statistics about teams that are playing against each other.
+While some situations can allow this, our non-parametric models will be
+able to handle data with thousands of different variables. To take
+advantage of this, we will have information about every single player
+that is on the field when the ball is snapped. This will allow us to
+have better prediction power then previous researchers. These
 non-parametric models will also allow us to discover key player specific
 variables that can allow for further causal inference with specific
-on-field positions. We hope to find how different player and non-player
-variables impact the conversion of fourth down attempts.</p>
-</div>
-<div id="motivation" class="section level1">
-<h1>motivation</h1>
+on-field positions.</p>
 </div>
 <div id="roadmap" class="section level1">
 <h1>roadmap</h1>
 </div>
-<div id="data" class="section level1">
-<h1>data</h1>
-</div>
-<div id="sources" class="section level1">
-<h1>sources</h1>
+<div id="data-sources" class="section level1">
+<h1>data sources</h1>
+<p>Our data was pulled from two main sources.</p>
+<p>As a base the nflverse package provided in R gave us play by play
+data for the years of 2017 to 2023. This includes basic game information
+and the IDs of players that participated each play. The reason for our
+cutoff of 2017 is due to the NFL only putting tracking chips in players
+jerseys as of the 2016 season. The 2016 season however still had many
+inconsistencies which leads us to drop the year.</p>
+<p>The key part then is the merging of Pro Football Focus’s aggregated
+weekly data. The statistics are downloaded as premium player reports on
+a weekly bases and then aggrigated to time lengths of 2 weeks, 12 weeks
+and 3 years. These time length have been arbitrarly picked which leaves
+room for future research. It was found that the 12 week timeframe better
+captured the significance and value of players. This is due to the 2
+week timeframe struggling with noise while the 3 year timeframe is not
+sensitive enough to emerging or aging players.</p>
+<p>Players from the PFF data set where merged into our base play by play
+data set based on a 12 step algorithm that matched ids accross the twos
+sources. The steps included pre-match ids, and then players matched on
+names, teams and positions.</p>
+<p>As a final note attendance data was also scrapped from pro football
+reference.</p>
 </div>
 <div id="variable-selection" class="section level1">
 <h1>variable selection</h1>
+<p>Our variables that we work with fall into one of two categories. They
+are either statistics about players or about the situation of the play.
+The player variables consist of variables that describe who was on the
+field. We also have access to player variables of the starting players
+on each team based on depth chart data provided by nflverse. In both
+situations the players are sorted into columns based on depth chart
+position. For example, the starting QB is also in the offense_player_1
+slot to allow us to maintain consistancy.</p>
+<p>In our models to predict conversions in third or fourth downs we use
+the following base collumns:</p>
+<p>Our models that are used to predict the attempt of a fourth downs
+conversion then use the following base collums:</p>
+<p>Obvously our attempt models are forced to only use the starter player
+statistics as we cannot use the players on the field to predict the type
+of player that was called.</p>
 </div>
-<div id="current-look" class="section level1">
-<h1>current look</h1>
-</div>
-<div id="how-are-we-trying-to-approach-this" class="section level1">
-<h1>how are we trying to approach this</h1>
-</div>
-<div id="explain-different-tools-and-models" class="section level1">
-<h1>explain different tools and models</h1>
+<div id="methodology-and-tools" class="section level1">
+<h1>Methodology and tools</h1>
+<p>Tools that have both predictive and causal traits are being
+employed.</p>
+<p>In our data we often had 20,000+ different player variables. This
+clearly is a situation where predictive tools such as Random Forest and
+XGBoosting thrive. In the use of XGBoosting we first use boostrapping to
+tune for optimal hyperparameters. Seccond we will run the tuned model on
+1000 train/test bootstrapped splits of data to report the AUC. This
+process will be done when predicting attempts and conversion.</p>
+<p>Similarly we can enact Random Forest to receive a OOB AUC. Random
+Forest will also let us receive insight into what variables have high
+importance in predictions based on MDA and MDI. This ranking of
+variables not only allows us to feature select for XGBoosting but it
+also assisted in watching what variables could be considered for causal
+analysis.</p>
+<p>For the causal analysis we will be enploying the a form of the
+Heckman correction. This is due to the selection bais in fourth downs.
+Since not all fourth downs are attempted, we do not have data on the
+fourth downs that never happened. We look to deal with this bias by
+using a evolved verison of heckmans original model. Im the original
+paper it was proposed to use a two step process. In the selection step
+one would predict the probability of being selected while including a
+variable that is exogenous to the actual outcome that we are interested
+in. This estimated probability is then converted into the IMR and used
+to control for selection bias in the outcome step. This process however
+assumes linear relationships in the selection stage.</p>
+<p>In our case we are in fact not dealing with linear relationships in
+the selection stage. This is discovered by how we have a increase of
+almost 20 %pts in AUC when predicting attempts with a XGBoost model
+instead of a linear model. Therefore our first step in correcting
+selection bias looks to predict the probability of a attempt of a fourth
+down. This prediction then is converted into a Generalized IMR that is
+not bound to the assumptions of a IMR. We then place our GIMR in our
+outcome equation when estimating the conversion of a fourth down to
+control for selection bias.</p>
 </div>
 <div id="exogenous-variables" class="section level1">
 <h1>exogenous variables</h1>
-<p>In our sample selection correction model a validation of the
-exogeniety of our variables that are used to predict whether or not a
-fourth down is attempted. While we can use theory to prove that these
-variables are exogenous to 4th down conversions, it is also possible to
-empirically prove this. Our situation is unique as 3rd downs can be used
-as a proxy of 4th downs with little to no self selection bias. This is
-due to how certain conditions cause a 3rd down to be treated similarly
-to a 4th down by the coaches. A fourth down is a teams last attempt for
-that offensive drive. While not in all, there are many cases of third
-down provide the similar conditions in terms of the coaches decision
-making.</p>
+<p>In our sample selection correction model, a validation of the
+exogeniety of our variables that are used to predict fourth down
+attempts is needed. While we can use theory to prove that these
+variables are exogenous to 4th down conversions in football there is the
+luxury of empirical evidence. Our situation is unique as 3rd downs can
+be used as a proxy of 4th downs with little to no self selection bias.
+This is due to how conditions such as desperation or play calling cause
+a 3rd down to be treated similarly to a 4th down by the coaches. A
+fourth down is a teams last attempt for that offensive drive. While not
+in all, there are many cases of third down provide the similar
+conditions in terms of the coaches decision making.</p>
 <p>In the proof of this we can first note that the grades of a teams
-kicker is positivly significant in it’s effect on fourth downs. This
-lets us proceed to prove the exogeniety of kicker grades on the
-conversion of a fourth down. From a theoretical side we can reason that
-the kicker is not on the field during a fourth down and also is unable
-to effect the decision making of the coaches, as there are no further
-decisions to be made. In a third down we actually find that kicker
-grades do have positive significance on the conversion of a third down.
-While this sets off alarm bells it is quickly visible that this
-significance is only found in the middle of the field, where the kicker
-is more likely to be used if the third down is not converted. This
-highlights that when the kicker is not apart of the decision making
+kicker is positivly significant in it’s effect on fourth downs. From a
+theoretical side we can reason that the kicker is not on the field
+during a fourth down and also is unable to effect the decision making of
+the coaches, as there are no further decisions to be made. In a third
+down we actually find that kicker grades do have positive significance
+on the conversion of a third down. However, this significance is only
+found in the middle of the field, where the kicker is more likely to be
+used if the third down is not converted. When we look at the situations
+on third down that would mirror a fourth down, there is no statistical
+significance. When the kicker is not apart of the decision making
 process on third down, similarly to fourth down, it does not have a
-effect on 3rd down conversion. This allows us the luxury of having
-empirical proof of the exogeniety of our kicker grades on the conversion
-of fourth downs.</p>
-<p>Our second key exogenous variable stems from the score differential
-of the team with possession of the football. This variable ranges from
--30 to +30 where -30 means a team is losing by 30 points and vice versa.
-The interpretion of its effect or lack of effect on the attempt and
-conversion of fourth downs is tricky due to non linearity. To start it
-is broken down into differnt variables and interactions with a tie game
-being the base case (score differential = 0).</p>
-<ul>
-<li>is_winning - Binary</li>
-<li>is_losing - Binary</li>
-<li>winning_score_diff - Continuous with a range of 1 to 30.</li>
-<li>losing_score_diff - Continuous with a range of -30 to -1.</li>
-</ul>
+effect on 3rd down conversion.</p>
+<p>[kicker exogeniety table]</p>
 </div>
 <div id="results" class="section level1">
 <h1>results</h1>
-<p>better kicker, trust kicker, you are fie to kick it. so 3rd down is
-convert or dont convert… you are fine kicking on 4th down so you HAVE to
-get it her ein third</p>
-<p>worse kicker, dont trust kicker, you are not fine to kick it. so 3rd
-down is convert or dont convert… you are not fine kicking on 4th down.
-so you lan to go for it on 4th… so you are fine with running it and not
-getting the first down on third down and then getting it on 4th
-down.</p>
+<div id="coaches-decision-making" class="section level2">
+<h2>Coaches decision making</h2>
+<div id="listening-to-kickers" class="section level3">
+<h3>listening to kickers</h3>
+</div>
+<div id="attempt-or-not---gimr" class="section level3">
+<h3>attempt or not - GIMR</h3>
+</div>
+</div>
+<div id="player-quality" class="section level2">
+<h2>player quality</h2>
+<div id="qbs-and-coaches-attempt-decision" class="section level3">
+<h3>QBs and coaches attempt decision</h3>
+</div>
+<div id="tesrbswrs" class="section level3">
+<h3>TEs/RBs/WRs</h3>
+</div>
+<div id="any-defense" class="section level3">
+<h3>Any defense</h3>
+</div>
+</div>
+<div id="predictive-results" class="section level2">
+<h2>Predictive results</h2>
+<div id="pure-predictions" class="section level3">
+<h3>pure predictions</h3>
+</div>
+<div id="variable-importance" class="section level3">
+<h3>variable importance</h3>
+</div>
+</div>
 </div>
 
 

@@ -15,8 +15,110 @@ knitr::opts_chunk$set(echo=FALSE)
 
 
 ```{r}
+# Column Name Transformer for Football Analytics
+transform_column_names <- function(df) {
+  # Position mapping
+  offense_positions <- c(
+    # QB slots (1-3)
+    "1" = "QB", "2" = "QB2", "3" = "QB3",
+    # Backs slots (4-7)
+    "4" = "RB", "5" = "RB2", "6" = "FB", "7" = "FB2",
+    # Wide receivers slots (8-13)
+    "8" = "WR1", "9" = "WR2", "10" = "WR3", "11" = "WR4", "12" = "WR5", "13" = "WR6",
+    # Tight ends slots (14-16)
+    "14" = "TE1", "15" = "TE2", "16" = "TE3",
+    # Offensive line slots (17-24)
+    "17" = "OL", "18" = "OL", "19" = "OL", "20" = "OL", "21" = "OL", 
+    "22" = "OL", "23" = "OL", "24" = "OL"
+  )
+  
+  defense_positions <- c(
+    # Defensive line slots (1-8)
+    "1" = "DL1", "2" = "DL2", "3" = "DL3", "4" = "DL4", 
+    "5" = "DL5", "6" = "DL6", "7" = "DL7", "8" = "DL8",
+    # Linebackers slots (9-14)
+    "9" = "LB1", "10" = "LB2", "11" = "LB3", "12" = "LB4", 
+    "13" = "LB5", "14" = "LB6",
+    # Cornerbacks slots (15-19)
+    "15" = "CB1", "16" = "CB2", "17" = "CB3", "18" = "CB4", "19" = "CB5",
+    # Safeties slots (20-23)
+    "20" = "S1", "21" = "S2", "22" = "S3", "23" = "S4"
+  )
+  
+  # Get column names
+  cols <- colnames(df)
+  new_cols <- cols
+  
+  for (i in seq_along(cols)) {
+    col <- cols[i]
+    
+    # Handle offense player patterns
+    if (grepl("offense_player_", col)) {
+      player_num <- gsub(".*offense_player_([0-9\\-]+).*", "\\1", col)
+      
+      # Determine position
+      if (grepl("-", player_num)) {
+        position <- "OL"
+      } else if (player_num %in% names(offense_positions)) {
+        position <- offense_positions[player_num]
+      } else {
+        position <- paste0("OFF", player_num)
+      }
+      
+      # Replace pattern and remove first two words after
+      if (grepl("^starter_", col)) {
+        parts <- strsplit(gsub("starter_offense_player_[0-9\\-]+_", "", col), "_")[[1]]
+        if (length(parts) >= 2) {
+          parts <- parts[-(1:2)]
+        }
+        new_cols[i] <- paste("starter", position, paste(parts, collapse = "_"), sep = "_")
+      } else {
+        parts <- strsplit(gsub("offense_player_[0-9\\-]+_", "", col), "_")[[1]]
+        if (length(parts) >= 2) {
+          parts <- parts[-(1:2)]
+        }
+        new_cols[i] <- paste(position, paste(parts, collapse = "_"), sep = "_")
+      }
+    }
+    
+    # Handle defense player patterns
+    else if (grepl("defense_player_", col)) {
+      player_num <- gsub(".*defense_player_([0-9]+).*", "\\1", col)
+      
+      # Determine position
+      if (player_num %in% names(defense_positions)) {
+        position <- defense_positions[player_num]
+      } else {
+        position <- paste0("DEF", player_num)
+      }
+      
+      # Replace pattern and remove first two words after
+      if (grepl("^starter_", col)) {
+        parts <- strsplit(gsub("starter_defense_player_[0-9]+_", "", col), "_")[[1]]
+        if (length(parts) >= 2) {
+          parts <- parts[-(1:2)]
+        }
+        new_cols[i] <- paste("starter", position, paste(parts, collapse = "_"), sep = "_")
+      } else {
+        parts <- strsplit(gsub("defense_player_[0-9]+_", "", col), "_")[[1]]
+        if (length(parts) >= 2) {
+          parts <- parts[-(1:2)]
+        }
+        new_cols[i] <- paste(position, paste(parts, collapse = "_"), sep = "_")
+      }
+    }
+  }
+  
+  # Set the new column names
+  colnames(df) <- new_cols
+  return(df)
+}
+
 analyze_third_down <- function(data_path) {
-ctd1 <- fread(data_path)
+  ctd1 <- fread(data_path)
+  
+  # Apply column name transformation
+  ctd1 <- transform_column_names(ctd1)
   
   # Remove my_id if it exists
   if("my_id" %in% colnames(ctd1)) {
@@ -33,14 +135,15 @@ ctd1 <- fread(data_path)
   all_cols <- colnames(ctd1)
   
   # Create regex patterns to identify regular and starter player variables
-  offense_player_pattern <- "^offense_player_\\d+_"
-  defense_player_pattern <- "^defense_player_\\d+_"
-  starter_offense_pattern <- "^starter_offense_player_\\d+_"
-  starter_defense_pattern <- "^starter_defense_player_\\d+_"
+  # Updated patterns to match transformed column names
+  offense_position_pattern <- "^(QB|QB2|QB3|RB|RB2|FB|FB2|WR\\d+|TE\\d+|OL)_"
+  defense_position_pattern <- "^(DL\\d+|LB\\d+|CB\\d+|S\\d+)_"
+  starter_offense_pattern <- "^starter_(QB|QB2|QB3|RB|RB2|FB|FB2|WR\\d+|TE\\d+|OL)_"
+  starter_defense_pattern <- "^starter_(DL\\d+|LB\\d+|CB\\d+|S\\d+)_"
   
   # Get columns for each type
-  offense_player_cols <- grep(offense_player_pattern, all_cols, value = TRUE)
-  defense_player_cols <- grep(defense_player_pattern, all_cols, value = TRUE)
+  offense_player_cols <- grep(offense_position_pattern, all_cols, value = TRUE)
+  defense_player_cols <- grep(defense_position_pattern, all_cols, value = TRUE)
   starter_offense_cols <- grep(starter_offense_pattern, all_cols, value = TRUE)
   starter_defense_cols <- grep(starter_defense_pattern, all_cols, value = TRUE)
   

@@ -15,6 +15,105 @@ library(caret)
 
 
 ```{r}
+# Column Name Transformer for Football Analytics
+transform_column_names <- function(df) {
+  # Position mapping
+  offense_positions <- c(
+    # QB slots (1-3)
+    "1" = "QB", "2" = "QB2", "3" = "QB3",
+    # Backs slots (4-7)
+    "4" = "RB", "5" = "RB2", "6" = "FB", "7" = "FB2",
+    # Wide receivers slots (8-13)
+    "8" = "WR1", "9" = "WR2", "10" = "WR3", "11" = "WR4", "12" = "WR5", "13" = "WR6",
+    # Tight ends slots (14-16)
+    "14" = "TE1", "15" = "TE2", "16" = "TE3",
+    # Offensive line slots (17-24)
+    "17" = "OL", "18" = "OL", "19" = "OL", "20" = "OL", "21" = "OL", 
+    "22" = "OL", "23" = "OL", "24" = "OL"
+  )
+  
+  defense_positions <- c(
+    # Defensive line slots (1-8)
+    "1" = "DL1", "2" = "DL2", "3" = "DL3", "4" = "DL4", 
+    "5" = "DL5", "6" = "DL6", "7" = "DL7", "8" = "DL8",
+    # Linebackers slots (9-14)
+    "9" = "LB1", "10" = "LB2", "11" = "LB3", "12" = "LB4", 
+    "13" = "LB5", "14" = "LB6",
+    # Cornerbacks slots (15-19)
+    "15" = "CB1", "16" = "CB2", "17" = "CB3", "18" = "CB4", "19" = "CB5",
+    # Safeties slots (20-23)
+    "20" = "S1", "21" = "S2", "22" = "S3", "23" = "S4"
+  )
+  
+  # Get column names
+  cols <- colnames(df)
+  new_cols <- cols
+  
+  for (i in seq_along(cols)) {
+    col <- cols[i]
+    
+    # Handle offense player patterns
+    if (grepl("offense_player_", col)) {
+      player_num <- gsub(".*offense_player_([0-9\\-]+).*", "\\1", col)
+      
+      # Determine position
+      if (grepl("-", player_num)) {
+        position <- "OL"
+      } else if (player_num %in% names(offense_positions)) {
+        position <- offense_positions[player_num]
+      } else {
+        position <- paste0("OFF", player_num)
+      }
+      
+      # Replace pattern and remove first two words after
+      if (grepl("^starter_", col)) {
+        parts <- strsplit(gsub("starter_offense_player_[0-9\\-]+_", "", col), "_")[[1]]
+        if (length(parts) >= 2) {
+          parts <- parts[-(1:2)]
+        }
+        new_cols[i] <- paste("starter", position, paste(parts, collapse = "_"), sep = "_")
+      } else {
+        parts <- strsplit(gsub("offense_player_[0-9\\-]+_", "", col), "_")[[1]]
+        if (length(parts) >= 2) {
+          parts <- parts[-(1:2)]
+        }
+        new_cols[i] <- paste(position, paste(parts, collapse = "_"), sep = "_")
+      }
+    }
+    
+    # Handle defense player patterns
+    else if (grepl("defense_player_", col)) {
+      player_num <- gsub(".*defense_player_([0-9]+).*", "\\1", col)
+      
+      # Determine position
+      if (player_num %in% names(defense_positions)) {
+        position <- defense_positions[player_num]
+      } else {
+        position <- paste0("DEF", player_num)
+      }
+      
+      # Replace pattern and remove first two words after
+      if (grepl("^starter_", col)) {
+        parts <- strsplit(gsub("starter_defense_player_[0-9]+_", "", col), "_")[[1]]
+        if (length(parts) >= 2) {
+          parts <- parts[-(1:2)]
+        }
+        new_cols[i] <- paste("starter", position, paste(parts, collapse = "_"), sep = "_")
+      } else {
+        parts <- strsplit(gsub("defense_player_[0-9]+_", "", col), "_")[[1]]
+        if (length(parts) >= 2) {
+          parts <- parts[-(1:2)]
+        }
+        new_cols[i] <- paste(position, paste(parts, collapse = "_"), sep = "_")
+      }
+    }
+  }
+  
+  # Set the new column names
+  colnames(df) <- new_cols
+  return(df)
+}
+
 # List of CTD1 datasets to analyze
 ctd1_datasets <- c(
   "processed_predict_cctd1_starters_off_grades.csv_predict_cctd1_players_off_grades.csv.csv.gz",
@@ -39,6 +138,12 @@ dataset_names <- c(
 tracked_vars <- c(
   "p_player_26_punting_grades_grades_punter_12w",
   "k_player_25_field_goals_grades_grades_fgep_kicker_12w"
+)
+
+# Updated variable names after transformation
+transformed_tracked_vars <- c(
+  "P_punting_grades_punter_12w",
+  "K_field_goals_grades_fgep_kicker_12w"
 )
 
 # Yardline ranges
@@ -70,6 +175,9 @@ analyze_yardline <- function(file_path, yardline_var) {
     dt <- fread(file_path)
     #cat("  Successfully read file with", nrow(dt), "rows and", ncol(dt), "columns\n")
     
+    # Apply column name transformation
+    dt <- transform_column_names(dt)
+    
     # Check for yardline column
     yardline_col <- paste0("yardline_", yardline_var)
     if (!yardline_col %in% names(dt)) {
@@ -89,14 +197,31 @@ analyze_yardline <- function(file_path, yardline_var) {
     
     # Run OLS model
     tryCatch({
-      # Check if variables are present
+      # Check if transformed variables are present
+      var_present <- FALSE
+      var_to_use <- character(0)
+      
+      # Check for original variable names
       for (var in tracked_vars) {
         if (var %in% names(dt_filtered)) {
-          #cat("  Variable", var, "is present\n")
-        } else {
-          #cat("  WARNING: Variable", var, "is not present in data\n")
-          return(NULL)
+          #cat("  Original variable", var, "is present\n")
+          var_present <- TRUE
+          var_to_use <- c(var_to_use, var)
         }
+      }
+      
+      # Check for transformed variable names
+      for (var in transformed_tracked_vars) {
+        if (var %in% names(dt_filtered)) {
+          #cat("  Transformed variable", var, "is present\n")
+          var_present <- TRUE
+          var_to_use <- c(var_to_use, var)
+        }
+      }
+      
+      if (!var_present) {
+        #cat("  WARNING: Neither original nor transformed variables found in data\n")
+        return(NULL)
       }
       
       # Check if outcome variable exists
@@ -116,16 +241,24 @@ analyze_yardline <- function(file_path, yardline_var) {
       
       # Create results list
       result <- list()
-      for (var in tracked_vars) {
-        if (var %in% rownames(robust_test)) {
-          t_val <- robust_test[var, "t value"]
-          p_val <- robust_test[var, "Pr(>|t|)"]
-          #cat("  ", var, ": t-value =", t_val, ", p-value =", p_val, "\n")
-          result[[var]] <- t_val
-        } else {
-          #cat("  ", var, ": Not in model\n")
-          result[[var]] <- NA
-        }
+      
+      # Process t-values for both original and transformed variable names
+      # Punter variables (index 1)
+      if (tracked_vars[1] %in% rownames(robust_test)) {
+        result[[tracked_vars[1]]] <- robust_test[tracked_vars[1], "t value"]
+      } else if (transformed_tracked_vars[1] %in% rownames(robust_test)) {
+        result[[tracked_vars[1]]] <- robust_test[transformed_tracked_vars[1], "t value"]
+      } else {
+        result[[tracked_vars[1]]] <- NA
+      }
+      
+      # Kicker variables (index 2)
+      if (tracked_vars[2] %in% rownames(robust_test)) {
+        result[[tracked_vars[2]]] <- robust_test[tracked_vars[2], "t value"]
+      } else if (transformed_tracked_vars[2] %in% rownames(robust_test)) {
+        result[[tracked_vars[2]]] <- robust_test[transformed_tracked_vars[2], "t value"]
+      } else {
+        result[[tracked_vars[2]]] <- NA
       }
       
       return(result)

@@ -15,11 +15,113 @@ library(data.table)
 
 
 ```{r}
+# Column Name Transformer for Football Analytics
+transform_column_names <- function(df) {
+  # Position mapping
+  offense_positions <- c(
+    # QB slots (1-3)
+    "1" = "QB", "2" = "QB2", "3" = "QB3",
+    # Backs slots (4-7)
+    "4" = "RB", "5" = "RB2", "6" = "FB", "7" = "FB2",
+    # Wide receivers slots (8-13)
+    "8" = "WR1", "9" = "WR2", "10" = "WR3", "11" = "WR4", "12" = "WR5", "13" = "WR6",
+    # Tight ends slots (14-16)
+    "14" = "TE1", "15" = "TE2", "16" = "TE3",
+    # Offensive line slots (17-24)
+    "17" = "OL", "18" = "OL", "19" = "OL", "20" = "OL", "21" = "OL", 
+    "22" = "OL", "23" = "OL", "24" = "OL"
+  )
+  
+  defense_positions <- c(
+    # Defensive line slots (1-8)
+    "1" = "DL1", "2" = "DL2", "3" = "DL3", "4" = "DL4", 
+    "5" = "DL5", "6" = "DL6", "7" = "DL7", "8" = "DL8",
+    # Linebackers slots (9-14)
+    "9" = "LB1", "10" = "LB2", "11" = "LB3", "12" = "LB4", 
+    "13" = "LB5", "14" = "LB6",
+    # Cornerbacks slots (15-19)
+    "15" = "CB1", "16" = "CB2", "17" = "CB3", "18" = "CB4", "19" = "CB5",
+    # Safeties slots (20-23)
+    "20" = "S1", "21" = "S2", "22" = "S3", "23" = "S4"
+  )
+  
+  # Get column names
+  cols <- colnames(df)
+  new_cols <- cols
+  
+  for (i in seq_along(cols)) {
+    col <- cols[i]
+    
+    # Handle offense player patterns
+    if (grepl("offense_player_", col)) {
+      player_num <- gsub(".*offense_player_([0-9\\-]+).*", "\\1", col)
+      
+      # Determine position
+      if (grepl("-", player_num)) {
+        position <- "OL"
+      } else if (player_num %in% names(offense_positions)) {
+        position <- offense_positions[player_num]
+      } else {
+        position <- paste0("OFF", player_num)
+      }
+      
+      # Replace pattern and remove first two words after
+      if (grepl("^starter_", col)) {
+        parts <- strsplit(gsub("starter_offense_player_[0-9\\-]+_", "", col), "_")[[1]]
+        if (length(parts) >= 2) {
+          parts <- parts[-(1:2)]
+        }
+        new_cols[i] <- paste("starter", position, paste(parts, collapse = "_"), sep = "_")
+      } else {
+        parts <- strsplit(gsub("offense_player_[0-9\\-]+_", "", col), "_")[[1]]
+        if (length(parts) >= 2) {
+          parts <- parts[-(1:2)]
+        }
+        new_cols[i] <- paste(position, paste(parts, collapse = "_"), sep = "_")
+      }
+    }
+    
+    # Handle defense player patterns
+    else if (grepl("defense_player_", col)) {
+      player_num <- gsub(".*defense_player_([0-9]+).*", "\\1", col)
+      
+      # Determine position
+      if (player_num %in% names(defense_positions)) {
+        position <- defense_positions[player_num]
+      } else {
+        position <- paste0("DEF", player_num)
+      }
+      
+      # Replace pattern and remove first two words after
+      if (grepl("^starter_", col)) {
+        parts <- strsplit(gsub("starter_defense_player_[0-9]+_", "", col), "_")[[1]]
+        if (length(parts) >= 2) {
+          parts <- parts[-(1:2)]
+        }
+        new_cols[i] <- paste("starter", position, paste(parts, collapse = "_"), sep = "_")
+      } else {
+        parts <- strsplit(gsub("defense_player_[0-9]+_", "", col), "_")[[1]]
+        if (length(parts) >= 2) {
+          parts <- parts[-(1:2)]
+        }
+        new_cols[i] <- paste(position, paste(parts, collapse = "_"), sep = "_")
+      }
+    }
+  }
+  
+  # Set the new column names
+  colnames(df) <- new_cols
+  return(df)
+}
+
 analyze_attempt_models <- function(select_file) {
   
   # Read data file
   cat("\nReading data:", select_file, "\n")
   select_data <- fread(select_file)
+  
+  # Apply the column name transformation
+  select_data <- transform_column_names(select_data)
   
   # Remove unwanted columns
   select_data[, c("attendance_raw", "attendance_pct", "my_id") := NULL]
@@ -32,8 +134,9 @@ analyze_attempt_models <- function(select_file) {
   all_cols <- colnames(select_data)
   
   # Create regex patterns to identify starter player variables
-  starter_offense_pattern <- "^starter_offense_player_\\d+_"
-  starter_defense_pattern <- "^starter_defense_player_\\d+_"
+  # Updated patterns to match transformed column names
+  starter_offense_pattern <- "^starter_(QB|QB2|QB3|RB|RB2|FB|FB2|WR\\d+|TE\\d+|OL)_"
+  starter_defense_pattern <- "^starter_(DL\\d+|LB\\d+|CB\\d+|S\\d+)_"
   
   # Get columns for each type
   starter_offense_cols <- grep(starter_offense_pattern, all_cols, value = TRUE)
@@ -42,10 +145,10 @@ analyze_attempt_models <- function(select_file) {
   # All starter player columns
   starter_player_cols <- c(starter_offense_cols, starter_defense_cols)
   
-  # Non-player columns
+  # Non-player columns - updated patterns for regular player columns
   common_cols <- setdiff(all_cols, c(starter_player_cols, 
-                                     grep("^offense_player_\\d+_", all_cols, value = TRUE),
-                                     grep("^defense_player_\\d+_", all_cols, value = TRUE)))
+                                     grep("^(QB|QB2|QB3|RB|RB2|FB|FB2|WR\\d+|TE\\d+|OL)_", all_cols, value = TRUE),
+                                     grep("^(DL\\d+|LB\\d+|CB\\d+|S\\d+)_", all_cols, value = TRUE)))
   
   # Create dataset with only starter players
   starter_data <- select_data[, c(common_cols, starter_player_cols), with = FALSE]
@@ -114,13 +217,13 @@ analyze_attempt_models <- function(select_file) {
   robust_probit_starter <- coeftest(probit_starter, vcov = vcovHC(probit_starter, type = "HC0"))
   
   # Extract kicker/punter variables and their significance
-  # First try specific patterns for kicker/punter variables
+  # Update kicker patterns to match transformed column names
   kicker_patterns <- c(
-    "p_player_\\d+_punting",
-    "k_player_\\d+_field_goals",
-    "player_.+_punter",
-    "player_.+_kicker",
-    "starter_offense_player_\\d+_(K|P)_",
+    "_punting",
+    "_field_goals",
+    "_punter",
+    "_kicker",
+    "starter_(QB|RB|WR\\d+|TE\\d+)_(K|P)_",
     "starter_.+_(kicker|punter)"
   )
   
@@ -296,12 +399,12 @@ for (dataset_name in names(kicker_punter_ols_results)) {
   for (i in 1:nrow(results)) {
     var_name <- results[i, Variable]
     
-    # Clean up variable name for display
-    var_display <- gsub("starter_offense_player_\\d+_|starter_", "", var_name)
+    # Clean up variable name for display - updated for transformed column names
+    var_display <- gsub("starter_(QB|RB|WR\\d+|TE\\d+|OL)_|starter_", "", var_name)
     
     # Identify if this is kicker or punter for clear labeling
-    is_kicker <- grepl("kicker|field_goals|k_player", var_name, ignore.case = TRUE)
-    is_punter <- grepl("punter|punting|p_player", var_name, ignore.case = TRUE)
+    is_kicker <- grepl("kicker|field_goals", var_name, ignore.case = TRUE)
+    is_punter <- grepl("punter|punting", var_name, ignore.case = TRUE)
     
     if (is_kicker) {
       var_display <- "Kicker"
@@ -351,12 +454,12 @@ for (dataset_name in names(kicker_punter_probit_results)) {
   for (i in 1:nrow(results)) {
     var_name <- results[i, Variable]
     
-    # Clean up variable name for display
-    var_display <- gsub("starter_offense_player_\\d+_|starter_", "", var_name)
+    # Clean up variable name for display - updated for transformed column names
+    var_display <- gsub("starter_(QB|RB|WR\\d+|TE\\d+|OL)_|starter_", "", var_name)
     
     # Identify if this is kicker or punter for clear labeling
-    is_kicker <- grepl("kicker|field_goals|k_player", var_name, ignore.case = TRUE)
-    is_punter <- grepl("punter|punting|p_player", var_name, ignore.case = TRUE)
+    is_kicker <- grepl("kicker|field_goals", var_name, ignore.case = TRUE)
+    is_punter <- grepl("punter|punting", var_name, ignore.case = TRUE)
     
     if (is_kicker) {
       var_display <- "Kicker"

@@ -1,0 +1,1170 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+<meta name="date" content="2025-03-08" />
+
+<title>Naming</title>
+
+<script src="site_libs/header-attrs-2.29/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/flatly.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.13.2/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/pagedtable-1.1/css/pagedtable.css" rel="stylesheet" />
+<script src="site_libs/pagedtable-1.1/js/pagedtable.js"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+
+
+<style type="text/css">
+  code {
+    white-space: pre;
+  }
+  .sourceCode {
+    overflow: visible;
+  }
+</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {  background-color: #f8f8f8; }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ef2929; } /* Alert */
+code span.an { color: #8f5902; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #204a87; } /* Attribute */
+code span.bn { color: #0000cf; } /* BaseN */
+code span.cf { color: #204a87; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4e9a06; } /* Char */
+code span.cn { color: #8f5902; } /* Constant */
+code span.co { color: #8f5902; font-style: italic; } /* Comment */
+code span.cv { color: #8f5902; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #8f5902; font-weight: bold; font-style: italic; } /* Documentation */
+code span.dt { color: #204a87; } /* DataType */
+code span.dv { color: #0000cf; } /* DecVal */
+code span.er { color: #a40000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #0000cf; } /* Float */
+code span.fu { color: #204a87; font-weight: bold; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #204a87; font-weight: bold; } /* Keyword */
+code span.op { color: #ce5c00; font-weight: bold; } /* Operator */
+code span.ot { color: #8f5902; } /* Other */
+code span.pp { color: #8f5902; font-style: italic; } /* Preprocessor */
+code span.sc { color: #ce5c00; font-weight: bold; } /* SpecialChar */
+code span.ss { color: #4e9a06; } /* SpecialString */
+code span.st { color: #4e9a06; } /* String */
+code span.va { color: #000000; } /* Variable */
+code span.vs { color: #4e9a06; } /* VerbatimString */
+code span.wa { color: #8f5902; font-weight: bold; font-style: italic; } /* Warning */
+
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<link rel="stylesheet" href="styles.css" type="text/css" />
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+.tocify-subheader {
+  display: inline;
+}
+.tocify-subheader .tocify-item {
+  font-size: 0.95em;
+}
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Simon Raymond</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="heckman.html">Heckman Selection</a>
+</li>
+<li>
+  <a href="thirddown.html">Third Down Analysis</a>
+</li>
+<li>
+  <a href="attempt_ols.html">Attempts OLS</a>
+</li>
+<li>
+  <a href="robustness_checks.html">Robustness Checks</a>
+</li>
+<li>
+  <a href="Writing.html">Writing</a>
+</li>
+<li>
+  <a href="kicker_exogenous.html">Proof of Exogeniety</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Naming</h1>
+<h4 class="date">2025-03-08</h4>
+
+</div>
+
+
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="co"># Column Name Transformer for Football Analytics</span></span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">library</span>(data.table)</span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a>transform_column_names <span class="ot">&lt;-</span> <span class="cf">function</span>(df) {</span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a>  <span class="co"># Position mapping</span></span>
+<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a>  offense_positions <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a>    <span class="co"># QB slots (1-3)</span></span>
+<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a>    <span class="st">&quot;1&quot;</span> <span class="ot">=</span> <span class="st">&quot;QB&quot;</span>, <span class="st">&quot;2&quot;</span> <span class="ot">=</span> <span class="st">&quot;QB2&quot;</span>, <span class="st">&quot;3&quot;</span> <span class="ot">=</span> <span class="st">&quot;QB3&quot;</span>,</span>
+<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a>    <span class="co"># Backs slots (4-7)</span></span>
+<span id="cb1-10"><a href="#cb1-10" tabindex="-1"></a>    <span class="st">&quot;4&quot;</span> <span class="ot">=</span> <span class="st">&quot;RB&quot;</span>, <span class="st">&quot;5&quot;</span> <span class="ot">=</span> <span class="st">&quot;RB2&quot;</span>, <span class="st">&quot;6&quot;</span> <span class="ot">=</span> <span class="st">&quot;FB&quot;</span>, <span class="st">&quot;7&quot;</span> <span class="ot">=</span> <span class="st">&quot;FB2&quot;</span>,</span>
+<span id="cb1-11"><a href="#cb1-11" tabindex="-1"></a>    <span class="co"># Wide receivers slots (8-13)</span></span>
+<span id="cb1-12"><a href="#cb1-12" tabindex="-1"></a>    <span class="st">&quot;8&quot;</span> <span class="ot">=</span> <span class="st">&quot;WR1&quot;</span>, <span class="st">&quot;9&quot;</span> <span class="ot">=</span> <span class="st">&quot;WR2&quot;</span>, <span class="st">&quot;10&quot;</span> <span class="ot">=</span> <span class="st">&quot;WR3&quot;</span>, <span class="st">&quot;11&quot;</span> <span class="ot">=</span> <span class="st">&quot;WR4&quot;</span>, <span class="st">&quot;12&quot;</span> <span class="ot">=</span> <span class="st">&quot;WR5&quot;</span>, <span class="st">&quot;13&quot;</span> <span class="ot">=</span> <span class="st">&quot;WR6&quot;</span>,</span>
+<span id="cb1-13"><a href="#cb1-13" tabindex="-1"></a>    <span class="co"># Tight ends slots (14-16)</span></span>
+<span id="cb1-14"><a href="#cb1-14" tabindex="-1"></a>    <span class="st">&quot;14&quot;</span> <span class="ot">=</span> <span class="st">&quot;TE1&quot;</span>, <span class="st">&quot;15&quot;</span> <span class="ot">=</span> <span class="st">&quot;TE2&quot;</span>, <span class="st">&quot;16&quot;</span> <span class="ot">=</span> <span class="st">&quot;TE3&quot;</span>,</span>
+<span id="cb1-15"><a href="#cb1-15" tabindex="-1"></a>    <span class="co"># Offensive line slots (17-24)</span></span>
+<span id="cb1-16"><a href="#cb1-16" tabindex="-1"></a>    <span class="st">&quot;17&quot;</span> <span class="ot">=</span> <span class="st">&quot;OL&quot;</span>, <span class="st">&quot;18&quot;</span> <span class="ot">=</span> <span class="st">&quot;OL&quot;</span>, <span class="st">&quot;19&quot;</span> <span class="ot">=</span> <span class="st">&quot;OL&quot;</span>, <span class="st">&quot;20&quot;</span> <span class="ot">=</span> <span class="st">&quot;OL&quot;</span>, <span class="st">&quot;21&quot;</span> <span class="ot">=</span> <span class="st">&quot;OL&quot;</span>, </span>
+<span id="cb1-17"><a href="#cb1-17" tabindex="-1"></a>    <span class="st">&quot;22&quot;</span> <span class="ot">=</span> <span class="st">&quot;OL&quot;</span>, <span class="st">&quot;23&quot;</span> <span class="ot">=</span> <span class="st">&quot;OL&quot;</span>, <span class="st">&quot;24&quot;</span> <span class="ot">=</span> <span class="st">&quot;OL&quot;</span></span>
+<span id="cb1-18"><a href="#cb1-18" tabindex="-1"></a>  )</span>
+<span id="cb1-19"><a href="#cb1-19" tabindex="-1"></a>  </span>
+<span id="cb1-20"><a href="#cb1-20" tabindex="-1"></a>  defense_positions <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb1-21"><a href="#cb1-21" tabindex="-1"></a>    <span class="co"># Defensive line slots (1-8)</span></span>
+<span id="cb1-22"><a href="#cb1-22" tabindex="-1"></a>    <span class="st">&quot;1&quot;</span> <span class="ot">=</span> <span class="st">&quot;DL1&quot;</span>, <span class="st">&quot;2&quot;</span> <span class="ot">=</span> <span class="st">&quot;DL2&quot;</span>, <span class="st">&quot;3&quot;</span> <span class="ot">=</span> <span class="st">&quot;DL3&quot;</span>, <span class="st">&quot;4&quot;</span> <span class="ot">=</span> <span class="st">&quot;DL4&quot;</span>, </span>
+<span id="cb1-23"><a href="#cb1-23" tabindex="-1"></a>    <span class="st">&quot;5&quot;</span> <span class="ot">=</span> <span class="st">&quot;DL5&quot;</span>, <span class="st">&quot;6&quot;</span> <span class="ot">=</span> <span class="st">&quot;DL6&quot;</span>, <span class="st">&quot;7&quot;</span> <span class="ot">=</span> <span class="st">&quot;DL7&quot;</span>, <span class="st">&quot;8&quot;</span> <span class="ot">=</span> <span class="st">&quot;DL8&quot;</span>,</span>
+<span id="cb1-24"><a href="#cb1-24" tabindex="-1"></a>    <span class="co"># Linebackers slots (9-14)</span></span>
+<span id="cb1-25"><a href="#cb1-25" tabindex="-1"></a>    <span class="st">&quot;9&quot;</span> <span class="ot">=</span> <span class="st">&quot;LB1&quot;</span>, <span class="st">&quot;10&quot;</span> <span class="ot">=</span> <span class="st">&quot;LB2&quot;</span>, <span class="st">&quot;11&quot;</span> <span class="ot">=</span> <span class="st">&quot;LB3&quot;</span>, <span class="st">&quot;12&quot;</span> <span class="ot">=</span> <span class="st">&quot;LB4&quot;</span>, </span>
+<span id="cb1-26"><a href="#cb1-26" tabindex="-1"></a>    <span class="st">&quot;13&quot;</span> <span class="ot">=</span> <span class="st">&quot;LB5&quot;</span>, <span class="st">&quot;14&quot;</span> <span class="ot">=</span> <span class="st">&quot;LB6&quot;</span>,</span>
+<span id="cb1-27"><a href="#cb1-27" tabindex="-1"></a>    <span class="co"># Cornerbacks slots (15-19)</span></span>
+<span id="cb1-28"><a href="#cb1-28" tabindex="-1"></a>    <span class="st">&quot;15&quot;</span> <span class="ot">=</span> <span class="st">&quot;CB1&quot;</span>, <span class="st">&quot;16&quot;</span> <span class="ot">=</span> <span class="st">&quot;CB2&quot;</span>, <span class="st">&quot;17&quot;</span> <span class="ot">=</span> <span class="st">&quot;CB3&quot;</span>, <span class="st">&quot;18&quot;</span> <span class="ot">=</span> <span class="st">&quot;CB4&quot;</span>, <span class="st">&quot;19&quot;</span> <span class="ot">=</span> <span class="st">&quot;CB5&quot;</span>,</span>
+<span id="cb1-29"><a href="#cb1-29" tabindex="-1"></a>    <span class="co"># Safeties slots (20-23)</span></span>
+<span id="cb1-30"><a href="#cb1-30" tabindex="-1"></a>    <span class="st">&quot;20&quot;</span> <span class="ot">=</span> <span class="st">&quot;S1&quot;</span>, <span class="st">&quot;21&quot;</span> <span class="ot">=</span> <span class="st">&quot;S2&quot;</span>, <span class="st">&quot;22&quot;</span> <span class="ot">=</span> <span class="st">&quot;S3&quot;</span>, <span class="st">&quot;23&quot;</span> <span class="ot">=</span> <span class="st">&quot;S4&quot;</span></span>
+<span id="cb1-31"><a href="#cb1-31" tabindex="-1"></a>  )</span>
+<span id="cb1-32"><a href="#cb1-32" tabindex="-1"></a>  </span>
+<span id="cb1-33"><a href="#cb1-33" tabindex="-1"></a>  <span class="co"># Get column names</span></span>
+<span id="cb1-34"><a href="#cb1-34" tabindex="-1"></a>  cols <span class="ot">&lt;-</span> <span class="fu">colnames</span>(df)</span>
+<span id="cb1-35"><a href="#cb1-35" tabindex="-1"></a>  new_cols <span class="ot">&lt;-</span> cols</span>
+<span id="cb1-36"><a href="#cb1-36" tabindex="-1"></a>  </span>
+<span id="cb1-37"><a href="#cb1-37" tabindex="-1"></a>  <span class="cf">for</span> (i <span class="cf">in</span> <span class="fu">seq_along</span>(cols)) {</span>
+<span id="cb1-38"><a href="#cb1-38" tabindex="-1"></a>    col <span class="ot">&lt;-</span> cols[i]</span>
+<span id="cb1-39"><a href="#cb1-39" tabindex="-1"></a>    </span>
+<span id="cb1-40"><a href="#cb1-40" tabindex="-1"></a>    <span class="co"># Handle offense player patterns</span></span>
+<span id="cb1-41"><a href="#cb1-41" tabindex="-1"></a>    <span class="cf">if</span> (<span class="fu">grepl</span>(<span class="st">&quot;offense_player_&quot;</span>, col)) {</span>
+<span id="cb1-42"><a href="#cb1-42" tabindex="-1"></a>      player_num <span class="ot">&lt;-</span> <span class="fu">gsub</span>(<span class="st">&quot;.*offense_player_([0-9</span><span class="sc">\\</span><span class="st">-]+).*&quot;</span>, <span class="st">&quot;</span><span class="sc">\\</span><span class="st">1&quot;</span>, col)</span>
+<span id="cb1-43"><a href="#cb1-43" tabindex="-1"></a>      </span>
+<span id="cb1-44"><a href="#cb1-44" tabindex="-1"></a>      <span class="co"># Determine position</span></span>
+<span id="cb1-45"><a href="#cb1-45" tabindex="-1"></a>      <span class="cf">if</span> (<span class="fu">grepl</span>(<span class="st">&quot;-&quot;</span>, player_num)) {</span>
+<span id="cb1-46"><a href="#cb1-46" tabindex="-1"></a>        position <span class="ot">&lt;-</span> <span class="st">&quot;OL&quot;</span></span>
+<span id="cb1-47"><a href="#cb1-47" tabindex="-1"></a>      } <span class="cf">else</span> <span class="cf">if</span> (player_num <span class="sc">%in%</span> <span class="fu">names</span>(offense_positions)) {</span>
+<span id="cb1-48"><a href="#cb1-48" tabindex="-1"></a>        position <span class="ot">&lt;-</span> offense_positions[player_num]</span>
+<span id="cb1-49"><a href="#cb1-49" tabindex="-1"></a>      } <span class="cf">else</span> {</span>
+<span id="cb1-50"><a href="#cb1-50" tabindex="-1"></a>        position <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">&quot;OFF&quot;</span>, player_num)</span>
+<span id="cb1-51"><a href="#cb1-51" tabindex="-1"></a>      }</span>
+<span id="cb1-52"><a href="#cb1-52" tabindex="-1"></a>      </span>
+<span id="cb1-53"><a href="#cb1-53" tabindex="-1"></a>      <span class="co"># Replace pattern and remove first two words after</span></span>
+<span id="cb1-54"><a href="#cb1-54" tabindex="-1"></a>      <span class="cf">if</span> (<span class="fu">grepl</span>(<span class="st">&quot;^starter_&quot;</span>, col)) {</span>
+<span id="cb1-55"><a href="#cb1-55" tabindex="-1"></a>        parts <span class="ot">&lt;-</span> <span class="fu">strsplit</span>(<span class="fu">gsub</span>(<span class="st">&quot;starter_offense_player_[0-9</span><span class="sc">\\</span><span class="st">-]+_&quot;</span>, <span class="st">&quot;&quot;</span>, col), <span class="st">&quot;_&quot;</span>)[[<span class="dv">1</span>]]</span>
+<span id="cb1-56"><a href="#cb1-56" tabindex="-1"></a>        <span class="cf">if</span> (<span class="fu">length</span>(parts) <span class="sc">&gt;=</span> <span class="dv">2</span>) {</span>
+<span id="cb1-57"><a href="#cb1-57" tabindex="-1"></a>          parts <span class="ot">&lt;-</span> parts[<span class="sc">-</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>)]</span>
+<span id="cb1-58"><a href="#cb1-58" tabindex="-1"></a>        }</span>
+<span id="cb1-59"><a href="#cb1-59" tabindex="-1"></a>        new_cols[i] <span class="ot">&lt;-</span> <span class="fu">paste</span>(<span class="st">&quot;starter&quot;</span>, position, <span class="fu">paste</span>(parts, <span class="at">collapse =</span> <span class="st">&quot;_&quot;</span>), <span class="at">sep =</span> <span class="st">&quot;_&quot;</span>)</span>
+<span id="cb1-60"><a href="#cb1-60" tabindex="-1"></a>      } <span class="cf">else</span> {</span>
+<span id="cb1-61"><a href="#cb1-61" tabindex="-1"></a>        parts <span class="ot">&lt;-</span> <span class="fu">strsplit</span>(<span class="fu">gsub</span>(<span class="st">&quot;offense_player_[0-9</span><span class="sc">\\</span><span class="st">-]+_&quot;</span>, <span class="st">&quot;&quot;</span>, col), <span class="st">&quot;_&quot;</span>)[[<span class="dv">1</span>]]</span>
+<span id="cb1-62"><a href="#cb1-62" tabindex="-1"></a>        <span class="cf">if</span> (<span class="fu">length</span>(parts) <span class="sc">&gt;=</span> <span class="dv">2</span>) {</span>
+<span id="cb1-63"><a href="#cb1-63" tabindex="-1"></a>          parts <span class="ot">&lt;-</span> parts[<span class="sc">-</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>)]</span>
+<span id="cb1-64"><a href="#cb1-64" tabindex="-1"></a>        }</span>
+<span id="cb1-65"><a href="#cb1-65" tabindex="-1"></a>        new_cols[i] <span class="ot">&lt;-</span> <span class="fu">paste</span>(position, <span class="fu">paste</span>(parts, <span class="at">collapse =</span> <span class="st">&quot;_&quot;</span>), <span class="at">sep =</span> <span class="st">&quot;_&quot;</span>)</span>
+<span id="cb1-66"><a href="#cb1-66" tabindex="-1"></a>      }</span>
+<span id="cb1-67"><a href="#cb1-67" tabindex="-1"></a>    }</span>
+<span id="cb1-68"><a href="#cb1-68" tabindex="-1"></a>    </span>
+<span id="cb1-69"><a href="#cb1-69" tabindex="-1"></a>    <span class="co"># Handle defense player patterns</span></span>
+<span id="cb1-70"><a href="#cb1-70" tabindex="-1"></a>    <span class="cf">else</span> <span class="cf">if</span> (<span class="fu">grepl</span>(<span class="st">&quot;defense_player_&quot;</span>, col)) {</span>
+<span id="cb1-71"><a href="#cb1-71" tabindex="-1"></a>      player_num <span class="ot">&lt;-</span> <span class="fu">gsub</span>(<span class="st">&quot;.*defense_player_([0-9]+).*&quot;</span>, <span class="st">&quot;</span><span class="sc">\\</span><span class="st">1&quot;</span>, col)</span>
+<span id="cb1-72"><a href="#cb1-72" tabindex="-1"></a>      </span>
+<span id="cb1-73"><a href="#cb1-73" tabindex="-1"></a>      <span class="co"># Determine position</span></span>
+<span id="cb1-74"><a href="#cb1-74" tabindex="-1"></a>      <span class="cf">if</span> (player_num <span class="sc">%in%</span> <span class="fu">names</span>(defense_positions)) {</span>
+<span id="cb1-75"><a href="#cb1-75" tabindex="-1"></a>        position <span class="ot">&lt;-</span> defense_positions[player_num]</span>
+<span id="cb1-76"><a href="#cb1-76" tabindex="-1"></a>      } <span class="cf">else</span> {</span>
+<span id="cb1-77"><a href="#cb1-77" tabindex="-1"></a>        position <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">&quot;DEF&quot;</span>, player_num)</span>
+<span id="cb1-78"><a href="#cb1-78" tabindex="-1"></a>      }</span>
+<span id="cb1-79"><a href="#cb1-79" tabindex="-1"></a>      </span>
+<span id="cb1-80"><a href="#cb1-80" tabindex="-1"></a>      <span class="co"># Replace pattern and remove first two words after</span></span>
+<span id="cb1-81"><a href="#cb1-81" tabindex="-1"></a>      <span class="cf">if</span> (<span class="fu">grepl</span>(<span class="st">&quot;^starter_&quot;</span>, col)) {</span>
+<span id="cb1-82"><a href="#cb1-82" tabindex="-1"></a>        parts <span class="ot">&lt;-</span> <span class="fu">strsplit</span>(<span class="fu">gsub</span>(<span class="st">&quot;starter_defense_player_[0-9]+_&quot;</span>, <span class="st">&quot;&quot;</span>, col), <span class="st">&quot;_&quot;</span>)[[<span class="dv">1</span>]]</span>
+<span id="cb1-83"><a href="#cb1-83" tabindex="-1"></a>        <span class="cf">if</span> (<span class="fu">length</span>(parts) <span class="sc">&gt;=</span> <span class="dv">2</span>) {</span>
+<span id="cb1-84"><a href="#cb1-84" tabindex="-1"></a>          parts <span class="ot">&lt;-</span> parts[<span class="sc">-</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>)]</span>
+<span id="cb1-85"><a href="#cb1-85" tabindex="-1"></a>        }</span>
+<span id="cb1-86"><a href="#cb1-86" tabindex="-1"></a>        new_cols[i] <span class="ot">&lt;-</span> <span class="fu">paste</span>(<span class="st">&quot;starter&quot;</span>, position, <span class="fu">paste</span>(parts, <span class="at">collapse =</span> <span class="st">&quot;_&quot;</span>), <span class="at">sep =</span> <span class="st">&quot;_&quot;</span>)</span>
+<span id="cb1-87"><a href="#cb1-87" tabindex="-1"></a>      } <span class="cf">else</span> {</span>
+<span id="cb1-88"><a href="#cb1-88" tabindex="-1"></a>        parts <span class="ot">&lt;-</span> <span class="fu">strsplit</span>(<span class="fu">gsub</span>(<span class="st">&quot;defense_player_[0-9]+_&quot;</span>, <span class="st">&quot;&quot;</span>, col), <span class="st">&quot;_&quot;</span>)[[<span class="dv">1</span>]]</span>
+<span id="cb1-89"><a href="#cb1-89" tabindex="-1"></a>        <span class="cf">if</span> (<span class="fu">length</span>(parts) <span class="sc">&gt;=</span> <span class="dv">2</span>) {</span>
+<span id="cb1-90"><a href="#cb1-90" tabindex="-1"></a>          parts <span class="ot">&lt;-</span> parts[<span class="sc">-</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>)]</span>
+<span id="cb1-91"><a href="#cb1-91" tabindex="-1"></a>        }</span>
+<span id="cb1-92"><a href="#cb1-92" tabindex="-1"></a>        new_cols[i] <span class="ot">&lt;-</span> <span class="fu">paste</span>(position, <span class="fu">paste</span>(parts, <span class="at">collapse =</span> <span class="st">&quot;_&quot;</span>), <span class="at">sep =</span> <span class="st">&quot;_&quot;</span>)</span>
+<span id="cb1-93"><a href="#cb1-93" tabindex="-1"></a>      }</span>
+<span id="cb1-94"><a href="#cb1-94" tabindex="-1"></a>    }</span>
+<span id="cb1-95"><a href="#cb1-95" tabindex="-1"></a>  }</span>
+<span id="cb1-96"><a href="#cb1-96" tabindex="-1"></a>  </span>
+<span id="cb1-97"><a href="#cb1-97" tabindex="-1"></a>  <span class="co"># Set the new column names</span></span>
+<span id="cb1-98"><a href="#cb1-98" tabindex="-1"></a>  <span class="fu">colnames</span>(df) <span class="ot">&lt;-</span> new_cols</span>
+<span id="cb1-99"><a href="#cb1-99" tabindex="-1"></a>  <span class="fu">return</span>(df)</span>
+<span id="cb1-100"><a href="#cb1-100" tabindex="-1"></a>}</span>
+<span id="cb1-101"><a href="#cb1-101" tabindex="-1"></a></span>
+<span id="cb1-102"><a href="#cb1-102" tabindex="-1"></a><span class="co"># Define the datasets to analyze</span></span>
+<span id="cb1-103"><a href="#cb1-103" tabindex="-1"></a>datasets <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb1-104"><a href="#cb1-104" tabindex="-1"></a>  <span class="fu">list</span>(<span class="at">outcome =</span> <span class="st">&quot;processed_predict_ccafd_off_grades.csv.csv.gz&quot;</span>, <span class="at">select =</span> <span class="st">&quot;processed_predict_ccfd_off_grades.csv.csv.gz&quot;</span>),</span>
+<span id="cb1-105"><a href="#cb1-105" tabindex="-1"></a>  <span class="fu">list</span>(<span class="at">outcome =</span> <span class="st">&quot;processed_predict_ccafd_off_yards.csv.csv.gz&quot;</span>, <span class="at">select =</span> <span class="st">&quot;processed_predict_ccfd_off_yards.csv.csv.gz&quot;</span>),</span>
+<span id="cb1-106"><a href="#cb1-106" tabindex="-1"></a>  <span class="fu">list</span>(<span class="at">outcome =</span> <span class="st">&quot;processed_predict_ccafd_off_tds.csv.csv.gz&quot;</span>, <span class="at">select =</span> <span class="st">&quot;processed_predict_ccfd_off_tds.csv.csv.gz&quot;</span>),</span>
+<span id="cb1-107"><a href="#cb1-107" tabindex="-1"></a>  <span class="fu">list</span>(<span class="at">outcome =</span> <span class="st">&quot;processed_predict_ccafd_off_specifics.csv.csv.gz&quot;</span>, <span class="at">select =</span> <span class="st">&quot;processed_predict_ccfd_off_specifics.csv.csv.gz&quot;</span>),</span>
+<span id="cb1-108"><a href="#cb1-108" tabindex="-1"></a>  <span class="fu">list</span>(<span class="at">outcome =</span> <span class="st">&quot;processed_predict_ccafd_off_first_downs.csv.csv.gz&quot;</span>, <span class="at">select =</span> <span class="st">&quot;processed_predict_ccfd_off_first_downs.csv.csv.gz&quot;</span>),</span>
+<span id="cb1-109"><a href="#cb1-109" tabindex="-1"></a>  <span class="fu">list</span>(<span class="at">outcome =</span> <span class="st">&quot;processed_predict_ccafd_def_stops.csv.csv.gz&quot;</span>, <span class="at">select =</span> <span class="st">&quot;processed_predict_ccfd_def_stops.csv.csv.gz&quot;</span>),</span>
+<span id="cb1-110"><a href="#cb1-110" tabindex="-1"></a>  <span class="fu">list</span>(<span class="at">outcome =</span> <span class="st">&quot;processed_predict_ccafd_def_grades.csv.csv.gz&quot;</span>, <span class="at">select =</span> <span class="st">&quot;processed_predict_ccfd_def_grades.csv.csv.gz&quot;</span>),</span>
+<span id="cb1-111"><a href="#cb1-111" tabindex="-1"></a>  <span class="fu">list</span>(<span class="at">outcome =</span> <span class="st">&quot;processed_predict_ccafd_def_specifics.csv.csv.gz&quot;</span>, <span class="at">select =</span> <span class="st">&quot;processed_predict_ccfd_def_specifics.csv.csv.gz&quot;</span>),</span>
+<span id="cb1-112"><a href="#cb1-112" tabindex="-1"></a>  <span class="fu">list</span>(<span class="at">outcome =</span> <span class="st">&quot;processed_predict_ccafd_def_tackles.csv.csv.gz&quot;</span>, <span class="at">select =</span> <span class="st">&quot;processed_predict_ccfd_def_tackles.csv.csv.gz&quot;</span>),</span>
+<span id="cb1-113"><a href="#cb1-113" tabindex="-1"></a>  <span class="fu">list</span>(<span class="at">outcome =</span> <span class="st">&quot;processed_predict_ccafd_def_pressure.csv.csv.gz&quot;</span>, <span class="at">select =</span> <span class="st">&quot;processed_predict_ccfd_def_pressure.csv.csv.gz&quot;</span>)</span>
+<span id="cb1-114"><a href="#cb1-114" tabindex="-1"></a>)</span>
+<span id="cb1-115"><a href="#cb1-115" tabindex="-1"></a></span>
+<span id="cb1-116"><a href="#cb1-116" tabindex="-1"></a><span class="co"># Process all datasets</span></span>
+<span id="cb1-117"><a href="#cb1-117" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">length</span>(datasets)) {</span>
+<span id="cb1-118"><a href="#cb1-118" tabindex="-1"></a>  <span class="co"># Get file paths</span></span>
+<span id="cb1-119"><a href="#cb1-119" tabindex="-1"></a>  outcome_file <span class="ot">&lt;-</span> datasets[[i]]<span class="sc">$</span>outcome</span>
+<span id="cb1-120"><a href="#cb1-120" tabindex="-1"></a>  select_file <span class="ot">&lt;-</span> datasets[[i]]<span class="sc">$</span>select</span>
+<span id="cb1-121"><a href="#cb1-121" tabindex="-1"></a>  </span>
+<span id="cb1-122"><a href="#cb1-122" tabindex="-1"></a>  <span class="co"># Process outcome file</span></span>
+<span id="cb1-123"><a href="#cb1-123" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">&quot;</span><span class="sc">\n</span><span class="st">Processing outcome file %d/%d: %s</span><span class="sc">\n</span><span class="st">&quot;</span>, i, <span class="fu">length</span>(datasets), outcome_file))</span>
+<span id="cb1-124"><a href="#cb1-124" tabindex="-1"></a>  outcome_data <span class="ot">&lt;-</span> <span class="fu">fread</span>(outcome_file)</span>
+<span id="cb1-125"><a href="#cb1-125" tabindex="-1"></a>  outcome_data <span class="ot">&lt;-</span> <span class="fu">transform_column_names</span>(outcome_data)</span>
+<span id="cb1-126"><a href="#cb1-126" tabindex="-1"></a>  </span>
+<span id="cb1-127"><a href="#cb1-127" tabindex="-1"></a>  <span class="co"># Save transformed data</span></span>
+<span id="cb1-128"><a href="#cb1-128" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">&quot;Saving to: %s</span><span class="sc">\n</span><span class="st">&quot;</span>, outcome_file))</span>
+<span id="cb1-129"><a href="#cb1-129" tabindex="-1"></a>  <span class="fu">fwrite</span>(outcome_data, outcome_file)</span>
+<span id="cb1-130"><a href="#cb1-130" tabindex="-1"></a>  </span>
+<span id="cb1-131"><a href="#cb1-131" tabindex="-1"></a>  <span class="co"># Process select file</span></span>
+<span id="cb1-132"><a href="#cb1-132" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">&quot;Processing select file %d/%d: %s</span><span class="sc">\n</span><span class="st">&quot;</span>, i, <span class="fu">length</span>(datasets), select_file))</span>
+<span id="cb1-133"><a href="#cb1-133" tabindex="-1"></a>  select_data <span class="ot">&lt;-</span> <span class="fu">fread</span>(select_file)</span>
+<span id="cb1-134"><a href="#cb1-134" tabindex="-1"></a>  select_data <span class="ot">&lt;-</span> <span class="fu">transform_column_names</span>(select_data)</span>
+<span id="cb1-135"><a href="#cb1-135" tabindex="-1"></a>  </span>
+<span id="cb1-136"><a href="#cb1-136" tabindex="-1"></a>  <span class="co"># Save transformed data</span></span>
+<span id="cb1-137"><a href="#cb1-137" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">&quot;Saving to: %s</span><span class="sc">\n</span><span class="st">&quot;</span>, select_file))</span>
+<span id="cb1-138"><a href="#cb1-138" tabindex="-1"></a>  <span class="fu">fwrite</span>(select_data, select_file)</span>
+<span id="cb1-139"><a href="#cb1-139" tabindex="-1"></a>  </span>
+<span id="cb1-140"><a href="#cb1-140" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">&quot;Completed dataset %d/%d</span><span class="sc">\n</span><span class="st">&quot;</span>, i, <span class="fu">length</span>(datasets)))</span>
+<span id="cb1-141"><a href="#cb1-141" tabindex="-1"></a>}</span></code></pre></div>
+<pre><code>## 
+## Processing outcome file 1/10: processed_predict_ccafd_off_grades.csv.csv.gz
+## Saving to: processed_predict_ccafd_off_grades.csv.csv.gz
+## Processing select file 1/10: processed_predict_ccfd_off_grades.csv.csv.gz
+## Saving to: processed_predict_ccfd_off_grades.csv.csv.gz
+## Completed dataset 1/10
+## 
+## Processing outcome file 2/10: processed_predict_ccafd_off_yards.csv.csv.gz
+## Saving to: processed_predict_ccafd_off_yards.csv.csv.gz
+## Processing select file 2/10: processed_predict_ccfd_off_yards.csv.csv.gz
+## Saving to: processed_predict_ccfd_off_yards.csv.csv.gz
+## Completed dataset 2/10
+## 
+## Processing outcome file 3/10: processed_predict_ccafd_off_tds.csv.csv.gz
+## Saving to: processed_predict_ccafd_off_tds.csv.csv.gz
+## Processing select file 3/10: processed_predict_ccfd_off_tds.csv.csv.gz
+## Saving to: processed_predict_ccfd_off_tds.csv.csv.gz
+## Completed dataset 3/10
+## 
+## Processing outcome file 4/10: processed_predict_ccafd_off_specifics.csv.csv.gz
+## Saving to: processed_predict_ccafd_off_specifics.csv.csv.gz
+## Processing select file 4/10: processed_predict_ccfd_off_specifics.csv.csv.gz
+## Saving to: processed_predict_ccfd_off_specifics.csv.csv.gz
+## Completed dataset 4/10
+## 
+## Processing outcome file 5/10: processed_predict_ccafd_off_first_downs.csv.csv.gz
+## Saving to: processed_predict_ccafd_off_first_downs.csv.csv.gz
+## Processing select file 5/10: processed_predict_ccfd_off_first_downs.csv.csv.gz
+## Saving to: processed_predict_ccfd_off_first_downs.csv.csv.gz
+## Completed dataset 5/10
+## 
+## Processing outcome file 6/10: processed_predict_ccafd_def_stops.csv.csv.gz
+## Saving to: processed_predict_ccafd_def_stops.csv.csv.gz
+## Processing select file 6/10: processed_predict_ccfd_def_stops.csv.csv.gz
+## Saving to: processed_predict_ccfd_def_stops.csv.csv.gz
+## Completed dataset 6/10
+## 
+## Processing outcome file 7/10: processed_predict_ccafd_def_grades.csv.csv.gz
+## Saving to: processed_predict_ccafd_def_grades.csv.csv.gz
+## Processing select file 7/10: processed_predict_ccfd_def_grades.csv.csv.gz
+## Saving to: processed_predict_ccfd_def_grades.csv.csv.gz
+## Completed dataset 7/10
+## 
+## Processing outcome file 8/10: processed_predict_ccafd_def_specifics.csv.csv.gz
+## Saving to: processed_predict_ccafd_def_specifics.csv.csv.gz
+## Processing select file 8/10: processed_predict_ccfd_def_specifics.csv.csv.gz
+## Saving to: processed_predict_ccfd_def_specifics.csv.csv.gz
+## Completed dataset 8/10
+## 
+## Processing outcome file 9/10: processed_predict_ccafd_def_tackles.csv.csv.gz
+## Saving to: processed_predict_ccafd_def_tackles.csv.csv.gz
+## Processing select file 9/10: processed_predict_ccfd_def_tackles.csv.csv.gz
+## Saving to: processed_predict_ccfd_def_tackles.csv.csv.gz
+## Completed dataset 9/10
+## 
+## Processing outcome file 10/10: processed_predict_ccafd_def_pressure.csv.csv.gz
+## Saving to: processed_predict_ccafd_def_pressure.csv.csv.gz
+## Processing select file 10/10: processed_predict_ccfd_def_pressure.csv.csv.gz
+## Saving to: processed_predict_ccfd_def_pressure.csv.csv.gz
+## Completed dataset 10/10</code></pre>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;</span><span class="sc">\n</span><span class="st">All datasets processed successfully!</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code></pre></div>
+<pre><code>## 
+## All datasets processed successfully!</code></pre>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="co"># Extract each dataset into its own variable</span></span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a>off_grades_outcome <span class="ot">&lt;-</span> <span class="fu">fread</span>(datasets[[<span class="dv">1</span>]]<span class="sc">$</span>outcome)</span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a>off_grades_select <span class="ot">&lt;-</span> <span class="fu">fread</span>(datasets[[<span class="dv">1</span>]]<span class="sc">$</span>select)</span>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a></span>
+<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a>off_yards_outcome <span class="ot">&lt;-</span> <span class="fu">fread</span>(datasets[[<span class="dv">2</span>]]<span class="sc">$</span>outcome)</span>
+<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a>off_yards_select <span class="ot">&lt;-</span> <span class="fu">fread</span>(datasets[[<span class="dv">2</span>]]<span class="sc">$</span>select)</span>
+<span id="cb5-7"><a href="#cb5-7" tabindex="-1"></a></span>
+<span id="cb5-8"><a href="#cb5-8" tabindex="-1"></a>off_tds_outcome <span class="ot">&lt;-</span> <span class="fu">fread</span>(datasets[[<span class="dv">3</span>]]<span class="sc">$</span>outcome)</span>
+<span id="cb5-9"><a href="#cb5-9" tabindex="-1"></a>off_tds_select <span class="ot">&lt;-</span> <span class="fu">fread</span>(datasets[[<span class="dv">3</span>]]<span class="sc">$</span>select)</span>
+<span id="cb5-10"><a href="#cb5-10" tabindex="-1"></a></span>
+<span id="cb5-11"><a href="#cb5-11" tabindex="-1"></a>off_specifics_outcome <span class="ot">&lt;-</span> <span class="fu">fread</span>(datasets[[<span class="dv">4</span>]]<span class="sc">$</span>outcome)</span>
+<span id="cb5-12"><a href="#cb5-12" tabindex="-1"></a>off_specifics_select <span class="ot">&lt;-</span> <span class="fu">fread</span>(datasets[[<span class="dv">4</span>]]<span class="sc">$</span>select)</span>
+<span id="cb5-13"><a href="#cb5-13" tabindex="-1"></a></span>
+<span id="cb5-14"><a href="#cb5-14" tabindex="-1"></a>off_first_downs_outcome <span class="ot">&lt;-</span> <span class="fu">fread</span>(datasets[[<span class="dv">5</span>]]<span class="sc">$</span>outcome)</span>
+<span id="cb5-15"><a href="#cb5-15" tabindex="-1"></a>off_first_downs_select <span class="ot">&lt;-</span> <span class="fu">fread</span>(datasets[[<span class="dv">5</span>]]<span class="sc">$</span>select)</span>
+<span id="cb5-16"><a href="#cb5-16" tabindex="-1"></a></span>
+<span id="cb5-17"><a href="#cb5-17" tabindex="-1"></a>def_stops_outcome <span class="ot">&lt;-</span> <span class="fu">fread</span>(datasets[[<span class="dv">6</span>]]<span class="sc">$</span>outcome)</span>
+<span id="cb5-18"><a href="#cb5-18" tabindex="-1"></a>def_stops_select <span class="ot">&lt;-</span> <span class="fu">fread</span>(datasets[[<span class="dv">6</span>]]<span class="sc">$</span>select)</span>
+<span id="cb5-19"><a href="#cb5-19" tabindex="-1"></a></span>
+<span id="cb5-20"><a href="#cb5-20" tabindex="-1"></a>def_grades_outcome <span class="ot">&lt;-</span> <span class="fu">fread</span>(datasets[[<span class="dv">7</span>]]<span class="sc">$</span>outcome)</span>
+<span id="cb5-21"><a href="#cb5-21" tabindex="-1"></a>def_grades_select <span class="ot">&lt;-</span> <span class="fu">fread</span>(datasets[[<span class="dv">7</span>]]<span class="sc">$</span>select)</span>
+<span id="cb5-22"><a href="#cb5-22" tabindex="-1"></a></span>
+<span id="cb5-23"><a href="#cb5-23" tabindex="-1"></a>def_specifics_outcome <span class="ot">&lt;-</span> <span class="fu">fread</span>(datasets[[<span class="dv">8</span>]]<span class="sc">$</span>outcome)</span>
+<span id="cb5-24"><a href="#cb5-24" tabindex="-1"></a>def_specifics_select <span class="ot">&lt;-</span> <span class="fu">fread</span>(datasets[[<span class="dv">8</span>]]<span class="sc">$</span>select)</span>
+<span id="cb5-25"><a href="#cb5-25" tabindex="-1"></a></span>
+<span id="cb5-26"><a href="#cb5-26" tabindex="-1"></a>def_tackles_outcome <span class="ot">&lt;-</span> <span class="fu">fread</span>(datasets[[<span class="dv">9</span>]]<span class="sc">$</span>outcome)</span>
+<span id="cb5-27"><a href="#cb5-27" tabindex="-1"></a>def_tackles_select <span class="ot">&lt;-</span> <span class="fu">fread</span>(datasets[[<span class="dv">9</span>]]<span class="sc">$</span>select)</span>
+<span id="cb5-28"><a href="#cb5-28" tabindex="-1"></a></span>
+<span id="cb5-29"><a href="#cb5-29" tabindex="-1"></a>def_pressure_outcome <span class="ot">&lt;-</span> <span class="fu">fread</span>(datasets[[<span class="dv">10</span>]]<span class="sc">$</span>outcome)</span>
+<span id="cb5-30"><a href="#cb5-30" tabindex="-1"></a>def_pressure_select <span class="ot">&lt;-</span> <span class="fu">fread</span>(datasets[[<span class="dv">10</span>]]<span class="sc">$</span>select)</span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="fu">colnames</span>(off_grades_outcome)</span></code></pre></div>
+<pre><code>##   [1] &quot;my_id&quot;                                   
+##   [2] &quot;conversion&quot;                              
+##   [3] &quot;ydstogo&quot;                                 
+##   [4] &quot;posteam_timeouts_remaining&quot;              
+##   [5] &quot;defteam_timeouts_remaining&quot;              
+##   [6] &quot;rush_attempt&quot;                            
+##   [7] &quot;week&quot;                                    
+##   [8] &quot;temp&quot;                                    
+##   [9] &quot;wind&quot;                                    
+##  [10] &quot;vegas_wp&quot;                                
+##  [11] &quot;spread_line&quot;                             
+##  [12] &quot;total_line&quot;                              
+##  [13] &quot;prep_days&quot;                               
+##  [14] &quot;overall_win_pct&quot;                         
+##  [15] &quot;team_win_pct&quot;                            
+##  [16] &quot;prev_win_pct&quot;                            
+##  [17] &quot;prev_shotgun_rate&quot;                       
+##  [18] &quot;prev_singleback_rate&quot;                    
+##  [19] &quot;prev_empty_rate&quot;                         
+##  [20] &quot;prev_iform_rate&quot;                         
+##  [21] &quot;prev_shotgun_success&quot;                    
+##  [22] &quot;prev_singleback_success&quot;                 
+##  [23] &quot;prev_empty_success&quot;                      
+##  [24] &quot;prev_iform_success&quot;                      
+##  [25] &quot;prev_stop_rate_run&quot;                      
+##  [26] &quot;prev_stop_rate_pass&quot;                     
+##  [27] &quot;shotgun_rate&quot;                            
+##  [28] &quot;singleback_rate&quot;                         
+##  [29] &quot;empty_rate&quot;                              
+##  [30] &quot;iform_rate&quot;                              
+##  [31] &quot;shotgun_success&quot;                         
+##  [32] &quot;singleback_success&quot;                      
+##  [33] &quot;empty_success&quot;                           
+##  [34] &quot;iform_success&quot;                           
+##  [35] &quot;def_stop_rate_run&quot;                       
+##  [36] &quot;def_stop_rate_pass&quot;                      
+##  [37] &quot;avg_pass_rushers&quot;                        
+##  [38] &quot;avg_box_defenders&quot;                       
+##  [39] &quot;cover0_rate&quot;                             
+##  [40] &quot;cover1_rate&quot;                             
+##  [41] &quot;cover2_rate&quot;                             
+##  [42] &quot;cover3_rate&quot;                             
+##  [43] &quot;cover4_rate&quot;                             
+##  [44] &quot;cover6_rate&quot;                             
+##  [45] &quot;two_man_rate&quot;                            
+##  [46] &quot;prevent_rate&quot;                            
+##  [47] &quot;attendance_raw&quot;                          
+##  [48] &quot;roof_outdoors&quot;                           
+##  [49] &quot;posteam_type_home&quot;                       
+##  [50] &quot;QB_present&quot;                              
+##  [51] &quot;QB2_present&quot;                             
+##  [52] &quot;QB3_present&quot;                             
+##  [53] &quot;RB_present&quot;                              
+##  [54] &quot;RB2_present&quot;                             
+##  [55] &quot;FB_present&quot;                              
+##  [56] &quot;FB2_present&quot;                             
+##  [57] &quot;WR1_present&quot;                             
+##  [58] &quot;WR2_present&quot;                             
+##  [59] &quot;WR3_present&quot;                             
+##  [60] &quot;WR4_present&quot;                             
+##  [61] &quot;WR5_present&quot;                             
+##  [62] &quot;WR6_present&quot;                             
+##  [63] &quot;TE1_present&quot;                             
+##  [64] &quot;TE2_present&quot;                             
+##  [65] &quot;TE3_present&quot;                             
+##  [66] &quot;OL_present&quot;                              
+##  [67] &quot;OL_present&quot;                              
+##  [68] &quot;OL_present&quot;                              
+##  [69] &quot;QB_short_grades_pass_12w&quot;                
+##  [70] &quot;QB_medium_grades_pass_12w&quot;               
+##  [71] &quot;QB_deep_grades_pass_12w&quot;                 
+##  [72] &quot;RB_grades_pass_block_12w&quot;                
+##  [73] &quot;RB_grades_run_12w&quot;                       
+##  [74] &quot;RB_grades_pass_route_12w&quot;                
+##  [75] &quot;WR1_short_grades_pass_route_12w&quot;         
+##  [76] &quot;WR1_medium_grades_pass_route_12w&quot;        
+##  [77] &quot;WR1_deep_grades_pass_route_12w&quot;          
+##  [78] &quot;WR2_short_grades_pass_route_12w&quot;         
+##  [79] &quot;WR2_medium_grades_pass_route_12w&quot;        
+##  [80] &quot;WR2_deep_grades_pass_route_12w&quot;          
+##  [81] &quot;WR3_short_grades_pass_route_12w&quot;         
+##  [82] &quot;WR3_medium_grades_pass_route_12w&quot;        
+##  [83] &quot;WR3_deep_grades_pass_route_12w&quot;          
+##  [84] &quot;TE1_short_grades_pass_route_12w&quot;         
+##  [85] &quot;TE1_medium_grades_pass_route_12w&quot;        
+##  [86] &quot;TE1_deep_grades_pass_route_12w&quot;          
+##  [87] &quot;DL1_present&quot;                             
+##  [88] &quot;DL2_present&quot;                             
+##  [89] &quot;DL3_present&quot;                             
+##  [90] &quot;DL4_present&quot;                             
+##  [91] &quot;DL5_present&quot;                             
+##  [92] &quot;DL6_present&quot;                             
+##  [93] &quot;DL7_present&quot;                             
+##  [94] &quot;DL8_present&quot;                             
+##  [95] &quot;LB1_present&quot;                             
+##  [96] &quot;LB2_present&quot;                             
+##  [97] &quot;LB3_present&quot;                             
+##  [98] &quot;LB4_present&quot;                             
+##  [99] &quot;LB5_present&quot;                             
+## [100] &quot;LB6_present&quot;                             
+## [101] &quot;CB1_present&quot;                             
+## [102] &quot;CB2_present&quot;                             
+## [103] &quot;CB3_present&quot;                             
+## [104] &quot;CB4_present&quot;                             
+## [105] &quot;CB5_present&quot;                             
+## [106] &quot;S1_present&quot;                              
+## [107] &quot;S2_present&quot;                              
+## [108] &quot;S3_present&quot;                              
+## [109] &quot;S4_present&quot;                              
+## [110] &quot;DL1_grades_defense_12w&quot;                  
+## [111] &quot;DL2_grades_defense_12w&quot;                  
+## [112] &quot;DL3_grades_defense_12w&quot;                  
+## [113] &quot;DL4_grades_defense_12w&quot;                  
+## [114] &quot;LB1_grades_defense_12w&quot;                  
+## [115] &quot;LB2_grades_defense_12w&quot;                  
+## [116] &quot;LB3_grades_defense_12w&quot;                  
+## [117] &quot;LB4_grades_defense_12w&quot;                  
+## [118] &quot;CB1_grades_defense_12w&quot;                  
+## [119] &quot;CB2_grades_defense_12w&quot;                  
+## [120] &quot;CB3_grades_defense_12w&quot;                  
+## [121] &quot;S1_grades_defense_12w&quot;                   
+## [122] &quot;S2_grades_defense_12w&quot;                   
+## [123] &quot;S3_grades_defense_12w&quot;                   
+## [124] &quot;starter_QB_short_grades_pass_12w&quot;        
+## [125] &quot;starter_QB_medium_grades_pass_12w&quot;       
+## [126] &quot;starter_QB_deep_grades_pass_12w&quot;         
+## [127] &quot;starter_RB_grades_pass_block_12w&quot;        
+## [128] &quot;starter_RB_grades_run_12w&quot;               
+## [129] &quot;starter_RB_grades_pass_route_12w&quot;        
+## [130] &quot;starter_WR1_short_grades_pass_route_12w&quot; 
+## [131] &quot;starter_WR1_medium_grades_pass_route_12w&quot;
+## [132] &quot;starter_WR1_deep_grades_pass_route_12w&quot;  
+## [133] &quot;starter_WR2_short_grades_pass_route_12w&quot; 
+## [134] &quot;starter_WR2_medium_grades_pass_route_12w&quot;
+## [135] &quot;starter_WR2_deep_grades_pass_route_12w&quot;  
+## [136] &quot;starter_WR3_short_grades_pass_route_12w&quot; 
+## [137] &quot;starter_WR3_medium_grades_pass_route_12w&quot;
+## [138] &quot;starter_WR3_deep_grades_pass_route_12w&quot;  
+## [139] &quot;starter_TE1_short_grades_pass_route_12w&quot; 
+## [140] &quot;starter_TE1_medium_grades_pass_route_12w&quot;
+## [141] &quot;starter_TE1_deep_grades_pass_route_12w&quot;  
+## [142] &quot;starter_DL1_grades_defense_12w&quot;          
+## [143] &quot;starter_DL2_grades_defense_12w&quot;          
+## [144] &quot;starter_DL3_grades_defense_12w&quot;          
+## [145] &quot;starter_DL4_grades_defense_12w&quot;          
+## [146] &quot;starter_LB1_grades_defense_12w&quot;          
+## [147] &quot;starter_LB2_grades_defense_12w&quot;          
+## [148] &quot;starter_LB3_grades_defense_12w&quot;          
+## [149] &quot;starter_LB4_grades_defense_12w&quot;          
+## [150] &quot;starter_CB1_grades_defense_12w&quot;          
+## [151] &quot;starter_CB2_grades_defense_12w&quot;          
+## [152] &quot;starter_CB3_grades_defense_12w&quot;          
+## [153] &quot;starter_S1_grades_defense_12w&quot;           
+## [154] &quot;starter_S2_grades_defense_12w&quot;           
+## [155] &quot;starter_S3_grades_defense_12w&quot;           
+## [156] &quot;OL_present&quot;                              
+## [157] &quot;OL_grades_pass_block_12w&quot;                
+## [158] &quot;OL_grades_run_block_12w&quot;                 
+## [159] &quot;starter_OL_grades_pass_block_12w&quot;        
+## [160] &quot;starter_OL_grades_run_block_12w&quot;         
+## [161] &quot;yardline_1_10&quot;                           
+## [162] &quot;yardline_11_20&quot;                          
+## [163] &quot;yardline_21_30&quot;                          
+## [164] &quot;yardline_31_40&quot;                          
+## [165] &quot;yardline_41_50&quot;                          
+## [166] &quot;yardline_51_60&quot;                          
+## [167] &quot;yardline_61_70&quot;                          
+## [168] &quot;yardline_71_80&quot;                          
+## [169] &quot;yardline_81_90&quot;                          
+## [170] &quot;yardline_91_100&quot;                         
+## [171] &quot;year2017_team_ARI&quot;                       
+## [172] &quot;year2017_team_BUF&quot;                       
+## [173] &quot;year2017_team_CHI&quot;                       
+## [174] &quot;year2017_team_CLE&quot;                       
+## [175] &quot;year2017_team_DAL&quot;                       
+## [176] &quot;year2017_team_DET&quot;                       
+## [177] &quot;year2017_team_GB&quot;                        
+## [178] &quot;year2017_team_HOU&quot;                       
+## [179] &quot;year2017_team_MIA&quot;                       
+## [180] &quot;year2017_team_MIN&quot;                       
+## [181] &quot;year2017_team_NE&quot;                        
+## [182] &quot;year2017_team_SF&quot;                        
+## [183] &quot;year2017_team_BAL&quot;                       
+## [184] &quot;year2017_team_DEN&quot;                       
+## [185] &quot;year2017_team_LA&quot;                        
+## [186] &quot;year2017_team_NYG&quot;                       
+## [187] &quot;year2017_team_OAK&quot;                       
+## [188] &quot;year2017_team_SEA&quot;                       
+## [189] &quot;year2017_team_CAR&quot;                       
+## [190] &quot;year2017_team_CIN&quot;                       
+## [191] &quot;year2017_team_IND&quot;                       
+## [192] &quot;year2017_team_NO&quot;                        
+## [193] &quot;year2017_team_PHI&quot;                       
+## [194] &quot;year2017_team_PIT&quot;                       
+## [195] &quot;year2017_team_TEN&quot;                       
+## [196] &quot;year2017_team_WAS&quot;                       
+## [197] &quot;year2017_team_KC&quot;                        
+## [198] &quot;year2017_team_LAC&quot;                       
+## [199] &quot;year2017_team_NYJ&quot;                       
+## [200] &quot;year2017_team_TB&quot;                        
+## [201] &quot;year2017_team_ATL&quot;                       
+## [202] &quot;year2017_team_JAX&quot;                       
+## [203] &quot;year2018_team_ARI&quot;                       
+## [204] &quot;year2018_team_BAL&quot;                       
+## [205] &quot;year2018_team_CAR&quot;                       
+## [206] &quot;year2018_team_CLE&quot;                       
+## [207] &quot;year2018_team_DET&quot;                       
+## [208] &quot;year2018_team_HOU&quot;                       
+## [209] &quot;year2018_team_IND&quot;                       
+## [210] &quot;year2018_team_KC&quot;                        
+## [211] &quot;year2018_team_NYG&quot;                       
+## [212] &quot;year2018_team_OAK&quot;                       
+## [213] &quot;year2018_team_PHI&quot;                       
+## [214] &quot;year2018_team_SEA&quot;                       
+## [215] &quot;year2018_team_BUF&quot;                       
+## [216] &quot;year2018_team_CHI&quot;                       
+## [217] &quot;year2018_team_CIN&quot;                       
+## [218] &quot;year2018_team_DAL&quot;                       
+## [219] &quot;year2018_team_DEN&quot;                       
+## [220] &quot;year2018_team_GB&quot;                        
+## [221] &quot;year2018_team_LAC&quot;                       
+## [222] &quot;year2018_team_NE&quot;                        
+## [223] &quot;year2018_team_NO&quot;                        
+## [224] &quot;year2018_team_PIT&quot;                       
+## [225] &quot;year2018_team_SF&quot;                        
+## [226] &quot;year2018_team_MIA&quot;                       
+## [227] &quot;year2018_team_MIN&quot;                       
+## [228] &quot;year2018_team_NYJ&quot;                       
+## [229] &quot;year2018_team_TB&quot;                        
+## [230] &quot;year2018_team_ATL&quot;                       
+## [231] &quot;year2018_team_JAX&quot;                       
+## [232] &quot;year2018_team_LA&quot;                        
+## [233] &quot;year2018_team_TEN&quot;                       
+## [234] &quot;year2018_team_WAS&quot;                       
+## [235] &quot;year2019_team_ARI&quot;                       
+## [236] &quot;year2019_team_BUF&quot;                       
+## [237] &quot;year2019_team_CHI&quot;                       
+## [238] &quot;year2019_team_CLE&quot;                       
+## [239] &quot;year2019_team_DAL&quot;                       
+## [240] &quot;year2019_team_IND&quot;                       
+## [241] &quot;year2019_team_JAX&quot;                       
+## [242] &quot;year2019_team_KC&quot;                        
+## [243] &quot;year2019_team_LAC&quot;                       
+## [244] &quot;year2019_team_MIN&quot;                       
+## [245] &quot;year2019_team_NE&quot;                        
+## [246] &quot;year2019_team_NO&quot;                        
+## [247] &quot;year2019_team_PHI&quot;                       
+## [248] &quot;year2019_team_SEA&quot;                       
+## [249] &quot;year2019_team_SF&quot;                        
+## [250] &quot;year2019_team_TB&quot;                        
+## [251] &quot;year2019_team_BAL&quot;                       
+## [252] &quot;year2019_team_CAR&quot;                       
+## [253] &quot;year2019_team_DEN&quot;                       
+## [254] &quot;year2019_team_DET&quot;                       
+## [255] &quot;year2019_team_HOU&quot;                       
+## [256] &quot;year2019_team_LA&quot;                        
+## [257] &quot;year2019_team_MIA&quot;                       
+## [258] &quot;year2019_team_NYG&quot;                       
+## [259] &quot;year2019_team_NYJ&quot;                       
+## [260] &quot;year2019_team_OAK&quot;                       
+## [261] &quot;year2019_team_PIT&quot;                       
+## [262] &quot;year2019_team_TEN&quot;                       
+## [263] &quot;year2019_team_CIN&quot;                       
+## [264] &quot;year2019_team_WAS&quot;                       
+## [265] &quot;year2019_team_ATL&quot;                       
+## [266] &quot;year2019_team_GB&quot;                        
+## [267] &quot;year2020_team_ATL&quot;                       
+## [268] &quot;year2020_team_BAL&quot;                       
+## [269] &quot;year2020_team_BUF&quot;                       
+## [270] &quot;year2020_team_CAR&quot;                       
+## [271] &quot;year2020_team_CIN&quot;                       
+## [272] &quot;year2020_team_DEN&quot;                       
+## [273] &quot;year2020_team_DET&quot;                       
+## [274] &quot;year2020_team_JAX&quot;                       
+## [275] &quot;year2020_team_KC&quot;                        
+## [276] &quot;year2020_team_LA&quot;                        
+## [277] &quot;year2020_team_MIN&quot;                       
+## [278] &quot;year2020_team_NE&quot;                        
+## [279] &quot;year2020_team_NO&quot;                        
+## [280] &quot;year2020_team_NYG&quot;                       
+## [281] &quot;year2020_team_SF&quot;                        
+## [282] &quot;year2020_team_WAS&quot;                       
+## [283] &quot;year2020_team_CHI&quot;                       
+## [284] &quot;year2020_team_DAL&quot;                       
+## [285] &quot;year2020_team_GB&quot;                        
+## [286] &quot;year2020_team_HOU&quot;                       
+## [287] &quot;year2020_team_MIA&quot;                       
+## [288] &quot;year2020_team_NYJ&quot;                       
+## [289] &quot;year2020_team_TB&quot;                        
+## [290] &quot;year2020_team_TEN&quot;                       
+## [291] &quot;year2020_team_ARI&quot;                       
+## [292] &quot;year2020_team_CLE&quot;                       
+## [293] &quot;year2020_team_IND&quot;                       
+## [294] &quot;year2020_team_LAC&quot;                       
+## [295] &quot;year2020_team_PHI&quot;                       
+## [296] &quot;year2020_team_SEA&quot;                       
+## [297] &quot;year2020_team_LV&quot;                        
+## [298] &quot;year2020_team_PIT&quot;                       
+## [299] &quot;year2021_team_ATL&quot;                       
+## [300] &quot;year2021_team_BUF&quot;                       
+## [301] &quot;year2021_team_CIN&quot;                       
+## [302] &quot;year2021_team_DAL&quot;                       
+## [303] &quot;year2021_team_DEN&quot;                       
+## [304] &quot;year2021_team_DET&quot;                       
+## [305] &quot;year2021_team_KC&quot;                        
+## [306] &quot;year2021_team_LA&quot;                        
+## [307] &quot;year2021_team_LV&quot;                        
+## [308] &quot;year2021_team_MIN&quot;                       
+## [309] &quot;year2021_team_NE&quot;                        
+## [310] &quot;year2021_team_NO&quot;                        
+## [311] &quot;year2021_team_NYG&quot;                       
+## [312] &quot;year2021_team_SF&quot;                        
+## [313] &quot;year2021_team_TEN&quot;                       
+## [314] &quot;year2021_team_ARI&quot;                       
+## [315] &quot;year2021_team_BAL&quot;                       
+## [316] &quot;year2021_team_CAR&quot;                       
+## [317] &quot;year2021_team_CHI&quot;                       
+## [318] &quot;year2021_team_GB&quot;                        
+## [319] &quot;year2021_team_IND&quot;                       
+## [320] &quot;year2021_team_LAC&quot;                       
+## [321] &quot;year2021_team_MIA&quot;                       
+## [322] &quot;year2021_team_NYJ&quot;                       
+## [323] &quot;year2021_team_PHI&quot;                       
+## [324] &quot;year2021_team_SEA&quot;                       
+## [325] &quot;year2021_team_TB&quot;                        
+## [326] &quot;year2021_team_WAS&quot;                       
+## [327] &quot;year2021_team_CLE&quot;                       
+## [328] &quot;year2021_team_HOU&quot;                       
+## [329] &quot;year2021_team_JAX&quot;                       
+## [330] &quot;year2021_team_PIT&quot;                       
+## [331] &quot;year2022_team_ARI&quot;                       
+## [332] &quot;year2022_team_ATL&quot;                       
+## [333] &quot;year2022_team_CAR&quot;                       
+## [334] &quot;year2022_team_CHI&quot;                       
+## [335] &quot;year2022_team_CIN&quot;                       
+## [336] &quot;year2022_team_HOU&quot;                       
+## [337] &quot;year2022_team_IND&quot;                       
+## [338] &quot;year2022_team_LAC&quot;                       
+## [339] &quot;year2022_team_MIA&quot;                       
+## [340] &quot;year2022_team_SEA&quot;                       
+## [341] &quot;year2022_team_TB&quot;                        
+## [342] &quot;year2022_team_TEN&quot;                       
+## [343] &quot;year2022_team_WAS&quot;                       
+## [344] &quot;year2022_team_BAL&quot;                       
+## [345] &quot;year2022_team_BUF&quot;                       
+## [346] &quot;year2022_team_DAL&quot;                       
+## [347] &quot;year2022_team_DET&quot;                       
+## [348] &quot;year2022_team_GB&quot;                        
+## [349] &quot;year2022_team_JAX&quot;                       
+## [350] &quot;year2022_team_KC&quot;                        
+## [351] &quot;year2022_team_LA&quot;                        
+## [352] &quot;year2022_team_LV&quot;                        
+## [353] &quot;year2022_team_NO&quot;                        
+## [354] &quot;year2022_team_PHI&quot;                       
+## [355] &quot;year2022_team_PIT&quot;                       
+## [356] &quot;year2022_team_CLE&quot;                       
+## [357] &quot;year2022_team_DEN&quot;                       
+## [358] &quot;year2022_team_MIN&quot;                       
+## [359] &quot;year2022_team_NE&quot;                        
+## [360] &quot;year2022_team_NYJ&quot;                       
+## [361] &quot;year2022_team_NYG&quot;                       
+## [362] &quot;year2022_team_SF&quot;                        
+## [363] &quot;year2023_team_BAL&quot;                       
+## [364] &quot;year2023_team_CHI&quot;                       
+## [365] &quot;year2023_team_CLE&quot;                       
+## [366] &quot;year2023_team_GB&quot;                        
+## [367] &quot;year2023_team_IND&quot;                       
+## [368] &quot;year2023_team_KC&quot;                        
+## [369] &quot;year2023_team_LAC&quot;                       
+## [370] &quot;year2023_team_LV&quot;                        
+## [371] &quot;year2023_team_MIA&quot;                       
+## [372] &quot;year2023_team_MIN&quot;                       
+## [373] &quot;year2023_team_NO&quot;                        
+## [374] &quot;year2023_team_NYG&quot;                       
+## [375] &quot;year2023_team_SEA&quot;                       
+## [376] &quot;year2023_team_SF&quot;                        
+## [377] &quot;year2023_team_WAS&quot;                       
+## [378] &quot;year2023_team_ATL&quot;                       
+## [379] &quot;year2023_team_BUF&quot;                       
+## [380] &quot;year2023_team_CAR&quot;                       
+## [381] &quot;year2023_team_DAL&quot;                       
+## [382] &quot;year2023_team_DEN&quot;                       
+## [383] &quot;year2023_team_HOU&quot;                       
+## [384] &quot;year2023_team_LA&quot;                        
+## [385] &quot;year2023_team_NE&quot;                        
+## [386] &quot;year2023_team_PHI&quot;                       
+## [387] &quot;year2023_team_PIT&quot;                       
+## [388] &quot;year2023_team_TEN&quot;                       
+## [389] &quot;year2023_team_ARI&quot;                       
+## [390] &quot;year2023_team_CIN&quot;                       
+## [391] &quot;year2023_team_DET&quot;                       
+## [392] &quot;year2023_team_TB&quot;                        
+## [393] &quot;year2023_team_JAX&quot;                       
+## [394] &quot;year2023_team_NYJ&quot;                       
+## [395] &quot;is_first_half&quot;                           
+## [396] &quot;time_in_half&quot;                            
+## [397] &quot;attendance_pct&quot;                          
+## [398] &quot;home_attendance&quot;</code></pre>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = false;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

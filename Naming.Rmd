@@ -1,0 +1,194 @@
+---
+title: "Naming"
+output: html_document
+date: "2025-03-08"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+# Column Name Transformer for Football Analytics
+library(data.table)
+
+transform_column_names <- function(df) {
+  # Position mapping
+  offense_positions <- c(
+    # QB slots (1-3)
+    "1" = "QB", "2" = "QB2", "3" = "QB3",
+    # Backs slots (4-7)
+    "4" = "RB", "5" = "RB2", "6" = "FB", "7" = "FB2",
+    # Wide receivers slots (8-13)
+    "8" = "WR1", "9" = "WR2", "10" = "WR3", "11" = "WR4", "12" = "WR5", "13" = "WR6",
+    # Tight ends slots (14-16)
+    "14" = "TE1", "15" = "TE2", "16" = "TE3",
+    # Offensive line slots (17-24)
+    "17" = "OL", "18" = "OL", "19" = "OL", "20" = "OL", "21" = "OL", 
+    "22" = "OL", "23" = "OL", "24" = "OL"
+  )
+  
+  defense_positions <- c(
+    # Defensive line slots (1-8)
+    "1" = "DL1", "2" = "DL2", "3" = "DL3", "4" = "DL4", 
+    "5" = "DL5", "6" = "DL6", "7" = "DL7", "8" = "DL8",
+    # Linebackers slots (9-14)
+    "9" = "LB1", "10" = "LB2", "11" = "LB3", "12" = "LB4", 
+    "13" = "LB5", "14" = "LB6",
+    # Cornerbacks slots (15-19)
+    "15" = "CB1", "16" = "CB2", "17" = "CB3", "18" = "CB4", "19" = "CB5",
+    # Safeties slots (20-23)
+    "20" = "S1", "21" = "S2", "22" = "S3", "23" = "S4"
+  )
+  
+  # Get column names
+  cols <- colnames(df)
+  new_cols <- cols
+  
+  for (i in seq_along(cols)) {
+    col <- cols[i]
+    
+    # Handle offense player patterns
+    if (grepl("offense_player_", col)) {
+      player_num <- gsub(".*offense_player_([0-9\\-]+).*", "\\1", col)
+      
+      # Determine position
+      if (grepl("-", player_num)) {
+        position <- "OL"
+      } else if (player_num %in% names(offense_positions)) {
+        position <- offense_positions[player_num]
+      } else {
+        position <- paste0("OFF", player_num)
+      }
+      
+      # Replace pattern and remove first two words after
+      if (grepl("^starter_", col)) {
+        parts <- strsplit(gsub("starter_offense_player_[0-9\\-]+_", "", col), "_")[[1]]
+        if (length(parts) >= 2) {
+          parts <- parts[-(1:2)]
+        }
+        new_cols[i] <- paste("starter", position, paste(parts, collapse = "_"), sep = "_")
+      } else {
+        parts <- strsplit(gsub("offense_player_[0-9\\-]+_", "", col), "_")[[1]]
+        if (length(parts) >= 2) {
+          parts <- parts[-(1:2)]
+        }
+        new_cols[i] <- paste(position, paste(parts, collapse = "_"), sep = "_")
+      }
+    }
+    
+    # Handle defense player patterns
+    else if (grepl("defense_player_", col)) {
+      player_num <- gsub(".*defense_player_([0-9]+).*", "\\1", col)
+      
+      # Determine position
+      if (player_num %in% names(defense_positions)) {
+        position <- defense_positions[player_num]
+      } else {
+        position <- paste0("DEF", player_num)
+      }
+      
+      # Replace pattern and remove first two words after
+      if (grepl("^starter_", col)) {
+        parts <- strsplit(gsub("starter_defense_player_[0-9]+_", "", col), "_")[[1]]
+        if (length(parts) >= 2) {
+          parts <- parts[-(1:2)]
+        }
+        new_cols[i] <- paste("starter", position, paste(parts, collapse = "_"), sep = "_")
+      } else {
+        parts <- strsplit(gsub("defense_player_[0-9]+_", "", col), "_")[[1]]
+        if (length(parts) >= 2) {
+          parts <- parts[-(1:2)]
+        }
+        new_cols[i] <- paste(position, paste(parts, collapse = "_"), sep = "_")
+      }
+    }
+  }
+  
+  # Set the new column names
+  colnames(df) <- new_cols
+  return(df)
+}
+
+# Define the datasets to analyze
+datasets <- list(
+  list(outcome = "processed_predict_ccafd_off_grades.csv.csv.gz", select = "processed_predict_ccfd_off_grades.csv.csv.gz"),
+  list(outcome = "processed_predict_ccafd_off_yards.csv.csv.gz", select = "processed_predict_ccfd_off_yards.csv.csv.gz"),
+  list(outcome = "processed_predict_ccafd_off_tds.csv.csv.gz", select = "processed_predict_ccfd_off_tds.csv.csv.gz"),
+  list(outcome = "processed_predict_ccafd_off_specifics.csv.csv.gz", select = "processed_predict_ccfd_off_specifics.csv.csv.gz"),
+  list(outcome = "processed_predict_ccafd_off_first_downs.csv.csv.gz", select = "processed_predict_ccfd_off_first_downs.csv.csv.gz"),
+  list(outcome = "processed_predict_ccafd_def_stops.csv.csv.gz", select = "processed_predict_ccfd_def_stops.csv.csv.gz"),
+  list(outcome = "processed_predict_ccafd_def_grades.csv.csv.gz", select = "processed_predict_ccfd_def_grades.csv.csv.gz"),
+  list(outcome = "processed_predict_ccafd_def_specifics.csv.csv.gz", select = "processed_predict_ccfd_def_specifics.csv.csv.gz"),
+  list(outcome = "processed_predict_ccafd_def_tackles.csv.csv.gz", select = "processed_predict_ccfd_def_tackles.csv.csv.gz"),
+  list(outcome = "processed_predict_ccafd_def_pressure.csv.csv.gz", select = "processed_predict_ccfd_def_pressure.csv.csv.gz")
+)
+
+# Process all datasets
+for (i in 1:length(datasets)) {
+  # Get file paths
+  outcome_file <- datasets[[i]]$outcome
+  select_file <- datasets[[i]]$select
+  
+  # Process outcome file
+  cat(sprintf("\nProcessing outcome file %d/%d: %s\n", i, length(datasets), outcome_file))
+  outcome_data <- fread(outcome_file)
+  outcome_data <- transform_column_names(outcome_data)
+  
+  # Save transformed data
+  cat(sprintf("Saving to: %s\n", outcome_file))
+  fwrite(outcome_data, outcome_file)
+  
+  # Process select file
+  cat(sprintf("Processing select file %d/%d: %s\n", i, length(datasets), select_file))
+  select_data <- fread(select_file)
+  select_data <- transform_column_names(select_data)
+  
+  # Save transformed data
+  cat(sprintf("Saving to: %s\n", select_file))
+  fwrite(select_data, select_file)
+  
+  cat(sprintf("Completed dataset %d/%d\n", i, length(datasets)))
+}
+
+cat("\nAll datasets processed successfully!\n")
+```
+
+```{r}
+# Extract each dataset into its own variable
+off_grades_outcome <- fread(datasets[[1]]$outcome)
+off_grades_select <- fread(datasets[[1]]$select)
+
+off_yards_outcome <- fread(datasets[[2]]$outcome)
+off_yards_select <- fread(datasets[[2]]$select)
+
+off_tds_outcome <- fread(datasets[[3]]$outcome)
+off_tds_select <- fread(datasets[[3]]$select)
+
+off_specifics_outcome <- fread(datasets[[4]]$outcome)
+off_specifics_select <- fread(datasets[[4]]$select)
+
+off_first_downs_outcome <- fread(datasets[[5]]$outcome)
+off_first_downs_select <- fread(datasets[[5]]$select)
+
+def_stops_outcome <- fread(datasets[[6]]$outcome)
+def_stops_select <- fread(datasets[[6]]$select)
+
+def_grades_outcome <- fread(datasets[[7]]$outcome)
+def_grades_select <- fread(datasets[[7]]$select)
+
+def_specifics_outcome <- fread(datasets[[8]]$outcome)
+def_specifics_select <- fread(datasets[[8]]$select)
+
+def_tackles_outcome <- fread(datasets[[9]]$outcome)
+def_tackles_select <- fread(datasets[[9]]$select)
+
+def_pressure_outcome <- fread(datasets[[10]]$outcome)
+def_pressure_select <- fread(datasets[[10]]$select)
+```
+
+```{r}
+colnames(off_grades_outcome)
+```
+
+
