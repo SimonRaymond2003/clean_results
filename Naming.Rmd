@@ -191,4 +191,138 @@ def_pressure_select <- fread(datasets[[10]]$select)
 colnames(off_grades_outcome)
 ```
 
+now manually set variables to the names we want
+
+```{r}
+rename_nfl_variables <- function(data) {
+  # Note: Fixed effect variables and player variables are not renamed
+  
+  # Helper function to check if column exists before renaming
+  rename_if_exists <- function(df, old_names, new_names) {
+    for (i in seq_along(old_names)) {
+      old_name <- old_names[i]
+      new_name <- new_names[i]
+      if (old_name %in% names(df)) {
+        names(df)[names(df) == old_name] <- new_name
+      }
+    }
+    return(df)
+  }
+  
+  # Create a named vector for variable mapping
+  var_mapping <- c(
+    # Game situation variables
+    "ydstogo" = "yards_to_go",
+    "posteam_timeouts_remaining" = "off_timeouts_remaining",
+    "defteam_timeouts_remaining" = "def_timeouts_remaining",
+    "rush_attempt" = "is_rush_attempt",
+    "week" = "week",
+    "is_first_half" = "is_first_half",
+    "time_in_half" = "time_remaining_half",
+    "down1_pct" = "off_run_down1_pct",
+    "down2_pct" = "off_run_down2_pct",
+    "down3_pct" = "off_run_down3_pct",
+    "down4_pct" = "off_run_down4_pct",
+    
+    # Game conditions
+    "temp" = "temp",
+    "wind" = "wind",
+    "roof_outdoors" = "is_outdoors",
+    "posteam_type_home" = "is_off_type_home",
+    "home_attendance" = "home_attendance",
+    
+    # Game state
+    "is_winning" = "off_is_winning",
+    "is_losing" = "off_is_losing",
+    "winning_score_diff" = "winning_score_diff",
+    "losing_score_diff" = "losing_score_diff",
+    
+    # Game odds variables
+    "vegas_wp" = "vegas_win_prob",
+    "spread_line" = "spread_line",
+    "total_line" = "total_line",
+    "prep_days" = "preparation_days",
+    
+    # Coach/team performance variables
+    "overall_win_pct" = "off_coach_overall_win_pct",
+    "team_win_pct" = "off_coach_team_win_pct", 
+    "prev_win_pct" = "off_team_prev_win_pct",
+    
+    # Offensive formation rates/success
+    "prev_shotgun_rate" = "off_prev_shotgun_rate",
+    "prev_singleback_rate" = "off_prev_singleback_rate",
+    "prev_empty_rate" = "off_prev_empty_rate",
+    "prev_iform_rate" = "off_prev_iform_rate",
+    "prev_shotgun_success" = "off_prev_shotgun_success",
+    "prev_singleback_success" = "off_prev_singleback_success",
+    "prev_empty_success" = "off_prev_empty_success",
+    "prev_iform_success" = "off_prev_iform_success",
+    
+    # Current season offensive rates
+    "shotgun_rate" = "off_shotgun_rate",
+    "singleback_rate" = "off_singleback_rate",
+    "empty_rate" = "off_empty_rate",
+    "iform_rate" = "off_iform_rate",
+    "shotgun_success" = "off_shotgun_success",
+    "singleback_success" = "off_singleback_success",
+    "empty_success" = "off_empty_success",
+    "iform_success" = "off_iform_success",
+    
+    # Stop rates
+    "prev_stop_rate_run" = "def_prev_stop_rate_run",
+    "prev_stop_rate_pass" = "def_prev_stop_rate_pass",
+    "def_stop_rate_run" = "def_stop_rate_run",
+    "def_stop_rate_pass" = "def_stop_rate_pass",
+    
+    # Defensive metrics
+    "avg_pass_rushers" = "def_avg_pass_rushers",
+    "avg_box_defenders" = "def_avg_box_defenders",
+    
+    # Coverage rates
+    "cover0_rate" = "def_cover0_rate",
+    "cover1_rate" = "def_cover1_rate",
+    "cover2_rate" = "def_cover2_rate",
+    "cover3_rate" = "def_cover3_rate",
+    "cover4_rate" = "def_cover4_rate",
+    "cover6_rate" = "def_cover6_rate",
+    "two_man_rate" = "def_two_man_rate",
+    "prevent_rate" = "def_prevent_rate",
+    
+    # Field position - keeping original names
+    "yardline_1_10" = "yardline_1_10",
+    "yardline_11_20" = "yardline_11_20",
+    "yardline_21_30" = "yardline_21_30",
+    "yardline_41_50" = "yardline_41_50",
+    "yardline_51_60" = "yardline_51_60",
+    "yardline_61_70" = "yardline_61_70",
+    "yardline_71_80" = "yardline_71_80",
+    "yardline_81_90" = "yardline_81_90",
+    "yardline_91_100" = "yardline_91_100",
+    
+    # Special metric - keeping original name
+    "GIMR" = "GIMR"
+  )
+  
+  # Apply renaming using the helper function for conditional renaming
+  result <- rename_if_exists(data, names(var_mapping), var_mapping)
+  
+  # Add special case variable patterns
+  # Only rename if the column exists
+  if ("p_player_26_punting_grades_grades_punter_12w" %in% names(result)) {
+    names(result)[names(result) == "p_player_26_punting_grades_grades_punter_12w"] <- "sp_punter_grades_12w"
+  }
+  
+  if ("k_player_25_field_goals_grades_grades_fgep_kicker_12w" %in% names(result)) {
+    names(result)[names(result) == "k_player_25_field_goals_grades_grades_fgep_kicker_12w"] <- "sp_kicker_grades_12w"
+  }
+  
+  # Return the renamed dataframe
+  return(result)
+}
+
+# Example usage (commented out):
+# data <- read.csv("your_nfl_data.csv")
+# renamed_data <- rename_nfl_variables(data)
+# View(renamed_data)
+```
 

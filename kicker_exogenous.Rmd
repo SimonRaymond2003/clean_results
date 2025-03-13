@@ -11,6 +11,8 @@ library(lmtest)
 library(sandwich)
 library(car)
 library(caret)
+library(ggplot2)
+library(reshape2)
 ```
 
 
@@ -343,6 +345,50 @@ print_t_value_matrix <- function(t_matrix, var_name) {
 # Print the results
 print_t_value_matrix(punter_matrix, tracked_vars[1])
 print_t_value_matrix(kicker_matrix, tracked_vars[2])
+
+# Function to get significance levels from t-values
+get_significance <- function(t_value) {
+  abs_t <- abs(t_value)
+  if (abs_t > 2.576) return(4)  # *** (0.01)
+  if (abs_t > 1.96) return(3)   # ** (0.05)
+  if (abs_t > 1.645) return(2)  # * (0.1)
+  if (abs_t > 1.44) return(1)   # . (0.15)
+  return(0)                      # not significant
+}
+
+# Create heatmaps for both matrices
+create_significance_heatmap <- function(t_matrix, title) {
+  # Convert matrix to long format
+  melted_matrix <- melt(t_matrix)
+  colnames(melted_matrix) <- c("Dataset", "Yardline", "t_value")
+  
+  # Add significance levels
+  melted_matrix$significance <- sapply(melted_matrix$t_value, get_significance)
+  
+  # Create the heatmap
+  ggplot(melted_matrix, aes(x = Yardline, y = Dataset, fill = significance)) +
+    geom_tile(color = "white") +
+    scale_fill_gradientn(
+      colors = c("#FFFFFF", "#FFFFB2", "#FED976", "#FEB24C", "#FD8D3C"),
+      breaks = 0:4,
+      labels = c("ns", ".", "*", "**", "***"),
+      name = "Significance"
+    ) +
+    theme_minimal() +
+    theme(
+      axis.text.x = element_text(angle = 45, hjust = 1),
+      axis.title = element_blank(),
+      panel.grid = element_blank()
+    ) +
+    ggtitle(title)
+}
+
+# Create and display heatmaps
+punter_heatmap <- create_significance_heatmap(punter_matrix, "Punter Significance Levels by Field Position")
+print(punter_heatmap)
+
+kicker_heatmap <- create_significance_heatmap(kicker_matrix, "Kicker Significance Levels by Field Position")
+print(kicker_heatmap)
 
 cat("\nAnalysis complete!\n")
 ```
