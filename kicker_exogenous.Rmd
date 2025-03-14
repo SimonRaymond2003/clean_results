@@ -121,19 +121,17 @@ ctd1_datasets <- c(
   "processed_predict_cctd1_starters_off_grades.csv_predict_cctd1_players_off_grades.csv.csv.gz",
   "processed_predict_cctd1_starters_off_yards.csv_predict_cctd1_players_off_yards.csv.csv.gz",
   "processed_predict_cctd1_starters_off_tds.csv_predict_cctd1_players_off_tds.csv.csv.gz",
-  "processed_predict_cctd1_starters_off_specifics.csv_predict_cctd1_players_off_specifics.csv.csv.gz",
   "processed_predict_cctd1_starters_off_first_downs.csv_predict_cctd1_players_off_first_downs.csv.csv.gz",
   "processed_predict_cctd1_starters_def_stops.csv_predict_cctd1_players_def_stops.csv.csv.gz",
   "processed_predict_cctd1_starters_def_grades.csv_predict_cctd1_players_def_grades.csv.csv.gz",
-  "processed_predict_cctd1_starters_def_specifics.csv_predict_cctd1_players_def_specifics.csv.csv.gz",
   "processed_predict_cctd1_starters_def_tackles.csv_predict_cctd1_players_def_tackles.csv.csv.gz",
   "processed_predict_cctd1_starters_def_pressure.csv_predict_cctd1_players_def_pressure.csv.csv.gz"
 )
 
 # For display names
 dataset_names <- c(
-  "off_grades", "off_yards", "off_tds", "off_specifics", "off_first_downs",
-  "def_stops", "def_grades", "def_specifics", "def_tackles", "def_pressure"
+  "off_grades", "off_yards", "off_tds", "off_first_downs",
+  "def_stops", "def_grades", "def_tackles", "def_pressure"
 )
 
 # Variables to track across models - using only 12w versions

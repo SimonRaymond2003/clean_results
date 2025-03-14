@@ -294,6 +294,17 @@ analyze_attempt_models <- function(select_file) {
   cat("Probit Starter Players AIC:", round(probit_starter$aic, 2), "\n")
   cat("Probit Starter Players McFadden's Pseudo R²:", round(1 - probit_starter$deviance/probit_starter$null.deviance, 4), "\n")
   
+  # Assign models to environment with descriptive names
+  model_base_name <- gsub(".csv.gz$", "", basename(select_file))
+  model_base_name <- gsub("processed_predict_ccfd_", "", model_base_name)
+  model_base_name <- gsub("_v2", "", model_base_name)
+  
+  # Create variable names and assign models
+  ols_varname <- paste0("off_model_ols_", model_base_name)
+  probit_varname <- paste0("off_model_probit_", model_base_name)
+  assign(ols_varname, ols_starter, envir = .GlobalEnv)
+  assign(probit_varname, probit_starter, envir = .GlobalEnv)
+  
   # Return results needed for the summary table
   return(list(
     dataset = select_file,
@@ -311,11 +322,9 @@ datasets <- c(
   "processed_predict_ccfd_off_grades.csv_v2.csv.gz",
   "processed_predict_ccfd_off_yards.csv_v2.csv.gz",
   "processed_predict_ccfd_off_tds.csv_v2.csv.gz",
-  "processed_predict_ccfd_off_specifics.csv_v2.csv.gz",
   "processed_predict_ccfd_off_first_downs.csv_v2.csv.gz",
   "processed_predict_ccfd_def_stops.csv_v2.csv.gz",
   "processed_predict_ccfd_def_grades.csv_v2.csv.gz", 
-  "processed_predict_ccfd_def_specifics.csv_v2.csv.gz",
   "processed_predict_ccfd_def_tackles.csv_v2.csv.gz",
   "processed_predict_ccfd_def_pressure.csv_v2.csv.gz"
 )
@@ -493,3 +502,101 @@ for (dataset_name in names(kicker_punter_probit_results)) {
 
 cat("\nSignificance codes: 0 '***' 0.01 '**' 0.05 '*' 0.1 '.' 0.15\n")
 ```
+
+```{r}
+# Code to extract QB variables and their t-values across offensive models
+# Define the offensive models to analyze with correct names including .csv
+offense_models <- c("off_model_ols_off_grades.csv", "off_model_ols_off_yards.csv", 
+                   "off_model_ols_off_tds.csv", "off_model_ols_off_first_downs.csv")
+
+# Create a data frame to store results
+qb_t_values <- data.frame(
+  Variable = character(),
+  Short = numeric(),
+  Medium = numeric(),
+  Deep = numeric(),
+  Model = character(),
+  stringsAsFactors = FALSE
+)
+
+# Loop through each model
+for (model_name in offense_models) {
+  # Debug: Print current model being processed
+  cat("Processing model:", model_name, "\n")
+  
+  # Get the model if it exists in global environment
+  if (exists(model_name)) {
+    model <- get(model_name)
+    
+    # Get robust t-values for coefficients
+    robust_stats <- coeftest(model, vcov = vcovHC(model, type = "HC0"))
+    
+    # Extract coefficient names and t-values
+    coef_names <- rownames(robust_stats)
+    t_values <- robust_stats[, "t value"]
+    
+    # Find QB variables with short, medium, or deep in name
+    qb_short_idx <- grep("starter_QB.*short", coef_names)
+    qb_medium_idx <- grep("starter_QB.*medium", coef_names)
+    qb_deep_idx <- grep("starter_QB.*deep", coef_names)
+    
+    # Get the actual variable names
+    qb_short_vars <- coef_names[qb_short_idx]
+    qb_medium_vars <- coef_names[qb_medium_idx]
+    qb_deep_vars <- coef_names[qb_deep_idx]
+    
+    # Get their t-values directly
+    qb_short_t <- if(length(qb_short_idx) > 0) t_values[qb_short_idx] else NA
+    qb_medium_t <- if(length(qb_medium_idx) > 0) t_values[qb_medium_idx] else NA
+    qb_deep_t <- if(length(qb_deep_idx) > 0) t_values[qb_deep_idx] else NA
+    
+    # Create clean variable names for display
+    if(length(qb_short_vars) > 0) {
+      var_name <- qb_short_vars[1]
+      # Extract the main type (grades_pass, yards, touchdowns, etc.)
+      var_type <- gsub("starter_QB_short_([^_]+).*", "\\1", var_name)
+      
+      # Add row to results
+      qb_t_values <- rbind(qb_t_values, data.frame(
+        Variable = paste0("QB_", var_type),
+        Short = if(length(qb_short_t) > 0) qb_short_t else NA,
+        Medium = if(length(qb_medium_t) > 0) qb_medium_t else NA,
+        Deep = if(length(qb_deep_t) > 0) qb_deep_t else NA,
+        Model = model_name,
+        stringsAsFactors = FALSE
+      ))
+    }
+  } else {
+    cat("Model", model_name, "not found in global environment\n")
+  }
+}
+
+# Display the table
+cat("\n\n", paste(rep("=", 100), collapse=""), "\n")
+cat("QB PASSING DEPTH T-VALUES ACROSS OFFENSIVE MODELS\n")
+cat(paste(rep("=", 100), collapse=""), "\n\n")
+
+# Print a more easily readable table
+cat("Table of QB Passing Depths T-Values:\n\n")
+
+# Create column headers with depth and model 
+cat(sprintf("%-30s %-15s %-10s %-10s %-10s\n", "Model", "Variable", "Short", "Medium", "Deep"))
+cat(paste(rep("-", 80), collapse=""), "\n")
+
+# Loop through each model
+for (model in unique(qb_t_values$Model)) {
+  # Get subset of data for this model
+  model_data <- qb_t_values[qb_t_values$Model == model, ]
+  
+  # Print each row
+  for (i in 1:nrow(model_data)) {
+    cat(sprintf("%-30s %-15s %-10.3f %-10.3f %-10.3f\n", 
+               model, 
+               model_data$Variable[i],
+               model_data$Short[i], 
+               model_data$Medium[i], 
+               model_data$Deep[i]))
+  }
+}
+```
+

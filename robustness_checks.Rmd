@@ -14,10 +14,6 @@ library(data.table)
 library(sandwich)
 library(lmtest)
 library(car)
-```
-
-
-```{r}
 # Column Name Transformer for Football Analytics
 transform_column_names <- function(df) {
   # Position mapping
@@ -117,16 +113,17 @@ transform_column_names <- function(df) {
   return(df)
 }
 
+# Initialize to store models for QB depth analysis
+no_correction_models <- list()
+
 # Define the datasets to analyze
 datasets <- list(
   list(outcome = "processed_predict_ccafd_off_grades.csv.csv.gz"),
   list(outcome = "processed_predict_ccafd_off_yards.csv.csv.gz"),
   list(outcome = "processed_predict_ccafd_off_tds.csv.csv.gz"),
-  list(outcome = "processed_predict_ccafd_off_specifics.csv.csv.gz"),
   list(outcome = "processed_predict_ccafd_off_first_downs.csv.csv.gz"),
   list(outcome = "processed_predict_ccafd_def_stops.csv.csv.gz"),
   list(outcome = "processed_predict_ccafd_def_grades.csv.csv.gz"),
-  list(outcome = "processed_predict_ccafd_def_specifics.csv.csv.gz"),
   list(outcome = "processed_predict_ccafd_def_tackles.csv.csv.gz"),
   list(outcome = "processed_predict_ccafd_def_pressure.csv.csv.gz")
 )
@@ -223,6 +220,22 @@ analyze_dataset <- function(outcome_file) {
     cat("ERROR in starter model:", e$message, "\n")
     return(NULL)
   })
+  
+  # Clean up dataset name for display
+  dataset_name <- gsub(".csv.csv.gz$", "", outcome_file)
+  dataset_name <- gsub("processed_predict_ccafd_", "", dataset_name)
+  
+  # Make dataset name more readable
+  dataset_name <- gsub("_", " ", dataset_name)
+  dataset_name <- gsub("off", "Offense", dataset_name)
+  dataset_name <- gsub("def", "Defense", dataset_name)
+  dataset_name <- tools::toTitleCase(dataset_name)
+  
+  # Store models for QB depth analysis
+  no_correction_models[[dataset_name]] <<- list(
+    player = ols_model_player_no_gimr,
+    starter = ols_model_starter_no_gimr
+  )
   
   # Function to format and analyze model results
   analyze_model <- function(model, model_name) {
@@ -358,9 +371,9 @@ for(result in results_summary) {
                 ifelse(is.na(result$r2_starter), "ERROR", result$r2_starter)))
   }
 }
-```
+# Initialize to store models for standard Heckman approach
+standard_heckman_models <- list()
 
-```{r}
 # Column Name Transformer for Football Analytics
 transform_column_names <- function(df) {
   # Position mapping
@@ -612,6 +625,17 @@ run_standard_heckman <- function(select_data, outcome_data) {
     return(imr_info)
   }
   
+  # Get dataset name
+  dataset_path <- deparse(substitute(outcome_data))
+  dataset_name <- gsub(".csv.csv.gz$", "", dataset_path)
+  dataset_name <- gsub("processed_predict_ccafd_", "", dataset_name)
+  
+  # Make dataset name more readable
+  dataset_name <- gsub("_", " ", dataset_name)
+  dataset_name <- gsub("off", "Offense", dataset_name)
+  dataset_name <- gsub("def", "Defense", dataset_name)
+  dataset_name <- tools::toTitleCase(dataset_name)
+  
   # Analyze models with IMR
   player_imr_info <- analyze_model(ols_model_player, "Player Model with IMR")
   starter_imr_info <- analyze_model(ols_model_starter, "Starter Model with IMR")
@@ -630,6 +654,29 @@ run_standard_heckman <- function(select_data, outcome_data) {
   cat("Starter Model IMR p-value:", starter_imr_info$pval, 
       ifelse(starter_imr_info$pval < 0.05, "- Significant selection bias detected", "- No significant selection bias"), "\n")
   
+  # Store models for QB depth analysis - use a better way to get the dataset name
+  outcome_file_name <- as.character(match.call()$outcome_data)
+  if (is.null(outcome_file_name) || length(outcome_file_name) == 0) {
+    # Try to get dataset name from the actual outcome_data
+    if (!is.null(attributes(outcome_data)$name)) {
+      dataset_name <- attributes(outcome_data)$name
+    } else {
+      # Use a default/generic name if unable to determine
+      dataset_name <- paste0("Dataset_", format(Sys.time(), "%Y%m%d%H%M%S"))
+    }
+  } else {
+    # Use the provided name
+    dataset_name <- gsub("outcome_data_", "", outcome_file_name[1])
+    dataset_name <- gsub("_", " ", dataset_name)
+    dataset_name <- tools::toTitleCase(dataset_name)
+  }
+  
+  # Store models for QB depth analysis
+  standard_heckman_models[[dataset_name]] <<- list(
+    player = ols_model_player,
+    starter = ols_model_starter
+  )
+  
   # Return results
   results <- list(
     probit_model = probit_model,
@@ -647,11 +694,9 @@ datasets <- list(
   list(outcome = "processed_predict_ccafd_off_grades.csv.csv.gz", select = "processed_predict_ccfd_off_grades.csv.csv.gz"),
   list(outcome = "processed_predict_ccafd_off_yards.csv.csv.gz", select = "processed_predict_ccfd_off_yards.csv.csv.gz"),
   list(outcome = "processed_predict_ccafd_off_tds.csv.csv.gz", select = "processed_predict_ccfd_off_tds.csv.csv.gz"),
-  list(outcome = "processed_predict_ccafd_off_specifics.csv.csv.gz", select = "processed_predict_ccfd_off_specifics.csv.csv.gz"),
   list(outcome = "processed_predict_ccafd_off_first_downs.csv.csv.gz", select = "processed_predict_ccfd_off_first_downs.csv.csv.gz"),
   list(outcome = "processed_predict_ccafd_def_stops.csv.csv.gz", select = "processed_predict_ccfd_def_stops.csv.csv.gz"),
   list(outcome = "processed_predict_ccafd_def_grades.csv.csv.gz", select = "processed_predict_ccfd_def_grades.csv.csv.gz"),
-  list(outcome = "processed_predict_ccafd_def_specifics.csv.csv.gz", select = "processed_predict_ccfd_def_specifics.csv.csv.gz"),
   list(outcome = "processed_predict_ccafd_def_tackles.csv.csv.gz", select = "processed_predict_ccfd_def_tackles.csv.csv.gz"),
   list(outcome = "processed_predict_ccafd_def_pressure.csv.csv.gz", select = "processed_predict_ccfd_def_pressure.csv.csv.gz")
 )
@@ -696,6 +741,9 @@ for (i in 1:length(datasets)) {
   # Apply the column name transformation to both datasets
   outcome_data <- transform_column_names(outcome_data)
   select_data <- transform_column_names(select_data)
+  
+  # Set the name attribute on outcome_data to help with model storing
+  attr(outcome_data, "name") <- dataset_name
   
   # Run the standard Heckman analysis
   results <- run_standard_heckman(
@@ -753,4 +801,229 @@ cat("\nSignificance codes: 0 '***' 0.01 '**' 0.05 '*' 0.1 '.' 0.15\n")
 cat("\nNote: IMR values are shown as coefficient (t-value). A significant IMR coefficient indicates\n")
 cat("the presence of selection bias. All models control for multiple relevant variables as shown\n")
 cat("in the detailed model outputs above.\n")
+# Function to extract QB depth values from models
+extract_qb_depth_values <- function(models_list, model_approach) {
+  qb_tvalues <- data.frame(
+    Dataset = character(),
+    ModelType = character(),
+    QB_Type = character(),
+    Short = numeric(),
+    Medium = numeric(),
+    Deep = numeric(),
+    ModelApproach = character(),
+    stringsAsFactors = FALSE
+  )
+  
+  # Find offensive models that were processed
+  offense_datasets <- grep("Offense", names(models_list), value = TRUE)
+  
+  for (dataset_name in offense_datasets) {
+    models <- models_list[[dataset_name]]
+    
+    if (is.null(models)) next  # Skip if no models for this dataset
+    
+    for (model_type in c("player", "starter")) {
+      model <- models[[model_type]]
+      
+      if (is.null(model)) next  # Skip if model is NULL
+      
+      # Get robust statistics
+      robust_stats <- tryCatch({
+        coeftest(model, vcov = vcovHC(model, type = "HC0"))
+      }, error = function(e) {
+        return(NULL)
+      })
+      
+      if (is.null(robust_stats)) next  # Skip if couldn't get robust stats
+      
+      coef_names <- rownames(robust_stats)
+      t_values <- robust_stats[, "t value"]
+      
+      # Extract QB variable types (grades, yards, touchdowns, etc.)
+      qb_pattern <- paste0(ifelse(model_type == "player", "", "starter_"), "QB_(short|medium|deep)")
+      qb_vars <- grep(qb_pattern, coef_names, value = TRUE)
+      
+      if (length(qb_vars) == 0) next  # Skip if no QB variables found
+      
+      qb_types <- unique(gsub("^.*QB_(short|medium|deep)_([^_]+).*$", "\\2", qb_vars))
+      
+      # For each QB variable type, extract t-values for short, medium, deep
+      for (qb_type in qb_types) {
+        short_pattern <- paste0(ifelse(model_type == "starter", "starter_", ""), "QB_short_", qb_type)
+        medium_pattern <- paste0(ifelse(model_type == "starter", "starter_", ""), "QB_medium_", qb_type)
+        deep_pattern <- paste0(ifelse(model_type == "starter", "starter_", ""), "QB_deep_", qb_type)
+        
+        # Find matching t-values
+        short_idx <- grep(short_pattern, coef_names)
+        medium_idx <- grep(medium_pattern, coef_names)
+        deep_idx <- grep(deep_pattern, coef_names)
+        
+        short_t <- if(length(short_idx) > 0) t_values[short_idx[1]] else NA
+        medium_t <- if(length(medium_idx) > 0) t_values[medium_idx[1]] else NA
+        deep_t <- if(length(deep_idx) > 0) t_values[deep_idx[1]] else NA
+        
+        # Only add to results if any of the pass depths were found
+        if (!all(is.na(c(short_t, medium_t, deep_t)))) {
+          qb_tvalues <- rbind(qb_tvalues, data.frame(
+            Dataset = dataset_name,
+            ModelType = ifelse(model_type == "player", "Player Model", "Starter Model"),
+            QB_Type = qb_type,
+            Short = short_t,
+            Medium = medium_t,
+            Deep = deep_t,
+            ModelApproach = model_approach,
+            stringsAsFactors = FALSE
+          ))
+        }
+      }
+    }
+  }
+  
+  return(qb_tvalues)
+}
+
+# Extract QB depth values from both model types
+qb_no_correction_tvalues <- extract_qb_depth_values(no_correction_models, "No Selection Correction")
+qb_standard_heckman_tvalues <- extract_qb_depth_values(standard_heckman_models, "Standard Heckman")
+
+# Combine results for comparison
+qb_all_tvalues <- rbind(qb_no_correction_tvalues, qb_standard_heckman_tvalues)
+
+# Display results for each approach
+for (approach in unique(qb_all_tvalues$ModelApproach)) {
+  cat("\n\n", paste(rep("=", 120), collapse=""), "\n")
+  cat("QB PASS DEPTH T-VALUES: ", approach, "\n")
+  cat(paste(rep("=", 120), collapse=""), "\n\n")
+  
+  subset_data <- qb_all_tvalues[qb_all_tvalues$ModelApproach == approach,]
+  
+  if (nrow(subset_data) > 0) {
+    # Format table headers
+    cat(sprintf("%-30s %-20s %-15s %-10s %-10s %-10s\n", 
+        "Dataset", "Model Type", "QB Variable", "Short", "Medium", "Deep"))
+    cat(paste(rep("-", 95), collapse=""), "\n")
+    
+    # Format and print each row with significance stars
+    for (i in 1:nrow(subset_data)) {
+      # Add significance stars based on t-values
+      short_stars <- ifelse(abs(subset_data$Short[i]) > 2.58, "***",
+                    ifelse(abs(subset_data$Short[i]) > 1.96, "**",
+                    ifelse(abs(subset_data$Short[i]) > 1.65, "*",
+                    ifelse(abs(subset_data$Short[i]) > 1.44, ".", ""))))
+      
+      medium_stars <- ifelse(abs(subset_data$Medium[i]) > 2.58, "***",
+                     ifelse(abs(subset_data$Medium[i]) > 1.96, "**",
+                     ifelse(abs(subset_data$Medium[i]) > 1.65, "*",
+                     ifelse(abs(subset_data$Medium[i]) > 1.44, ".", ""))))
+      
+      deep_stars <- ifelse(abs(subset_data$Deep[i]) > 2.58, "***",
+                   ifelse(abs(subset_data$Deep[i]) > 1.96, "**",
+                   ifelse(abs(subset_data$Deep[i]) > 1.65, "*",
+                   ifelse(abs(subset_data$Deep[i]) > 1.44, ".", ""))))
+      
+      # Format t-values with significance stars
+      short_fmt <- ifelse(is.na(subset_data$Short[i]), "NA", 
+                        sprintf("%.3f%s", subset_data$Short[i], short_stars))
+      medium_fmt <- ifelse(is.na(subset_data$Medium[i]), "NA", 
+                         sprintf("%.3f%s", subset_data$Medium[i], medium_stars))
+      deep_fmt <- ifelse(is.na(subset_data$Deep[i]), "NA", 
+                       sprintf("%.3f%s", subset_data$Deep[i], deep_stars))
+      
+      # Print formatted row
+      cat(sprintf("%-30s %-20s %-15s %-10s %-10s %-10s\n",
+                subset_data$Dataset[i],
+                subset_data$ModelType[i],
+                subset_data$QB_Type[i],
+                short_fmt, medium_fmt, deep_fmt))
+    }
+    
+    cat("\nSignificance codes: 0 '***' 0.01 '**' 0.05 '*' 0.1 '.' 0.15\n")
+    cat("\nNote: T-values shown with significance stars. Higher absolute t-values indicate\n")
+    cat("stronger statistical significance. Positive values suggest better conversion rates\n")
+    cat("for passes at that depth, while negative values suggest worse conversion rates.\n")
+  } else {
+    cat("No QB pass depth variables found in any of the models with this approach.\n")
+  }
+}
+
+# Create a summary table showing average t-values by model type for each approach
+cat("\n\n", paste(rep("=", 120), collapse=""), "\n")
+cat("SUMMARY: AVERAGE QB PASS DEPTH T-VALUES BY MODEL TYPE AND APPROACH\n")
+cat(paste(rep("=", 120), collapse=""), "\n\n")
+
+# Calculate averages by model type and approach
+avg_by_model_approach <- aggregate(
+  cbind(Short, Medium, Deep) ~ ModelType + ModelApproach, 
+  data = qb_all_tvalues, 
+  FUN = function(x) mean(x, na.rm = TRUE)
+)
+
+# Print the summary table
+cat(sprintf("%-20s %-25s %-15s %-15s %-15s\n", 
+    "Model Type", "Approach", "Avg Short", "Avg Medium", "Avg Deep"))
+cat(paste(rep("-", 95), collapse=""), "\n")
+
+for (i in 1:nrow(avg_by_model_approach)) {
+  cat(sprintf("%-20s %-25s %-15.3f %-15.3f %-15.3f\n",
+              avg_by_model_approach$ModelType[i],
+              avg_by_model_approach$ModelApproach[i],
+              avg_by_model_approach$Short[i],
+              avg_by_model_approach$Medium[i],
+              avg_by_model_approach$Deep[i]))
+}
+
+# Compare t-values between approaches to see impact of selection correction
+cat("\n\n", paste(rep("=", 120), collapse=""), "\n")
+cat("COMPARISON: IMPACT OF SELECTION CORRECTION ON QB DEPTH SIGNIFICANCE\n")
+cat(paste(rep("=", 120), collapse=""), "\n\n")
+
+# For each approach, model type, and QB variable type, calculate the average absolute difference
+if (nrow(qb_no_correction_tvalues) > 0 && nrow(qb_standard_heckman_tvalues) > 0) {
+  # Get common datasets, model types, and QB types to compare
+  common_datasets <- intersect(qb_no_correction_tvalues$Dataset, qb_standard_heckman_tvalues$Dataset)
+  
+  if (length(common_datasets) > 0) {
+    cat("Looking at datasets with both types of models:\n\n")
+    
+    cat(sprintf("%-30s %-20s %-15s %-15s %-15s %-15s\n", 
+        "Dataset", "Model Type", "QB Variable", "Δ Short", "Δ Medium", "Δ Deep"))
+    cat(paste(rep("-", 115), collapse=""), "\n")
+    
+    for (dataset in common_datasets) {
+      subset_no_corr <- qb_no_correction_tvalues[qb_no_correction_tvalues$Dataset == dataset,]
+      subset_heckman <- qb_standard_heckman_tvalues[qb_standard_heckman_tvalues$Dataset == dataset,]
+      
+      for (model_type in unique(c(subset_no_corr$ModelType, subset_heckman$ModelType))) {
+        subset_no_corr_model <- subset_no_corr[subset_no_corr$ModelType == model_type,]
+        subset_heckman_model <- subset_heckman[subset_heckman$ModelType == model_type,]
+        
+        common_qb_types <- intersect(subset_no_corr_model$QB_Type, subset_heckman_model$QB_Type)
+        
+        for (qb_type in common_qb_types) {
+          no_corr_row <- subset_no_corr_model[subset_no_corr_model$QB_Type == qb_type,]
+          heckman_row <- subset_heckman_model[subset_heckman_model$QB_Type == qb_type,]
+          
+          # Calculate differences
+          delta_short <- heckman_row$Short - no_corr_row$Short
+          delta_medium <- heckman_row$Medium - no_corr_row$Medium
+          delta_deep <- heckman_row$Deep - no_corr_row$Deep
+          
+          # Format and print
+          cat(sprintf("%-30s %-20s %-15s %+15.3f %+15.3f %+15.3f\n",
+                      dataset, model_type, qb_type,
+                      delta_short, delta_medium, delta_deep))
+        }
+      }
+    }
+    
+    cat("\nNote: Positive differences (Δ) indicate that selection correction (Heckman approach) increased\n")
+    cat("the t-value, meaning the coefficient became more significant after accounting for selection bias.\n")
+    cat("Negative differences suggest the opposite effect.\n")
+  } else {
+    cat("No common datasets found between the two approaches for direct comparison.\n")
+  }
+} else {
+  cat("Insufficient data for comparison between approaches.\n")
+}
 ```
+

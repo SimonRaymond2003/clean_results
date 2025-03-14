@@ -498,17 +498,18 @@ ctd1_datasets <- c(
   "processed_predict_cctd1_starters_off_grades.csv_predict_cctd1_players_off_grades.csv.csv.gz",
   "processed_predict_cctd1_starters_off_yards.csv_predict_cctd1_players_off_yards.csv.csv.gz",
   "processed_predict_cctd1_starters_off_tds.csv_predict_cctd1_players_off_tds.csv.csv.gz",
-  "processed_predict_cctd1_starters_off_specifics.csv_predict_cctd1_players_off_specifics.csv.csv.gz",
   "processed_predict_cctd1_starters_off_first_downs.csv_predict_cctd1_players_off_first_downs.csv.csv.gz",
   "processed_predict_cctd1_starters_def_stops.csv_predict_cctd1_players_def_stops.csv.csv.gz",
   "processed_predict_cctd1_starters_def_grades.csv_predict_cctd1_players_def_grades.csv.csv.gz",
-  "processed_predict_cctd1_starters_def_specifics.csv_predict_cctd1_players_def_specifics.csv.csv.gz",
   "processed_predict_cctd1_starters_def_tackles.csv_predict_cctd1_players_def_tackles.csv.csv.gz",
   "processed_predict_cctd1_starters_def_pressure.csv_predict_cctd1_players_def_pressure.csv.csv.gz"
 )
 
 # Run the analysis on all datasets
 results <- run_third_down_analysis(ctd1_datasets)
+
+# Initialize a list to store models for all datasets
+all_outcome_models <- list()
 
 # Generate a summary comparing the model performance across all datasets
 cat("\n\n=================================================================\n")
@@ -530,6 +531,15 @@ summary_df <- data.frame(
 
 for(dataset_name in names(results)) {
   result <- results[[dataset_name]]
+  # Store models for QB depth analysis
+  dataset_name_clean <- gsub("processed_predict_cctd1_starters_|.csv_predict_cctd1_players_|.csv.csv.gz", "", dataset_name)
+  dataset_name_clean <- tools::toTitleCase(gsub("_", " ", dataset_name_clean))
+  
+  all_outcome_models[[dataset_name_clean]] <- list(
+    regular = result$regular_ols,
+    starter = result$starter_ols
+  )
+  
   if(!is.null(result$comparison)) {
     comp <- result$comparison
     summary_df <- rbind(summary_df, data.frame(
@@ -561,8 +571,208 @@ if(nrow(summary_df) > 0) {
   
   print(summary_df_formatted)
   
-  # Skip the average improvement and top 10 variables sections
+# Skip the average improvement and top 10 variables sections
 } else {
   cat("No comparison results available across the datasets.\n")
+}
+
+# Initialize a data frame to store QB t-values from outcome models
+qb_outcome_tvalues <- data.frame(
+  Dataset = character(),
+  ModelType = character(),
+  QB_Type = character(),
+  Short = numeric(),
+  Medium = numeric(),
+  Deep = numeric(),
+  stringsAsFactors = FALSE
+)
+
+# Extract QB variables from outcome models
+cat("\n\n", paste(rep("=", 120), collapse=""), "\n")
+cat("QB PASS DEPTH T-VALUES IN OUTCOME MODELS\n")
+cat(paste(rep("=", 120), collapse=""), "\n\n")
+
+# Find offensive models that were processed
+offense_datasets <- grep("Off", names(all_outcome_models), value = TRUE)
+
+for (dataset_name in offense_datasets) {
+  models <- all_outcome_models[[dataset_name]]
+  
+  for (model_type in c("regular", "starter")) {
+    model <- models[[model_type]]
+    if(is.null(model)) next
+    
+    # Get robust statistics
+    robust_stats <- coeftest(model, vcov = vcovHC(model, type = "HC0"))
+    coef_names <- rownames(robust_stats)
+    t_values <- robust_stats[, "t value"]
+    
+    # Extract QB variable types (grades, yards, touchdowns, etc.)
+    qb_types <- unique(gsub("^.*QB_(short|medium|deep)_([^_]+).*$", "\\2", 
+                           grep("QB_(short|medium|deep)", coef_names, value = TRUE)))
+    
+    # For each QB variable type, extract t-values for short, medium, deep
+    for (qb_type in qb_types) {
+      short_pattern <- paste0("QB_short_", qb_type)
+      medium_pattern <- paste0("QB_medium_", qb_type)
+      deep_pattern <- paste0("QB_deep_", qb_type)
+      
+      # For starter models, add the prefix
+      if (model_type == "starter") {
+        short_pattern <- paste0("starter_", short_pattern)
+        medium_pattern <- paste0("starter_", medium_pattern)
+        deep_pattern <- paste0("starter_", deep_pattern)
+      }
+      
+      # Find matching t-values
+      short_idx <- grep(short_pattern, coef_names)
+      medium_idx <- grep(medium_pattern, coef_names)
+      deep_idx <- grep(deep_pattern, coef_names)
+      
+      short_t <- if(length(short_idx) > 0) t_values[short_idx] else NA
+      medium_t <- if(length(medium_idx) > 0) t_values[medium_idx] else NA
+      deep_t <- if(length(deep_idx) > 0) t_values[deep_idx] else NA
+      
+      # Only add to results if any of the pass depths were found
+      if (!all(is.na(c(short_t, medium_t, deep_t)))) {
+        qb_outcome_tvalues <- rbind(qb_outcome_tvalues, data.frame(
+          Dataset = dataset_name,
+          ModelType = ifelse(model_type == "regular", "Regular Model", "Starter Model"),
+          QB_Type = qb_type,
+          Short = short_t,
+          Medium = medium_t,
+          Deep = deep_t,
+          stringsAsFactors = FALSE
+        ))
+      }
+    }
+  }
+}
+
+# If we found any QB variables, display the results
+if (nrow(qb_outcome_tvalues) > 0) {
+  # Format table headers
+  cat(sprintf("%-30s %-20s %-15s %-10s %-10s %-10s\n", 
+      "Dataset", "Model Type", "QB Variable", "Short", "Medium", "Deep"))
+  cat(paste(rep("-", 95), collapse=""), "\n")
+  
+  # Format and print each row with significance stars
+  for (i in 1:nrow(qb_outcome_tvalues)) {
+    # Add significance stars
+    short_stars <- ""
+    medium_stars <- ""
+    deep_stars <- ""
+    
+    # Extract p-values from the robust statistics for the same coefficients
+    model_type <- ifelse(qb_outcome_tvalues$ModelType[i] == "Regular Model", "regular", "starter")
+    dataset <- qb_outcome_tvalues$Dataset[i]
+    model <- all_outcome_models[[dataset]][[model_type]]
+    robust_stats <- coeftest(model, vcov = vcovHC(model, type = "HC0"))
+    
+    # Find the matching coefficient
+    short_pattern <- paste0(
+      ifelse(model_type == "starter", "starter_", ""),
+      "QB_short_", qb_outcome_tvalues$QB_Type[i]
+    )
+    medium_pattern <- paste0(
+      ifelse(model_type == "starter", "starter_", ""),
+      "QB_medium_", qb_outcome_tvalues$QB_Type[i]
+    )
+    deep_pattern <- paste0(
+      ifelse(model_type == "starter", "starter_", ""),
+      "QB_deep_", qb_outcome_tvalues$QB_Type[i]
+    )
+    
+    short_idx <- grep(short_pattern, rownames(robust_stats))
+    medium_idx <- grep(medium_pattern, rownames(robust_stats))
+    deep_idx <- grep(deep_pattern, rownames(robust_stats))
+    
+    # Add significance stars based on p-values
+    if (length(short_idx) > 0) {
+      p_val <- robust_stats[short_idx, "Pr(>|t|)"]
+      short_stars <- ifelse(p_val < 0.01, "***",
+                   ifelse(p_val < 0.05, "**",
+                   ifelse(p_val < 0.1, "*",
+                   ifelse(p_val < 0.15, ".", ""))))
+    }
+    
+    if (length(medium_idx) > 0) {
+      p_val <- robust_stats[medium_idx, "Pr(>|t|)"]
+      medium_stars <- ifelse(p_val < 0.01, "***",
+                    ifelse(p_val < 0.05, "**",
+                    ifelse(p_val < 0.1, "*",
+                    ifelse(p_val < 0.15, ".", ""))))
+    }
+    
+    if (length(deep_idx) > 0) {
+      p_val <- robust_stats[deep_idx, "Pr(>|t|)"]
+      deep_stars <- ifelse(p_val < 0.01, "***",
+                  ifelse(p_val < 0.05, "**",
+                  ifelse(p_val < 0.1, "*",
+                  ifelse(p_val < 0.15, ".", ""))))
+    }
+    
+    # Format t-values with significance stars
+    short_fmt <- ifelse(is.na(qb_outcome_tvalues$Short[i]), "NA", 
+                        sprintf("%.3f%s", qb_outcome_tvalues$Short[i], short_stars))
+    medium_fmt <- ifelse(is.na(qb_outcome_tvalues$Medium[i]), "NA", 
+                         sprintf("%.3f%s", qb_outcome_tvalues$Medium[i], medium_stars))
+    deep_fmt <- ifelse(is.na(qb_outcome_tvalues$Deep[i]), "NA", 
+                       sprintf("%.3f%s", qb_outcome_tvalues$Deep[i], deep_stars))
+    
+    # Print formatted row
+    cat(sprintf("%-30s %-20s %-15s %-10s %-10s %-10s\n",
+                qb_outcome_tvalues$Dataset[i],
+                qb_outcome_tvalues$ModelType[i],
+                qb_outcome_tvalues$QB_Type[i],
+                short_fmt, medium_fmt, deep_fmt))
+  }
+  
+  cat("\nSignificance codes: 0 '***' 0.01 '**' 0.05 '*' 0.1 '.' 0.15\n")
+  cat("\nNote: T-values shown with significance stars. Higher absolute t-values indicate\n")
+  cat("stronger statistical significance. Positive values suggest better conversion rates\n")
+  cat("for passes at that depth, while negative values suggest worse conversion rates.\n")
+} else {
+  cat("No QB pass depth variables found in any of the outcome models.\n")
+}
+
+# Create a summary table showing average t-values by QB depth across models
+if (nrow(qb_outcome_tvalues) > 0) {
+  cat("\n\n", paste(rep("=", 120), collapse=""), "\n")
+  cat("SUMMARY: AVERAGE QB PASS DEPTH T-VALUES BY MODEL TYPE\n")
+  cat(paste(rep("=", 120), collapse=""), "\n\n")
+  
+  # Calculate averages by model type
+  avg_by_model <- aggregate(
+    cbind(Short, Medium, Deep) ~ ModelType, 
+    data = qb_outcome_tvalues, 
+    FUN = function(x) mean(x, na.rm = TRUE)
+  )
+  
+  # Print the summary table
+  cat(sprintf("%-20s %-15s %-15s %-15s\n", 
+      "Model Type", "Avg Short", "Avg Medium", "Avg Deep"))
+  cat(paste(rep("-", 70), collapse=""), "\n")
+  
+  for (i in 1:nrow(avg_by_model)) {
+    cat(sprintf("%-20s %-15.3f %-15.3f %-15.3f\n",
+                avg_by_model$ModelType[i],
+                avg_by_model$Short[i],
+                avg_by_model$Medium[i],
+                avg_by_model$Deep[i]))
+  }
+  
+  # Calculate overall averages
+  overall_avg <- colMeans(qb_outcome_tvalues[, c("Short", "Medium", "Deep")], na.rm = TRUE)
+  
+  cat(paste(rep("-", 70), collapse=""), "\n")
+  cat(sprintf("%-20s %-15.3f %-15.3f %-15.3f\n",
+              "Overall Average",
+              overall_avg["Short"],
+              overall_avg["Medium"],
+              overall_avg["Deep"]))
+              
+  cat("\nNote: Higher average t-values suggest stronger positive effects of quarterback\n")
+  cat("performance at that pass depth on conversion success across models.\n")
 }
 ```
