@@ -13,6 +13,7 @@ library(car)
 library(caret)
 library(ggplot2)
 library(reshape2)
+library(dplyr)
 ```
 
 
@@ -354,38 +355,183 @@ get_significance <- function(t_value) {
   return(0)                      # not significant
 }
 
-# Create heatmaps for both matrices
-create_significance_heatmap <- function(t_matrix, title) {
-  # Convert matrix to long format
+# Create modern football-themed heatmap
+create_football_heatmap <- function(t_matrix, player_type) {
+  # Convert matrix to long format and prepare data
   melted_matrix <- melt(t_matrix)
-  colnames(melted_matrix) <- c("Dataset", "Yardline", "t_value")
+  colnames(melted_matrix) <- c("Metric", "Field_Position", "t_value")
   
-  # Add significance levels
-  melted_matrix$significance <- sapply(melted_matrix$t_value, get_significance)
+  # Clean up metric names for display
+  melted_matrix$Metric <- gsub("_", " ", melted_matrix$Metric)
+  melted_matrix$Metric <- tools::toTitleCase(melted_matrix$Metric)
+  
+  # Format yard line ranges for better display
+  melted_matrix$Field_Position <- gsub("_", "-", melted_matrix$Field_Position)
+  melted_matrix$Field_Position <- factor(melted_matrix$Field_Position, 
+                                       levels = unique(melted_matrix$Field_Position))
+  
+  # Define significance thresholds
+  significance_thresholds <- c(
+    "NS" = 0,      # Not significant
+    "*" = 1.645,   # p < 0.1
+    "**" = 1.96,   # p < 0.05
+    "***" = 2.576  # p < 0.01
+  )
+  
+  # Field theme colors - with better significance contrast
+  field_colors <- c(
+    "#0B2D12",  # Darker grass (not significant)
+    "#2E7D32",  # Brighter grass (* p < 0.1)
+    "#FFD700",  # Bright gold (** p < 0.05)
+    "#FFFFFF"   # White (*** p < 0.01)
+  )
+  
+  # Create custom theme for football field look
+  theme_football <- theme_minimal() +
+    theme(
+      plot.title = element_text(
+        family = "Arial Black",
+        size = 20,
+        face = "bold",
+        hjust = 0.5,
+        margin = margin(t = 20, b = 25),
+        color = "#ffd700"  # Gold color for title
+      ),
+      axis.text = element_text(
+        family = "Arial",
+        size = 10,
+        color = "white"
+      ),
+      axis.title = element_text(
+        family = "Arial",
+        size = 12,
+        face = "bold",
+        color = "white"
+      ),
+      legend.title = element_text(
+        family = "Arial",
+        size = 11,
+        face = "bold",
+        color = "white"
+      ),
+      legend.text = element_text(
+        family = "Arial",
+        size = 10,
+        color = "white"
+      ),
+      plot.background = element_rect(
+        fill = "#1e4d2b",
+        color = NA
+      ),
+      panel.background = element_rect(
+        fill = "#1e4d2b",
+        color = NA
+      ),
+      panel.grid.major = element_line(
+        color = "#ffffff33",
+        size = 0.2
+      ),
+      panel.grid.minor = element_blank(),
+      legend.background = element_rect(
+        fill = "#1e4d2b",
+        color = NA
+      )
+    )
   
   # Create the heatmap
-  ggplot(melted_matrix, aes(x = Yardline, y = Dataset, fill = significance)) +
-    geom_tile(color = "white") +
+  ggplot(melted_matrix, aes(x = Field_Position, y = Metric)) +
+    # Base tiles
+    geom_tile(aes(fill = abs(t_value)), color = "#ffffff33", size = 0.5) +
+    # Add base layer for NA values
+    geom_text(
+      data = subset(melted_matrix, is.na(t_value)),
+      aes(label = "NA"),
+      color = "white",
+      size = 3.8,
+      fontface = "bold"
+    ) +
+    # Add t-values for non-NA values
+    geom_text(
+      data = subset(melted_matrix, !is.na(t_value)),
+      aes(
+        label = sprintf("%.2f", t_value),
+        color = abs(t_value) >= significance_thresholds["**"]
+      ),
+      size = 3.8,
+      fontface = "bold",
+      vjust = -0.3
+    ) +
+    # Add significance stars
+    geom_text(
+      data = subset(melted_matrix, !is.na(t_value) & abs(t_value) >= significance_thresholds["*"]),
+      aes(
+        label = ifelse(abs(t_value) >= significance_thresholds["***"], "***",
+               ifelse(abs(t_value) >= significance_thresholds["**"], "**", "*")),
+        color = abs(t_value) >= significance_thresholds["**"]
+      ),
+      size = 3.8,
+      fontface = "bold",
+      vjust = 1
+    ) +
+    # Define colors for text
+    scale_color_manual(
+      values = c("TRUE" = "black", "FALSE" = "white"),
+      guide = "none"
+    ) +
+    # Custom fill scale for significance levels
     scale_fill_gradientn(
-      colors = c("#FFFFFF", "#FFFFB2", "#FED976", "#FEB24C", "#FD8D3C"),
-      breaks = 0:4,
-      labels = c("ns", ".", "*", "**", "***"),
-      name = "Significance"
+      colors = field_colors,
+      name = "Significance\nLevel",
+      breaks = significance_thresholds,
+      labels = c("Not Significant", "p < 0.1 (*)", "p < 0.05 (**)", "p < 0.01 (***)"),
+      limits = c(0, max(max(abs(melted_matrix$t_value), na.rm = TRUE), significance_thresholds["***"]))
     ) +
-    theme_minimal() +
+    labs(
+      title = sprintf("%s Impact by Field Position", player_type),
+      x = "Field Position (Yards)",
+      y = "Performance Metric",
+      caption = "T-values shown with significance levels: *** p<0.01, ** p<0.05, * p<0.1"
+    ) +
+    theme_football +
+    # Add enhanced yard line markers
+    geom_hline(
+      yintercept = seq(0.5, length(unique(melted_matrix$Metric)) + 0.5, 1),
+      color = "#ffffff40",
+      size = 0.3,
+      linetype = "dotted"
+    ) +
+    geom_vline(
+      xintercept = seq(0.5, length(unique(melted_matrix$Field_Position)) + 0.5, 1),
+      color = "#ffffff40",
+      size = 0.3,
+      linetype = "dotted"
+    ) +
+    # Enhanced styling
     theme(
-      axis.text.x = element_text(angle = 45, hjust = 1),
-      axis.title = element_blank(),
-      panel.grid = element_blank()
-    ) +
-    ggtitle(title)
+      plot.caption = element_text(
+        color = "#ffffffcc",
+        size = 9,
+        hjust = 1,
+        margin = margin(t = 15)
+      ),
+      axis.text.x = element_text(
+        angle = 45,
+        hjust = 1,
+        vjust = 1,
+        margin = margin(t = 5)
+      ),
+      legend.position = "right",
+      legend.margin = margin(l = 10),
+      legend.key.height = unit(1, "cm"),
+      legend.key.width = unit(0.5, "cm")
+    )
 }
 
-# Create and display heatmaps
-punter_heatmap <- create_significance_heatmap(punter_matrix, "Punter Significance Levels by Field Position")
+# Create and display heatmaps with new design
+punter_heatmap <- create_football_heatmap(punter_matrix, "Punter")
 print(punter_heatmap)
 
-kicker_heatmap <- create_significance_heatmap(kicker_matrix, "Kicker Significance Levels by Field Position")
+kicker_heatmap <- create_football_heatmap(kicker_matrix, "Kicker")
 print(kicker_heatmap)
 
 cat("\nAnalysis complete!\n")
