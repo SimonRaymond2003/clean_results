@@ -1,13 +1,359 @@
----
-title: "Heckman Selection Model Analysis"
-output: html_document
----
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
 
 
 
-```
-## 
+<title>Heckman Selection Model Analysis</title>
+
+<script src="site_libs/header-attrs-2.22/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/flatly.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.13.2/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/pagedtable-1.1/css/pagedtable.css" rel="stylesheet" />
+<script src="site_libs/pagedtable-1.1/js/pagedtable.js"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+
+
+
+
+
+
+<link rel="stylesheet" href="styles.css" type="text/css" />
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+.tocify-subheader {
+  display: inline;
+}
+.tocify-subheader .tocify-item {
+  font-size: 0.95em;
+}
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Simon Raymond</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="heckman.html">Heckman Selection</a>
+</li>
+<li>
+  <a href="thirddown.html">Third Down Analysis</a>
+</li>
+<li>
+  <a href="attempt_ols.html">Attempts OLS</a>
+</li>
+<li>
+  <a href="robustness_checks.html">Robustness Checks</a>
+</li>
+<li>
+  <a href="Writing.html">Writing</a>
+</li>
+<li>
+  <a href="kicker_exogenous.html">Proof of Exogeniety</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Heckman Selection Model Analysis</h1>
+
+</div>
+
+
+<pre><code>## 
 ## 
 ## ==================================================================================================== 
 ## ANALYZING DATASET 1/8: Offense Grades
@@ -352,11 +698,11 @@ output: html_document
 ## home_attendance                     -0.0351      -0.4710       
 ## GIMR                                 0.0571       2.2735     **
 ## 
-## Significance codes: 0 '***' 0.01 '**' 0.05 '*' 0.1 '.' 0.15
+## Significance codes: 0 &#39;***&#39; 0.01 &#39;**&#39; 0.05 &#39;*&#39; 0.1 &#39;.&#39; 0.15
 ## 
 ## Adjusted R-squared: 0.112072 
 ## 
-## Variables with VIF > 5:
+## Variables with VIF &gt; 5:
 ## prev_shotgun_rate                                      9.39
 ## prev_singleback_rate                                   5.37
 ## cover1_rate                                            6.05
@@ -694,11 +1040,11 @@ output: html_document
 ## home_attendance                     -0.0084      -0.1118       
 ## GIMR                                 0.0505       2.0396     **
 ## 
-## Significance codes: 0 '***' 0.01 '**' 0.05 '*' 0.1 '.' 0.15
+## Significance codes: 0 &#39;***&#39; 0.01 &#39;**&#39; 0.05 &#39;*&#39; 0.1 &#39;.&#39; 0.15
 ## 
 ## Adjusted R-squared: 0.1111214 
 ## 
-## Variables with VIF > 5:
+## Variables with VIF &gt; 5:
 ## prev_shotgun_rate                                      9.60
 ## prev_singleback_rate                                   5.54
 ## cover1_rate                                            6.07
@@ -1070,11 +1416,11 @@ output: html_document
 ## home_attendance                     -0.0297      -0.3942       
 ## GIMR                                 0.0497       2.0460     **
 ## 
-## Significance codes: 0 '***' 0.01 '**' 0.05 '*' 0.1 '.' 0.15
+## Significance codes: 0 &#39;***&#39; 0.01 &#39;**&#39; 0.05 &#39;*&#39; 0.1 &#39;.&#39; 0.15
 ## 
 ## Adjusted R-squared: 0.112259 
 ## 
-## Variables with VIF > 5:
+## Variables with VIF &gt; 5:
 ## prev_shotgun_rate                                      9.66
 ## prev_singleback_rate                                   5.70
 ## cover1_rate                                            6.10
@@ -1418,11 +1764,11 @@ output: html_document
 ## home_attendance                     -0.0112      -0.1538       
 ## GIMR                                 0.0476       1.9983     **
 ## 
-## Significance codes: 0 '***' 0.01 '**' 0.05 '*' 0.1 '.' 0.15
+## Significance codes: 0 &#39;***&#39; 0.01 &#39;**&#39; 0.05 &#39;*&#39; 0.1 &#39;.&#39; 0.15
 ## 
 ## Adjusted R-squared: 0.1159215 
 ## 
-## Variables with VIF > 5:
+## Variables with VIF &gt; 5:
 ## prev_shotgun_rate                                     10.11
 ## prev_singleback_rate                                   6.13
 ## prev_iform_rate                                        5.15
@@ -1788,11 +2134,11 @@ output: html_document
 ## home_attendance                     -0.0251      -0.3352       
 ## GIMR                                 0.0557       2.3935     **
 ## 
-## Significance codes: 0 '***' 0.01 '**' 0.05 '*' 0.1 '.' 0.15
+## Significance codes: 0 &#39;***&#39; 0.01 &#39;**&#39; 0.05 &#39;*&#39; 0.1 &#39;.&#39; 0.15
 ## 
 ## Adjusted R-squared: 0.1117194 
 ## 
-## Variables with VIF > 5:
+## Variables with VIF &gt; 5:
 ## prev_shotgun_rate                                      9.50
 ## prev_singleback_rate                                   5.59
 ## cover1_rate                                            6.14
@@ -2131,11 +2477,11 @@ output: html_document
 ## home_attendance                     -0.0219      -0.2964       
 ## GIMR                                 0.0478       2.0890     **
 ## 
-## Significance codes: 0 '***' 0.01 '**' 0.05 '*' 0.1 '.' 0.15
+## Significance codes: 0 &#39;***&#39; 0.01 &#39;**&#39; 0.05 &#39;*&#39; 0.1 &#39;.&#39; 0.15
 ## 
 ## Adjusted R-squared: 0.1140666 
 ## 
-## Variables with VIF > 5:
+## Variables with VIF &gt; 5:
 ## prev_shotgun_rate                                     10.02
 ## prev_singleback_rate                                   5.95
 ## prev_iform_rate                                        5.03
@@ -2504,11 +2850,11 @@ output: html_document
 ## home_attendance                     -0.0272      -0.3623       
 ## GIMR                                 0.0473       2.0757     **
 ## 
-## Significance codes: 0 '***' 0.01 '**' 0.05 '*' 0.1 '.' 0.15
+## Significance codes: 0 &#39;***&#39; 0.01 &#39;**&#39; 0.05 &#39;*&#39; 0.1 &#39;.&#39; 0.15
 ## 
 ## Adjusted R-squared: 0.1111887 
 ## 
-## Variables with VIF > 5:
+## Variables with VIF &gt; 5:
 ## prev_shotgun_rate                                      9.51
 ## prev_singleback_rate                                   5.48
 ## cover1_rate                                            6.14
@@ -2849,11 +3195,11 @@ output: html_document
 ## home_attendance                     -0.0223      -0.3051       
 ## GIMR                                 0.0410       1.8224      *
 ## 
-## Significance codes: 0 '***' 0.01 '**' 0.05 '*' 0.1 '.' 0.15
+## Significance codes: 0 &#39;***&#39; 0.01 &#39;**&#39; 0.05 &#39;*&#39; 0.1 &#39;.&#39; 0.15
 ## 
 ## Adjusted R-squared: 0.1136534 
 ## 
-## Variables with VIF > 5:
+## Variables with VIF &gt; 5:
 ## prev_shotgun_rate                                      9.93
 ## prev_singleback_rate                                   5.75
 ## cover1_rate                                            6.20
@@ -3229,11 +3575,11 @@ output: html_document
 ## home_attendance                     -0.0293      -0.3881       
 ## GIMR                                 0.0487       1.9957     **
 ## 
-## Significance codes: 0 '***' 0.01 '**' 0.05 '*' 0.1 '.' 0.15
+## Significance codes: 0 &#39;***&#39; 0.01 &#39;**&#39; 0.05 &#39;*&#39; 0.1 &#39;.&#39; 0.15
 ## 
 ## Adjusted R-squared: 0.1100651 
 ## 
-## Variables with VIF > 5:
+## Variables with VIF &gt; 5:
 ## prev_shotgun_rate                                      9.37
 ## prev_singleback_rate                                   5.39
 ## cover1_rate                                            6.72
@@ -3582,11 +3928,11 @@ output: html_document
 ## home_attendance                     -0.0113      -0.1511       
 ## GIMR                                 0.0493       2.0620     **
 ## 
-## Significance codes: 0 '***' 0.01 '**' 0.05 '*' 0.1 '.' 0.15
+## Significance codes: 0 &#39;***&#39; 0.01 &#39;**&#39; 0.05 &#39;*&#39; 0.1 &#39;.&#39; 0.15
 ## 
 ## Adjusted R-squared: 0.1117406 
 ## 
-## Variables with VIF > 5:
+## Variables with VIF &gt; 5:
 ## prev_shotgun_rate                                      9.87
 ## prev_singleback_rate                                   5.75
 ## prev_iform_rate                                        5.01
@@ -3952,11 +4298,11 @@ output: html_document
 ## home_attendance                     -0.0302      -0.4067       
 ## GIMR                                 0.0547       2.2450     **
 ## 
-## Significance codes: 0 '***' 0.01 '**' 0.05 '*' 0.1 '.' 0.15
+## Significance codes: 0 &#39;***&#39; 0.01 &#39;**&#39; 0.05 &#39;*&#39; 0.1 &#39;.&#39; 0.15
 ## 
 ## Adjusted R-squared: 0.1110219 
 ## 
-## Variables with VIF > 5:
+## Variables with VIF &gt; 5:
 ## prev_shotgun_rate                                      9.33
 ## prev_singleback_rate                                   5.39
 ## cover1_rate                                            6.13
@@ -4318,11 +4664,11 @@ output: html_document
 ## home_attendance                     -0.0276      -0.3738       
 ## GIMR                                 0.0521       2.1791     **
 ## 
-## Significance codes: 0 '***' 0.01 '**' 0.05 '*' 0.1 '.' 0.15
+## Significance codes: 0 &#39;***&#39; 0.01 &#39;**&#39; 0.05 &#39;*&#39; 0.1 &#39;.&#39; 0.15
 ## 
 ## Adjusted R-squared: 0.1103503 
 ## 
-## Variables with VIF > 5:
+## Variables with VIF &gt; 5:
 ## prev_shotgun_rate                                      9.71
 ## prev_singleback_rate                                   5.58
 ## cover1_rate                                            6.08
@@ -4679,11 +5025,11 @@ output: html_document
 ## home_attendance                     -0.0357      -0.4811       
 ## GIMR                                 0.0501       2.1457     **
 ## 
-## Significance codes: 0 '***' 0.01 '**' 0.05 '*' 0.1 '.' 0.15
+## Significance codes: 0 &#39;***&#39; 0.01 &#39;**&#39; 0.05 &#39;*&#39; 0.1 &#39;.&#39; 0.15
 ## 
 ## Adjusted R-squared: 0.1096368 
 ## 
-## Variables with VIF > 5:
+## Variables with VIF &gt; 5:
 ## prev_shotgun_rate                                      9.23
 ## prev_singleback_rate                                   5.33
 ## cover1_rate                                            6.46
@@ -5014,11 +5360,11 @@ output: html_document
 ## home_attendance                     -0.0031      -0.0420       
 ## GIMR                                 0.0465       2.0345     **
 ## 
-## Significance codes: 0 '***' 0.01 '**' 0.05 '*' 0.1 '.' 0.15
+## Significance codes: 0 &#39;***&#39; 0.01 &#39;**&#39; 0.05 &#39;*&#39; 0.1 &#39;.&#39; 0.15
 ## 
 ## Adjusted R-squared: 0.1128029 
 ## 
-## Variables with VIF > 5:
+## Variables with VIF &gt; 5:
 ## prev_shotgun_rate                                      9.61
 ## prev_singleback_rate                                   5.46
 ## cover1_rate                                            6.03
@@ -5364,11 +5710,11 @@ output: html_document
 ## home_attendance                     -0.0326      -0.4401       
 ## GIMR                                 0.0478       1.9574      *
 ## 
-## Significance codes: 0 '***' 0.01 '**' 0.05 '*' 0.1 '.' 0.15
+## Significance codes: 0 &#39;***&#39; 0.01 &#39;**&#39; 0.05 &#39;*&#39; 0.1 &#39;.&#39; 0.15
 ## 
 ## Adjusted R-squared: 0.109698 
 ## 
-## Variables with VIF > 5:
+## Variables with VIF &gt; 5:
 ## prev_shotgun_rate                                      9.23
 ## prev_singleback_rate                                   5.32
 ## cover1_rate                                            6.12
@@ -5689,11 +6035,11 @@ output: html_document
 ## home_attendance                     -0.0009      -0.0125       
 ## GIMR                                 0.0500       2.0848     **
 ## 
-## Significance codes: 0 '***' 0.01 '**' 0.05 '*' 0.1 '.' 0.15
+## Significance codes: 0 &#39;***&#39; 0.01 &#39;**&#39; 0.05 &#39;*&#39; 0.1 &#39;.&#39; 0.15
 ## 
 ## Adjusted R-squared: 0.1092911 
 ## 
-## Variables with VIF > 5:
+## Variables with VIF &gt; 5:
 ## prev_shotgun_rate                                      9.39
 ## prev_singleback_rate                                   5.51
 ## cover1_rate                                            6.00
@@ -5706,76 +6052,34 @@ output: html_document
 ## ================================================================================ 
 ## 
 ## Player Model with GIMR: 0.109698 
-## Starter Model with GIMR: 0.1092911
-```
-
-```
+## Starter Model with GIMR: 0.1092911</code></pre>
+<pre><code>## 
 ## 
-## 
-##  ========================================================================================================================
-```
-
-```
-## GIMR SELECTION BIAS RESULTS SUMMARY
-```
-
-```
-## ========================================================================================================================
-```
-
-```
-## Dataset                        Player GIMR               Starter GIMR
-```
-
-```
-## --------------------------------------------------------------------------------
-```
-
-```
-## Offense Grades                 0.0571 (t=2.19**)         0.0505 (t=1.95*)         
+##  ========================================================================================================================</code></pre>
+<pre><code>## GIMR SELECTION BIAS RESULTS SUMMARY</code></pre>
+<pre><code>## ========================================================================================================================</code></pre>
+<pre><code>## Dataset                        Player GIMR               Starter GIMR</code></pre>
+<pre><code>## --------------------------------------------------------------------------------</code></pre>
+<pre><code>## Offense Grades                 0.0571 (t=2.19**)         0.0505 (t=1.95*)         
 ## Offense Yards                  0.0497 (t=1.96**)         0.0476 (t=1.91*)         
 ## Offense Tds                    0.0557 (t=2.31**)         0.0478 (t=2.01**)        
 ## Offense First Downs            0.0473 (t=2.00**)         0.0410 (t=1.76*)         
 ## Defense Stops                  0.0487 (t=1.92*)          0.0493 (t=1.98**)        
 ## Defense Grades                 0.0547 (t=2.17**)         0.0521 (t=2.09**)        
 ## Defense Tackles                0.0501 (t=2.07**)         0.0465 (t=1.96*)         
-## Defense Pressure               0.0478 (t=1.89*)          0.0500 (t=2.01**)
-```
-
-```
+## Defense Pressure               0.0478 (t=1.89*)          0.0500 (t=2.01**)</code></pre>
+<pre><code>## 
+## Significance codes: 0 &#39;***&#39; 0.01 &#39;**&#39; 0.05 &#39;*&#39; 0.1 &#39;.&#39; 0.15</code></pre>
+<pre><code>## 
+## Note: GIMR values are shown as coefficient (t-value). A significant GIMR coefficient indicates</code></pre>
+<pre><code>## the presence of selection bias. All models control for multiple relevant variables as shown</code></pre>
+<pre><code>## in the detailed model outputs above.</code></pre>
+<pre><code>## 
 ## 
-## Significance codes: 0 '***' 0.01 '**' 0.05 '*' 0.1 '.' 0.15
-```
-
-```
-## 
-## Note: GIMR values are shown as coefficient (t-value). A significant GIMR coefficient indicates
-```
-
-```
-## the presence of selection bias. All models control for multiple relevant variables as shown
-```
-
-```
-## in the detailed model outputs above.
-```
-
-```
-## 
-## 
-##  ========================================================================================================================
-```
-
-```
-## QB PASS DEPTH T-VALUES IN OUTCOME MODELS
-```
-
-```
-## ========================================================================================================================
-```
-
-```
-## Dataset                        Model Type           QB Variable     Short      Medium     Deep      
+##  ========================================================================================================================</code></pre>
+<pre><code>## QB PASS DEPTH T-VALUES IN OUTCOME MODELS</code></pre>
+<pre><code>## ========================================================================================================================</code></pre>
+<pre><code>## Dataset                        Model Type           QB Variable     Short      Medium     Deep      
 ## ----------------------------------------------------------------------------------------------- 
 ## Offense Grades                 Player Model         grades          2.453**    -0.301     -1.559.   
 ## Offense Grades                 Starter Model        grades          2.017**    -1.258     -0.857    
@@ -5786,15 +6090,12 @@ output: html_document
 ## Offense First Downs            Player Model         touchdowns      0.434      0.037      -1.520.   
 ## Offense First Downs            Starter Model        touchdowns      3.095***   -1.094     -1.494.   
 ## 
-## Significance codes: 0 '***' 0.01 '**' 0.05 '*' 0.1 '.' 0.15
+## Significance codes: 0 &#39;***&#39; 0.01 &#39;**&#39; 0.05 &#39;*&#39; 0.1 &#39;.&#39; 0.15
 ## 
 ## Note: T-values shown with significance stars. Higher absolute t-values indicate
 ## stronger statistical significance. Positive values suggest better conversion rates
-## for passes at that depth, while negative values suggest worse conversion rates.
-```
-
-```
-## 
+## for passes at that depth, while negative values suggest worse conversion rates.</code></pre>
+<pre><code>## 
 ## 
 ##  ======================================================================================================================== 
 ## SUMMARY: AVERAGE QB PASS DEPTH T-VALUES BY MODEL TYPE
@@ -5808,6 +6109,83 @@ output: html_document
 ## Overall Average      1.831           -0.113          -1.685         
 ## 
 ## Note: Higher average t-values suggest stronger positive effects of quarterback
-## performance at that pass depth on conversion success across models.
-```
+## performance at that pass depth on conversion success across models.</code></pre>
 
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = false;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
