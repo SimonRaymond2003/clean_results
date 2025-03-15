@@ -420,6 +420,7 @@ run_heckman <- function(select_data, outcome_data, n_validation = 1, n_test = 2)
 datasets <- list(
   list(outcome = "processed_predict_ccafd_off_grades.csv.csv.gz", select = "processed_predict_ccfd_off_grades.csv.csv.gz"),
   list(outcome = "processed_predict_ccafd_off_yards.csv.csv.gz", select = "processed_predict_ccfd_off_yards.csv.csv.gz"),
+  list(outcome = "processed_predict_ccafd_off_completions.csv.csv.gz", select = "processed_predict_ccfd_off_completions.csv.csv.gz"),
   list(outcome = "processed_predict_ccafd_off_tds.csv.csv.gz", select = "processed_predict_ccfd_off_tds.csv.csv.gz"),
   list(outcome = "processed_predict_ccafd_off_first_downs.csv.csv.gz", select = "processed_predict_ccfd_off_first_downs.csv.csv.gz"),
   list(outcome = "processed_predict_ccafd_def_stops.csv.csv.gz", select = "processed_predict_ccfd_def_stops.csv.csv.gz"),
@@ -620,12 +621,30 @@ for (dataset_name in offense_datasets) {
 
 # If we found any QB variables, display the results
 if (nrow(qb_outcome_tvalues) > 0) {
-  # Format table headers
-  cat(sprintf("%-30s %-20s %-15s %-10s %-10s %-10s\n", 
-      "Dataset", "Model Type", "QB Variable", "Short", "Medium", "Deep"))
-  cat(paste(rep("-", 95), collapse=""), "\n")
+  # Create a more visually appealing table with clear formatting
+  formatted_table <- character()
   
-  # Format and print each row with significance stars
+  # Add fancy header
+  header <- paste0(
+    "\n", paste(rep("=", 100), collapse=""), "\n",
+    "QB PASS DEPTH T-VALUES IN OUTCOME MODELS\n",
+    paste(rep("=", 100), collapse=""), "\n\n"
+  )
+  formatted_table <- c(formatted_table, header)
+  
+  # Format table headers with better spacing and dividers
+  col_header <- sprintf("| %-28s | %-18s | %-13s | %-10s | %-10s | %-10s |", 
+      "Dataset", "Model Type", "QB Variable", "Short", "Medium", "Deep")
+  divider <- paste0("|", paste(rep("-", 30), collapse=""), 
+                   "|", paste(rep("-", 20), collapse=""),
+                   "|", paste(rep("-", 15), collapse=""),
+                   "|", paste(rep("-", 12), collapse=""),
+                   "|", paste(rep("-", 12), collapse=""),
+                   "|", paste(rep("-", 12), collapse=""), "|")
+  
+  formatted_table <- c(formatted_table, col_header, divider)
+  
+  # Format and add each row with significance stars
   for (i in 1:nrow(qb_outcome_tvalues)) {
     # Add significance stars
     short_stars <- ""
@@ -691,27 +710,49 @@ if (nrow(qb_outcome_tvalues) > 0) {
     deep_fmt <- ifelse(is.na(qb_outcome_tvalues$Deep[i]), "NA", 
                        sprintf("%.3f%s", qb_outcome_tvalues$Deep[i], deep_stars))
     
-    # Print formatted row
-    cat(sprintf("%-30s %-20s %-15s %-10s %-10s %-10s\n",
+    # Format row with table borders
+    formatted_row <- sprintf("| %-28s | %-18s | %-13s | %-10s | %-10s | %-10s |",
                 qb_outcome_tvalues$Dataset[i],
                 qb_outcome_tvalues$ModelType[i],
                 qb_outcome_tvalues$QB_Type[i],
-                short_fmt, medium_fmt, deep_fmt))
+                short_fmt, medium_fmt, deep_fmt)
+    
+    formatted_table <- c(formatted_table, formatted_row)
   }
   
-  cat("\nSignificance codes: 0 '***' 0.01 '**' 0.05 '*' 0.1 '.' 0.15\n")
-  cat("\nNote: T-values shown with significance stars. Higher absolute t-values indicate\n")
-  cat("stronger statistical significance. Positive values suggest better conversion rates\n")
-  cat("for passes at that depth, while negative values suggest worse conversion rates.\n")
+  # Add footer with significance explanation
+  footer <- c(
+    divider,
+    "\nSignificance codes: 0 '***' 0.01 '**' 0.05 '*' 0.1 '.' 0.15",
+    "\nNote: T-values shown with significance stars. Higher absolute t-values indicate",
+    "stronger statistical significance. Positive values suggest better conversion rates",
+    "for passes at that depth, while negative values suggest worse conversion rates.\n"
+  )
+  formatted_table <- c(formatted_table, footer)
+  
+  # Print the formatted table to console
+  cat(paste(formatted_table, collapse = "\n"))
+  
+  # Save the formatted table to a text file
+  dir.create("tables", showWarnings = FALSE)
+  writeLines(formatted_table, "tables/heckman_qb_depth.txt")
+  cat("\nQB depth table saved to: tables/heckman_qb_depth.txt\n")
 } else {
   cat("No QB pass depth variables found in any of the outcome models.\n")
 }
 
 # Create a summary table showing average t-values by QB depth across models
 if (nrow(qb_outcome_tvalues) > 0) {
-  cat("\n\n", paste(rep("=", 120), collapse=""), "\n")
-  cat("SUMMARY: AVERAGE QB PASS DEPTH T-VALUES BY MODEL TYPE\n")
-  cat(paste(rep("=", 120), collapse=""), "\n\n")
+  # Create a more visually appealing summary table
+  summary_table <- character()
+  
+  # Add fancy header
+  header <- paste0(
+    "\n", paste(rep("=", 100), collapse=""), "\n",
+    "SUMMARY: AVERAGE QB PASS DEPTH T-VALUES BY MODEL TYPE\n",
+    paste(rep("=", 100), collapse=""), "\n\n"
+  )
+  summary_table <- c(summary_table, header)
   
   # Calculate averages by model type
   avg_by_model <- aggregate(
@@ -720,31 +761,52 @@ if (nrow(qb_outcome_tvalues) > 0) {
     FUN = function(x) mean(x, na.rm = TRUE)
   )
   
-  # Print the summary table
-  cat(sprintf("%-20s %-15s %-15s %-15s\n", 
-      "Model Type", "Avg Short", "Avg Medium", "Avg Deep"))
-  cat(paste(rep("-", 70), collapse=""), "\n")
+  # Format table headers with better spacing and dividers
+  col_header <- sprintf("| %-25s | %-15s | %-15s | %-15s |", 
+      "Model Type", "Avg Short", "Avg Medium", "Avg Deep")
+  divider <- paste0("|", paste(rep("-", 27), collapse=""), 
+                   "|", paste(rep("-", 17), collapse=""),
+                   "|", paste(rep("-", 17), collapse=""),
+                   "|", paste(rep("-", 17), collapse=""), "|")
   
+  summary_table <- c(summary_table, col_header, divider)
+  
+  # Add each row with improved formatting
   for (i in 1:nrow(avg_by_model)) {
-    cat(sprintf("%-20s %-15.3f %-15.3f %-15.3f\n",
+    formatted_row <- sprintf("| %-25s | %15.3f | %15.3f | %15.3f |",
                 avg_by_model$ModelType[i],
                 avg_by_model$Short[i],
                 avg_by_model$Medium[i],
-                avg_by_model$Deep[i]))
+                avg_by_model$Deep[i])
+    
+    summary_table <- c(summary_table, formatted_row)
   }
   
   # Calculate overall averages
   overall_avg <- colMeans(qb_outcome_tvalues[, c("Short", "Medium", "Deep")], na.rm = TRUE)
   
-  cat(paste(rep("-", 70), collapse=""), "\n")
-  cat(sprintf("%-20s %-15.3f %-15.3f %-15.3f\n",
+  # Add overall average row with divider
+  summary_table <- c(summary_table, divider)
+  overall_row <- sprintf("| %-25s | %15.3f | %15.3f | %15.3f |",
               "Overall Average",
               overall_avg["Short"],
               overall_avg["Medium"],
-              overall_avg["Deep"]))
-              
-  cat("\nNote: Higher average t-values suggest stronger positive effects of quarterback\n")
-  cat("performance at that pass depth on conversion success across models.\n")
+              overall_avg["Deep"])
+  summary_table <- c(summary_table, overall_row, divider)
+  
+  # Add footer with explanation
+  footer <- c(
+    "\nNote: Higher average t-values suggest stronger positive effects of quarterback",
+    "performance at that pass depth on conversion success across models.\n"
+  )
+  summary_table <- c(summary_table, footer)
+  
+  # Print the formatted summary table to console
+  cat(paste(summary_table, collapse = "\n"))
+  
+  # Save the formatted summary table to a text file
+  dir.create("tables", showWarnings = FALSE)
+  writeLines(summary_table, "tables/heckman_qb_summary.txt")
+  cat("\nQB summary table saved to: tables/heckman_qb_summary.txt\n")
 }
 ```
-

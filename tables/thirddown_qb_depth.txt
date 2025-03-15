@@ -1,0 +1,26 @@
+
+====================================================================================================
+QB PASS DEPTH T-VALUES IN OUTCOME MODELS
+====================================================================================================
+
+
+| Dataset                      | Model Type         | QB Variable   | Short      | Medium     | Deep       |
+|------------------------------|--------------------|---------------|------------|------------|------------|
+| Off Gradesoff Grades         | Regular Model      | grades        | 0.684      | 1.951*     | 0.917      |
+| Off Gradesoff Grades         | Starter Model      | grades        | 0.376      | 0.215      | 0.152      |
+| Off Yardsoff Yards           | Regular Model      | yards         | 1.648*     | 3.143***   | -0.137     |
+| Off Yardsoff Yards           | Starter Model      | yards         | 1.816*     | 0.587      | -1.531.    |
+| Off Completionsoff Completions | Regular Model      | completions   | 1.387      | 2.736***   | 0.232      |
+| Off Completionsoff Completions | Starter Model      | completions   | 1.872*     | 0.057      | -1.110     |
+| Off Tdsoff Tds               | Regular Model      | touchdowns    | 1.827*     | 0.795      | 2.516**    |
+| Off Tdsoff Tds               | Starter Model      | touchdowns    | 0.125      | -0.917     | 0.334      |
+| Off First Downsoff First Downs | Regular Model      | touchdowns    | 2.062**    | 0.815      | 1.923*     |
+| Off First Downsoff First Downs | Starter Model      | touchdowns    | 0.342      | -1.080     | -0.271     |
+|------------------------------|--------------------|---------------|------------|------------|------------|
+
+Significance codes: 0 '***' 0.01 '**' 0.05 '*' 0.1 '.' 0.15
+
+Note: T-values shown with significance stars. Higher absolute t-values indicate
+stronger statistical significance. Positive values suggest better conversion rates
+for passes at that depth, while negative values suggest worse conversion rates.
+

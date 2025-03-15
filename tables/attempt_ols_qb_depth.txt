@@ -1,0 +1,20 @@
+
+====================================================================================================
+QB PASSING DEPTH T-VALUES ACROSS OFFENSIVE MODELS
+====================================================================================================
+
+
+| Model                        | Variable        | Short      | Medium     | Deep       |
+|------------------------------|-----------------|------------|------------|------------|
+| Off Grades                   | QB_grades       | 1.575.     | 1.657*     | 1.562.     |
+| Off Yards                    | QB_yards        | 0.627      | 1.538.     | 1.866*     |
+| Off Tds                      | QB_touchdowns   | 1.899*     | 1.852*     | 1.603.     |
+| Off First Downs              | QB_touchdowns   | 1.766*     | 1.696*     | 1.684*     |
+|------------------------------|-----------------|------------|------------|------------|
+
+Significance codes: 0 '***' 0.01 '**' 0.05 '*' 0.1 '.' 0.15
+
+Note: T-values shown with significance stars. Higher absolute t-values indicate
+stronger statistical significance. Positive values suggest better conversion rates
+for passes at that depth, while negative values suggest worse conversion rates.
+

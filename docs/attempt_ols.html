@@ -358,7 +358,7 @@ div.tocify {
 <pre><code>## 
 ## 
 ## ==================================================================================================== 
-## ANALYZING DATASET 1/8: Off Grades.csv
+## ANALYZING DATASET 1/9: Off Grades.csv
 ## ==================================================================================================== 
 ## 
 ## 
@@ -652,7 +652,7 @@ div.tocify {
 ## 
 ## 
 ## ==================================================================================================== 
-## ANALYZING DATASET 2/8: Off Yards.csv
+## ANALYZING DATASET 2/9: Off Yards.csv
 ## ==================================================================================================== 
 ## 
 ## 
@@ -954,7 +954,309 @@ div.tocify {
 ## 
 ## 
 ## ==================================================================================================== 
-## ANALYZING DATASET 3/8: Off Tds.csv
+## ANALYZING DATASET 3/9: Off Completions.csv
+## ==================================================================================================== 
+## 
+## 
+## Reading data: processed_predict_ccfd_off_completions.csv_v2.csv.gz 
+## 
+## OLS Starter Players Model Results (Robust Statistics)
+## Variable                        Coefficient      t-value    Sig
+## ----------------------------------------------------------------- 
+## (Intercept)                          0.2951       4.4282    ***
+## ydstogo                             -0.1103     -45.1651    ***
+## posteam_timeouts_remaining          -0.0363     -11.9011    ***
+## defteam_timeouts_remaining          -0.0024      -0.8217       
+## week                                 0.0047       1.6621      *
+## temp                                -0.0052      -1.6799      *
+## wind                                -0.0041      -1.3153       
+## vegas_wp                            -0.1057     -16.9739    ***
+## spread_line                          0.0002       0.0827       
+## total_line                          -0.0051      -1.5054      .
+## roof_outdoors                        0.0044       0.6090       
+## down1_pct                           -0.0004      -0.1016       
+## down2_pct                           -0.0019      -0.5440       
+## down3_pct                            0.0014       0.4103       
+## down4_pct                            0.0025       0.7677       
+## prep_days                            0.0029       1.2562       
+## overall_win_pct                      0.0006       0.1329       
+## team_win_pct                         0.0147       3.0315    ***
+## prev_win_pct                         0.0041       0.9578       
+## prev_shotgun_rate                    0.0027       0.3392       
+## prev_singleback_rate                 0.0019       0.3049       
+## prev_empty_rate                     -0.0042      -1.0339       
+## prev_iform_rate                     -0.0009      -0.1650       
+## prev_shotgun_success                 0.0089       2.2848     **
+## prev_singleback_success              0.0058       1.4865      .
+## prev_empty_success                   0.0093       2.7144    ***
+## prev_iform_success                  -0.0009      -0.2900       
+## prev_stop_rate_run                  -0.0014      -0.5161       
+## prev_stop_rate_pass                 -0.0072      -2.7046    ***
+## shotgun_rate                        -0.0014      -0.2665       
+## singleback_rate                     -0.0016      -0.3555       
+## empty_rate                           0.0015       0.3770       
+## iform_rate                          -0.0032      -0.8783       
+## shotgun_success                      0.0069       2.4613     **
+## singleback_success                  -0.0003      -0.0788       
+## empty_success                        0.0033       1.0208       
+## iform_success                        0.0052       1.7315      *
+## def_stop_rate_run                   -0.0017      -0.6535       
+## def_stop_rate_pass                  -0.0152      -5.8326    ***
+## avg_pass_rushers                     0.0023       0.8111       
+## avg_box_defenders                    0.0019       0.6850       
+## cover0_rate                         -0.0016      -0.5581       
+## cover1_rate                          0.0076       2.3830     **
+## cover2_rate                          0.0008       0.3110       
+## cover3_rate                          0.0005       0.1668       
+## cover4_rate                          0.0064       2.3078     **
+## cover6_rate                         -0.0003      -0.1090       
+## two_man_rate                        -0.0014      -0.5174       
+## prevent_rate                        -0.0004      -0.1477       
+## defteam_prev_game_off_4th_success       0.0011       0.4651       
+## defteam_prev_game_off_4th_fail       0.0008       0.3430       
+## p_player_26_punting_grades_grades_punter_12w      -0.0023      -0.9265       
+## k_player_25_field_goals_grades_grades_fgep_kicker_12w      -0.0045      -1.8646      *
+## posteam_type_home                    0.0243       5.2369    ***
+## is_winning                          -0.0096      -1.1154       
+## is_losing                           -0.0604      -7.5747    ***
+## winning_score_diff                   0.0174       4.4594    ***
+## losing_score_diff                   -0.0439     -10.2447    ***
+## Chuck_Pagano                         0.1659       2.2765     **
+## Bruce_Arians                         0.1271       1.8459      *
+## Sean_McDermott                       0.1826       2.7151    ***
+## Ron_Rivera                           0.2061       3.0825    ***
+## John_Fox                             0.1529       2.0554     **
+## Dirk_Koetter                         0.1178       1.6581      *
+## Hue_Jackson                          0.2297       3.2209    ***
+## John_Harbaugh                        0.2104       3.0526    ***
+## Jason_Garrett                        0.1725       2.4939     **
+## Vance_Joseph                         0.2254       3.2114    ***
+## Ben_McAdoo                           0.1811       2.4036     **
+## Jim_Caldwell                         0.1672       2.2635     **
+## Mike_McCarthy                        0.1947       2.8883    ***
+## Dan_Quinn                            0.1539       2.2414     **
+## Marvin_Lewis                         0.2007       2.8894    ***
+## Bill_OBrien                          0.1633       2.3965     **
+## Adam_Gase                            0.1449       2.1414     **
+## Anthony_Lynn                         0.1700       2.4827     **
+## Mike_Zimmer                          0.1751       2.5840    ***
+## Mike_Tomlin                          0.1517       2.2641     **
+## Bill_Belichick                       0.1360       2.0353     **
+## Sean_Payton                          0.1706       2.5315     **
+## Jack_Del_Rio                         0.3297       3.7919    ***
+## Todd_Bowles                          0.1389       2.0802     **
+## Doug_Pederson                        0.2048       3.0202    ***
+## Andy_Reid                            0.1683       2.4662     **
+## Kyle_Shanahan                        0.1713       2.5557     **
+## Pete_Carroll                         0.1658       2.4752     **
+## Mike_Mularkey                        0.1478       2.0209     **
+## Doug_Marrone                         0.1689       2.5115     **
+## Jay_Gruden                           0.1231       1.7811      *
+## Sean_McVay                           0.1577       2.3154     **
+## Steve_Spagnuolo                      0.1867       2.0355     **
+## Steve_Wilks                          0.1651       2.3321     **
+## Matt_Patricia                        0.1473       2.1497     **
+## Mike_Vrabel                          0.1777       2.6214    ***
+## Frank_Reich                          0.2039       3.0105    ***
+## Pat_Shurmur                          0.2145       3.0537    ***
+## Jon_Gruden                           0.2119       2.8324    ***
+## Matt_Nagy                            0.1889       2.7860    ***
+## Gregg_Williams                       0.2680       3.1547    ***
+## Joe_Philbin                          0.1795       2.1481     **
+## Kliff_Kingsbury                      0.2414       3.5772    ***
+## Vic_Fangio                           0.1696       2.4750     **
+## Freddie_Kitchens                     0.2106       2.8284    ***
+## Matt_LaFleur                         0.2420       3.5447    ***
+## Brian_Flores                         0.1801       2.6297    ***
+## Zac_Taylor                           0.1526       2.2469     **
+## Bill_Callahan                        0.0709       0.9478       
+## Matt_Rhule                           0.2199       3.1382    ***
+## Kevin_Stefanski                      0.2608       3.7856    ***
+## Joe_Judge                            0.1491       2.1310     **
+## Romeo_Crennel                        0.1379       1.7700      *
+## Raheem_Morris                        0.1673       2.1043     **
+## Darrell_Bevell                       0.1024       1.2187       
+## Arthur_Smith                         0.2164       3.0882    ***
+## Brandon_Staley                       0.2544       3.7315    ***
+## Urban_Meyer                          0.1988       2.5322     **
+## Dan_Campbell                         0.3013       4.3167    ***
+## David_Culley                         0.1555       2.0692     **
+## Robert_Saleh                         0.2134       3.1237    ***
+## Nick_Sirianni                        0.2698       3.7968    ***
+## Rich_Bisaccia                        0.1698       2.1729     **
+## Josh_McDaniels                       0.1969       2.7182    ***
+## Brian_Daboll                         0.2150       3.0407    ***
+## Matt_Eberflus                        0.2148       3.0336    ***
+## Lovie_Smith                          0.2070       2.8527    ***
+## Nathaniel_Hackett                    0.1569       2.1793     **
+## Mike_McDaniel                        0.2432       3.3650    ***
+## Kevin_OConnell                       0.2120       2.9850    ***
+## Dennis_Allen                         0.1421       2.0424     **
+## Jeff_Saturday                        0.2538       3.0817    ***
+## Jay_Rosburg                          0.2127       2.0733     **
+## DeMeco_Ryans                         0.2286       3.0290    ***
+## Shane_Steichen                       0.2620       3.4261    ***
+## Jonathan_Gannon                      0.3332       4.3426    ***
+## Antonio_Pierce                       0.1311       1.6024      .
+## Chris_Tabor                          0.2870       3.0801    ***
+## yardline_1_10                       -0.0886      -6.7186    ***
+## yardline_11_20                      -0.2005     -17.1580    ***
+## yardline_21_30                      -0.1724     -14.7708    ***
+## yardline_41_50                      -0.0697      -5.9906    ***
+## yardline_51_60                      -0.2140     -19.8477    ***
+## yardline_61_70                      -0.2742     -26.6813    ***
+## yardline_71_80                      -0.3004     -30.2488    ***
+## yardline_81_90                      -0.2667     -23.6903    ***
+## yardline_91_100                     -0.2467     -16.3895    ***
+## is_first_half                       -0.1053     -20.8947    ***
+## time_in_half                        -0.0351     -11.5071    ***
+## home_attendance                     -0.0083      -0.9871       
+## starter_QB_short_completions_12w      -0.0003      -0.0779       
+## starter_QB_medium_completions_12w       0.0077       1.8931      *
+## starter_QB_deep_completions_12w       0.0052       1.3895       
+## starter_RB_grades_pass_block_12w      -0.0043      -1.5117      .
+## starter_RB_attempts_12w              0.0028       0.9311       
+## starter_RB_short_receptions_12w       0.0026       0.8165       
+## starter_RB_medium_receptions_12w      -0.0037      -1.5237      .
+## starter_RB_deep_receptions_12w      -0.0017      -0.6289       
+## starter_WR1_grades_pass_block_12w       0.0038       1.4445      .
+## starter_WR1_grades_run_block_12w      -0.0033      -0.7905       
+## starter_WR1_short_receptions_12w      -0.0020      -0.6584       
+## starter_WR1_medium_receptions_12w      -0.0017      -0.5112       
+## starter_WR1_deep_receptions_12w       0.0014       0.4645       
+## starter_WR2_grades_pass_block_12w       0.0025       0.9915       
+## starter_WR2_grades_run_block_12w       0.0022       0.5112       
+## starter_WR2_short_receptions_12w       0.0048       1.5850      .
+## starter_WR2_medium_receptions_12w      -0.0037      -1.1570       
+## starter_WR2_deep_receptions_12w       0.0022       0.7734       
+## starter_WR3_grades_pass_block_12w       0.0007       0.2832       
+## starter_WR3_grades_run_block_12w       0.0004       0.1173       
+## starter_WR3_short_receptions_12w      -0.0006      -0.1874       
+## starter_WR3_medium_receptions_12w       0.0020       0.6219       
+## starter_WR3_deep_receptions_12w       0.0001       0.0507       
+## starter_TE1_grades_pass_block_12w      -0.0016      -0.4704       
+## starter_TE1_grades_run_block_12w       0.0022       0.5482       
+## starter_TE1_short_receptions_12w       0.0029       0.8094       
+## starter_TE1_medium_receptions_12w       0.0004       0.0983       
+## starter_TE1_deep_receptions_12w      -0.0034      -1.1504       
+## starter_OL_grades_pass_block_12w      -0.0045      -0.7807       
+## starter_OL_grades_run_block_12w       0.0034       0.5296       
+## starter_DL1_grades_defense_12w       0.0032       0.8920       
+## starter_DL2_grades_defense_12w      -0.0040      -1.0681       
+## starter_DL3_grades_defense_12w      -0.0009      -0.2370       
+## starter_DL4_grades_defense_12w       0.0007       0.2285       
+## starter_LB1_grades_defense_12w      -0.0032      -0.9465       
+## starter_LB2_grades_defense_12w       0.0029       0.8647       
+## starter_LB3_grades_defense_12w       0.0031       1.0436       
+## starter_LB4_grades_defense_12w       0.0017       0.6251       
+## starter_CB1_grades_defense_12w       0.0019       0.5026       
+## starter_CB2_grades_defense_12w      -0.0009      -0.2463       
+## starter_CB3_grades_defense_12w       0.0104       3.6440    ***
+## starter_S1_grades_defense_12w        0.0003       0.0866       
+## starter_S2_grades_defense_12w        0.0041       1.1550       
+## starter_S3_grades_defense_12w       -0.0042      -1.5873      .
+## 
+## Significance codes: 0 &#39;***&#39; 0.01 &#39;**&#39; 0.05 &#39;*&#39; 0.1 &#39;.&#39; 0.15
+## 
+## Model Fit Statistics:
+## OLS Starter R-squared: 0.2441 
+## OLS Starter Adj R-squared: 0.2385 
+## 
+## VIFs for Starter Players Model (showing only VIF &gt; 5):
+## vegas_wp                                               7.21
+## prev_shotgun_rate                                     12.13
+## prev_singleback_rate                                   7.89
+## prev_iform_rate                                        5.52
+## shotgun_rate                                           5.03
+## Chuck_Pagano                                          16.23
+## Bruce_Arians                                          52.49
+## Sean_McDermott                                        83.04
+## Ron_Rivera                                            93.38
+## John_Fox                                              15.22
+## Dirk_Koetter                                          24.59
+## Hue_Jackson                                           23.11
+## John_Harbaugh                                         91.13
+## Jason_Garrett                                         38.15
+## Vance_Joseph                                          31.36
+## Ben_McAdoo                                            12.64
+## Jim_Caldwell                                          14.40
+## Mike_McCarthy                                         72.34
+## Dan_Quinn                                             40.42
+## Marvin_Lewis                                          27.80
+## Bill_OBrien                                           43.36
+## Adam_Gase                                             57.36
+## Anthony_Lynn                                          48.76
+## Mike_Zimmer                                           64.58
+## Mike_Tomlin                                           91.49
+## Bill_Belichick                                        90.90
+## Sean_Payton                                           75.22
+## Jack_Del_Rio                                          15.04
+## Todd_Bowles                                           57.63
+## Doug_Pederson                                         77.95
+## Andy_Reid                                             73.72
+## Kyle_Shanahan                                         81.57
+## Pete_Carroll                                          89.94
+## Mike_Mularkey                                         15.06
+## Doug_Marrone                                          57.59
+## Jay_Gruden                                            33.29
+## Sean_McVay                                            87.94
+## Steve_Spagnuolo                                        5.91
+## Steve_Wilks                                           26.34
+## Matt_Patricia                                         36.26
+## Mike_Vrabel                                           74.47
+## Frank_Reich                                           67.33
+## Pat_Shurmur                                           27.40
+## Jon_Gruden                                            43.09
+## Matt_Nagy                                             54.13
+## Gregg_Williams                                         6.29
+## Kliff_Kingsbury                                       53.95
+## Vic_Fangio                                            42.73
+## Freddie_Kitchens                                      14.24
+## Matt_LaFleur                                          60.22
+## Brian_Flores                                          43.63
+## Zac_Taylor                                            65.55
+## Bill_Callahan                                         10.88
+## Matt_Rhule                                            32.82
+## Kevin_Stefanski                                       56.67
+## Joe_Judge                                             29.79
+## Romeo_Crennel                                          9.95
+## Raheem_Morris                                         10.68
+## Darrell_Bevell                                         7.51
+## Arthur_Smith                                          38.45
+## Brandon_Staley                                        41.15
+## Urban_Meyer                                           12.28
+## Dan_Campbell                                          42.05
+## David_Culley                                          16.93
+## Robert_Saleh                                          47.00
+## Nick_Sirianni                                         37.42
+## Rich_Bisaccia                                         10.99
+## Josh_McDaniels                                        20.44
+## Brian_Daboll                                          32.20
+## Matt_Eberflus                                         25.93
+## Lovie_Smith                                           16.64
+## Nathaniel_Hackett                                     17.06
+## Mike_McDaniel                                         24.25
+## Kevin_OConnell                                        26.88
+## Dennis_Allen                                          27.49
+## Jeff_Saturday                                          9.26
+## DeMeco_Ryans                                          13.19
+## Shane_Steichen                                        14.29
+## Jonathan_Gannon                                       13.58
+## Antonio_Pierce                                         8.35
+## starter_OL_grades_pass_block_12w                       6.43
+## starter_OL_grades_run_block_12w                        7.93
+## 
+## 
+## --- Model Summary Statistics ---
+## OLS Starter Players R-squared: 0.2441 
+## OLS Starter Players Adj R-squared: 0.2385 
+## 
+## Probit Starter Players AIC: 20385.78 
+## Probit Starter Players McFadden&#39;s Pseudo R²: 0.2591 
+## 
+## 
+## ==================================================================================================== 
+## ANALYZING DATASET 4/9: Off Tds.csv
 ## ==================================================================================================== 
 ## 
 ## 
@@ -1251,7 +1553,7 @@ div.tocify {
 ## 
 ## 
 ## ==================================================================================================== 
-## ANALYZING DATASET 4/8: Off First Downs.csv
+## ANALYZING DATASET 5/9: Off First Downs.csv
 ## ==================================================================================================== 
 ## 
 ## 
@@ -1550,7 +1852,7 @@ div.tocify {
 ## 
 ## 
 ## ==================================================================================================== 
-## ANALYZING DATASET 5/8: Def Stops.csv
+## ANALYZING DATASET 6/9: Def Stops.csv
 ## ==================================================================================================== 
 ## 
 ## 
@@ -1856,7 +2158,7 @@ div.tocify {
 ## 
 ## 
 ## ==================================================================================================== 
-## ANALYZING DATASET 6/8: Def Grades.csv
+## ANALYZING DATASET 7/9: Def Grades.csv
 ## ==================================================================================================== 
 ## 
 ## 
@@ -2152,7 +2454,7 @@ div.tocify {
 ## 
 ## 
 ## ==================================================================================================== 
-## ANALYZING DATASET 7/8: Def Tackles.csv
+## ANALYZING DATASET 8/9: Def Tackles.csv
 ## ==================================================================================================== 
 ## 
 ## 
@@ -2440,7 +2742,7 @@ div.tocify {
 ## 
 ## 
 ## ==================================================================================================== 
-## ANALYZING DATASET 8/8: Def Pressure.csv
+## ANALYZING DATASET 9/9: Def Pressure.csv
 ## ==================================================================================================== 
 ## 
 ## 
@@ -2723,12 +3025,13 @@ div.tocify {
 <pre><code>##                Dataset OLS R² OLS Adj. R² Probit AIC Probit Pseudo R²
 ## 1:      Off Grades.csv 0.2444      0.2390   20361.06           0.2593
 ## 2:       Off Yards.csv 0.2443      0.2387   20377.72           0.2594
-## 3:         Off Tds.csv 0.2443      0.2387   20377.16           0.2591
-## 4: Off First Downs.csv 0.2443      0.2387   20378.84           0.2591
-## 5:       Def Stops.csv 0.2447      0.2389   20379.25           0.2597
-## 6:      Def Grades.csv 0.2444      0.2389   20371.47           0.2593
-## 7:     Def Tackles.csv 0.2440      0.2387   20365.90           0.2589
-## 8:    Def Pressure.csv 0.2437      0.2387   20358.58           0.2584</code></pre>
+## 3: Off Completions.csv 0.2441      0.2385   20385.78           0.2591
+## 4:         Off Tds.csv 0.2443      0.2387   20377.16           0.2591
+## 5: Off First Downs.csv 0.2443      0.2387   20378.84           0.2591
+## 6:       Def Stops.csv 0.2447      0.2389   20379.25           0.2597
+## 7:      Def Grades.csv 0.2444      0.2389   20371.47           0.2593
+## 8:     Def Tackles.csv 0.2440      0.2387   20365.90           0.2589
+## 9:    Def Pressure.csv 0.2437      0.2387   20358.58           0.2584</code></pre>
 <pre><code>## 
 ## 
 ##  ====================================================================================================</code></pre>
@@ -2740,6 +3043,8 @@ div.tocify {
 ## Off Grades.csv            Kicker (FG)            -0.0045   -1.8422*    0.0655
 ## Off Yards.csv             Punter (Punt)          -0.0022   -0.8873    0.3749
 ## Off Yards.csv             Kicker (FG)            -0.0046   -1.8938*    0.0583
+## Off Completions.csv       Punter (Punt)          -0.0023   -0.9265    0.3542
+## Off Completions.csv       Kicker (FG)            -0.0045   -1.8646*    0.0622
 ## Off Tds.csv               Punter (Punt)          -0.0021   -0.8605    0.3895
 ## Off Tds.csv               Kicker (FG)            -0.0048   -1.9657**    0.0493
 ## Off First Downs.csv       Punter (Punt)          -0.0022   -0.8924    0.3722
@@ -2765,6 +3070,8 @@ div.tocify {
 ## Off Grades.csv            Kicker (FG)            -0.0188   -1.9152*    0.0555
 ## Off Yards.csv             Punter (Punt)          -0.0110   -1.1495    0.2504
 ## Off Yards.csv             Kicker (FG)            -0.0193   -1.9561*    0.0505
+## Off Completions.csv       Punter (Punt)          -0.0113   -1.1800    0.2380
+## Off Completions.csv       Kicker (FG)            -0.0190   -1.9336*    0.0532
 ## Off Tds.csv               Punter (Punt)          -0.0109   -1.1325    0.2574
 ## Off Tds.csv               Kicker (FG)            -0.0200   -2.0324**    0.0421
 ## Off First Downs.csv       Punter (Punt)          -0.0114   -1.1887    0.2346
@@ -2784,17 +3091,26 @@ div.tocify {
 ## Processing model: off_model_ols_off_tds.csv 
 ## Processing model: off_model_ols_off_first_downs.csv</code></pre>
 <pre><code>## 
+## ====================================================================================================
+## QB PASSING DEPTH T-VALUES ACROSS OFFENSIVE MODELS
+## ====================================================================================================
 ## 
-##  ====================================================================================================</code></pre>
-<pre><code>## QB PASSING DEPTH T-VALUES ACROSS OFFENSIVE MODELS</code></pre>
-<pre><code>## ====================================================================================================</code></pre>
-<pre><code>## Table of QB Passing Depths T-Values:</code></pre>
-<pre><code>## Model                          Variable        Short      Medium     Deep</code></pre>
-<pre><code>## --------------------------------------------------------------------------------</code></pre>
-<pre><code>## off_model_ols_off_grades.csv   QB_grades       1.575      1.657      1.562     
-## off_model_ols_off_yards.csv    QB_yards        0.627      1.538      1.866     
-## off_model_ols_off_tds.csv      QB_touchdowns   1.899      1.852      1.603     
-## off_model_ols_off_first_downs.csv QB_touchdowns   1.766      1.696      1.684</code></pre>
+## 
+## | Model                        | Variable        | Short      | Medium     | Deep       |
+## |------------------------------|-----------------|------------|------------|------------|
+## | Off Grades                   | QB_grades       | 1.575.     | 1.657*     | 1.562.     |
+## | Off Yards                    | QB_yards        | 0.627      | 1.538.     | 1.866*     |
+## | Off Tds                      | QB_touchdowns   | 1.899*     | 1.852*     | 1.603.     |
+## | Off First Downs              | QB_touchdowns   | 1.766*     | 1.696*     | 1.684*     |
+## |------------------------------|-----------------|------------|------------|------------|
+## 
+## Significance codes: 0 &#39;***&#39; 0.01 &#39;**&#39; 0.05 &#39;*&#39; 0.1 &#39;.&#39; 0.15
+## 
+## Note: T-values shown with significance stars. Higher absolute t-values indicate
+## stronger statistical significance. Positive values suggest better conversion rates
+## for passes at that depth, while negative values suggest worse conversion rates.</code></pre>
+<pre><code>## 
+## QB depth table saved to: tables/attempt_ols_qb_depth.txt</code></pre>
 
 
 

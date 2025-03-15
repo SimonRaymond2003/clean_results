@@ -1391,6 +1391,542 @@ Starter Players</h1>
 ## 
 ## 
 ## =================================================================
+## Analyzing dataset: processed_predict_cctd1_starters_off_completions.csv_predict_cctd1_players_off_completions.csv.csv.gz 
+## =================================================================
+## 
+## 
+## Preprocessing regular players dataset...
+## Detected 1 aliased variables: yardline_91_100  
+## Removed aliased variables, remaining columns: 116 
+## Error creating model matrix: &#39;.&#39; in formula and no &#39;data&#39; argument 
+## Running OLS with regular players...
+## Running probit with regular players...
+## 
+## Preprocessing starter players dataset...
+## Detected 1 aliased variables: yardline_91_100  
+## Removed aliased variables, remaining columns: 116 
+## Error creating model matrix: &#39;.&#39; in formula and no &#39;data&#39; argument 
+## Running OLS with starter players...
+## Running probit with starter players...
+## 
+## Regular Players OLS Model Results (Robust Statistics)
+## Variable                        Coefficient      t-value    Sig
+## ----------------------------------------------------------------- 
+## (Intercept)                          0.3063      15.9047    ***
+## ydstogo                             -0.1473     -69.4314    ***
+## posteam_timeouts_remaining           0.0058       2.2609     **
+## defteam_timeouts_remaining           0.0114       4.4049    ***
+## rush_attempt                         0.1039      16.6672    ***
+## week                                -0.0059      -2.1659     **
+## temp                                 0.0009       0.3077       
+## wind                                -0.0032      -1.0949       
+## vegas_wp                            -0.0117      -1.9616     **
+## spread_line                         -0.0050      -2.2518     **
+## total_line                           0.0053       1.7344      *
+## p_player_26_punting_grades_grades_punter_12w      -0.0091      -3.7731    ***
+## k_player_25_field_goals_grades_grades_fgep_kicker_12w       0.0098       3.9762    ***
+## defteam_prev_game_off_4th_success       0.0010       0.4571       
+## defteam_prev_game_off_4th_fail      -0.0016      -0.6925       
+## down4_pct                            0.0001       0.0527       
+## prep_days                           -0.0047      -2.1100     **
+## overall_win_pct                      0.0090       2.7169    ***
+## team_win_pct                         0.0208       5.8454    ***
+## prev_win_pct                         0.0044       1.4817      .
+## prev_shotgun_rate                   -0.0024      -0.4156       
+## prev_singleback_rate                -0.0064      -1.3726       
+## prev_empty_rate                     -0.0007      -0.2175       
+## prev_iform_rate                     -0.0005      -0.1214       
+## prev_shotgun_success                 0.0034       1.1761       
+## prev_singleback_success             -0.0039      -1.2195       
+## prev_empty_success                   0.0007       0.2799       
+## prev_iform_success                   0.0012       0.4764       
+## prev_stop_rate_run                  -0.0029      -1.1271       
+## prev_stop_rate_pass                 -0.0038      -1.4706      .
+## shotgun_rate                         0.0076       0.9306       
+## singleback_rate                     -0.0011      -0.2531       
+## empty_rate                           0.0050       0.6942       
+## iform_rate                           0.0025       0.7026       
+## shotgun_success                     -0.0082      -3.1611    ***
+## singleback_success                   0.0033       1.4331       
+## empty_success                       -0.0006      -0.2678       
+## iform_success                       -0.0016      -0.6670       
+## def_stop_rate_run                   -0.0031      -1.2437       
+## def_stop_rate_pass                  -0.0016      -0.6242       
+## avg_pass_rushers                    -0.0013      -0.4848       
+## avg_box_defenders                    0.0021       0.7534       
+## cover0_rate                         -0.0088      -3.0285    ***
+## cover1_rate                          0.0018       0.5930       
+## cover2_rate                          0.0044       1.7024      *
+## cover3_rate                          0.0016       0.6100       
+## cover4_rate                         -0.0030      -1.1039       
+## cover6_rate                          0.0005       0.1970       
+## two_man_rate                        -0.0011      -0.4189       
+## prevent_rate                        -0.0020      -0.8258       
+## home_attendance                     -0.0044      -1.7140      *
+## roof_outdoors                       -0.0061      -0.9194       
+## posteam_type_home                    0.0193       4.2732    ***
+## offense_formation_EMPTY             -0.0160      -0.9593       
+## offense_formation_SHOTGUN           -0.0243      -1.5465      .
+## offense_formation_SINGLEBACK        -0.0099      -0.5840       
+## offense_formation_I_FORM             0.0062       0.3167       
+## is_winning                           0.0127       1.4501      .
+## is_losing                            0.0113       1.4172       
+## winning_score_diff                  -0.0115      -3.0840    ***
+## losing_score_diff                   -0.0006      -0.1687       
+## yardline_1_10                        0.0480       2.9253    ***
+## yardline_11_20                       0.0728       5.8378    ***
+## yardline_21_30                       0.0783       7.2099    ***
+## yardline_31_40                       0.0970       9.0492    ***
+## yardline_41_50                       0.0929       8.4390    ***
+## yardline_51_60                       0.0893       7.9178    ***
+## yardline_61_70                       0.0649       5.6646    ***
+## yardline_71_80                       0.0614       5.2699    ***
+## yardline_81_90                       0.0360       3.0426    ***
+## is_first_half                        0.0137       2.7839    ***
+## time_in_half                        -0.0041      -1.4058       
+## QB_short_completions_12w             0.0049       1.3869       
+## QB_medium_completions_12w            0.0105       2.7364    ***
+## QB_deep_completions_12w              0.0007       0.2320       
+## RB_grades_pass_block_12w             0.0016       0.6723       
+## RB_attempts_12w                     -0.0016      -0.6601       
+## RB_short_receptions_12w             -0.0023      -0.9277       
+## RB_medium_receptions_12w            -0.0024      -1.0344       
+## RB_deep_receptions_12w               0.0025       1.0955       
+## WR1_grades_pass_block_12w           -0.0000      -0.0006       
+## WR1_grades_run_block_12w            -0.0010      -0.3742       
+## WR1_short_receptions_12w            -0.0045      -1.6815      *
+## WR1_medium_receptions_12w           -0.0003      -0.0991       
+## WR1_deep_receptions_12w              0.0061       2.2741     **
+## WR2_grades_pass_block_12w           -0.0011      -0.4675       
+## WR2_grades_run_block_12w             0.0089       2.8222    ***
+## WR2_short_receptions_12w            -0.0068      -2.3655     **
+## WR2_medium_receptions_12w            0.0039       1.2833       
+## WR2_deep_receptions_12w              0.0041       1.5127      .
+## WR3_grades_pass_block_12w           -0.0005      -0.2091       
+## WR3_grades_run_block_12w            -0.0024      -0.7495       
+## WR3_short_receptions_12w             0.0029       0.9369       
+## WR3_medium_receptions_12w           -0.0003      -0.1008       
+## WR3_deep_receptions_12w              0.0052       1.9186      *
+## TE1_grades_pass_block_12w           -0.0014      -0.4031       
+## TE1_grades_run_block_12w             0.0017       0.5020       
+## TE1_short_receptions_12w             0.0054       1.8542      *
+## TE1_medium_receptions_12w            0.0027       0.8869       
+## TE1_deep_receptions_12w             -0.0029      -1.1165       
+## OL_grades_pass_block_12w             0.0064       2.3053     **
+## OL_grades_run_block_12w             -0.0016      -0.5882       
+## DL1_grades_defense_12w              -0.0028      -1.2173       
+## DL2_grades_defense_12w              -0.0014      -0.5215       
+## DL3_grades_defense_12w              -0.0063      -1.6979      *
+## DL4_grades_defense_12w              -0.0049      -1.3340       
+## LB1_grades_defense_12w              -0.0009      -0.3736       
+## LB2_grades_defense_12w              -0.0063      -2.3958     **
+## LB3_grades_defense_12w               0.0025       0.6459       
+## LB4_grades_defense_12w              -0.0082      -2.4543     **
+## CB1_grades_defense_12w              -0.0061      -2.4197     **
+## CB2_grades_defense_12w              -0.0072      -2.8494    ***
+## CB3_grades_defense_12w              -0.0059      -2.1127     **
+## S1_grades_defense_12w               -0.0057      -2.4167     **
+## S2_grades_defense_12w               -0.0028      -1.1452       
+## S3_grades_defense_12w               -0.0061      -2.1925     **
+## 
+## Significance codes: 0 &#39;***&#39; 0.01 &#39;**&#39; 0.05 &#39;*&#39; 0.1 &#39;.&#39; 0.15
+## 
+## Starter Players OLS Model Results (Robust Statistics)
+## Variable                        Coefficient      t-value    Sig
+## ----------------------------------------------------------------- 
+## (Intercept)                          0.3079      17.1778    ***
+## ydstogo                             -0.1468     -70.2916    ***
+## posteam_timeouts_remaining           0.0056       2.2058     **
+## defteam_timeouts_remaining           0.0111       4.2838    ***
+## rush_attempt                         0.1015      16.4174    ***
+## week                                -0.0050      -1.8384      *
+## temp                                 0.0004       0.1263       
+## wind                                -0.0035      -1.1932       
+## vegas_wp                             0.0003       0.0502       
+## spread_line                         -0.0047      -2.1148     **
+## total_line                           0.0088       2.8458    ***
+## p_player_26_punting_grades_grades_punter_12w      -0.0087      -3.5719    ***
+## k_player_25_field_goals_grades_grades_fgep_kicker_12w       0.0104       4.1811    ***
+## defteam_prev_game_off_4th_success       0.0015       0.6631       
+## defteam_prev_game_off_4th_fail      -0.0011      -0.4809       
+## down4_pct                           -0.0000      -0.0187       
+## prep_days                           -0.0047      -2.1097     **
+## overall_win_pct                      0.0092       2.7485    ***
+## team_win_pct                         0.0214       5.9138    ***
+## prev_win_pct                         0.0050       1.6573      *
+## prev_shotgun_rate                   -0.0024      -0.4192       
+## prev_singleback_rate                -0.0059      -1.2398       
+## prev_empty_rate                     -0.0014      -0.4410       
+## prev_iform_rate                      0.0002       0.0587       
+## prev_shotgun_success                 0.0028       0.9780       
+## prev_singleback_success             -0.0037      -1.1373       
+## prev_empty_success                   0.0010       0.3903       
+## prev_iform_success                   0.0015       0.5725       
+## prev_stop_rate_run                  -0.0030      -1.1585       
+## prev_stop_rate_pass                 -0.0050      -1.9652     **
+## shotgun_rate                         0.0117       1.4159       
+## singleback_rate                      0.0004       0.0993       
+## empty_rate                           0.0082       1.1247       
+## iform_rate                           0.0030       0.8362       
+## shotgun_success                     -0.0078      -2.9699    ***
+## singleback_success                   0.0021       0.9032       
+## empty_success                       -0.0000      -0.0086       
+## iform_success                       -0.0020      -0.8002       
+## def_stop_rate_run                   -0.0044      -1.7571      *
+## def_stop_rate_pass                  -0.0041      -1.6068      .
+## avg_pass_rushers                    -0.0012      -0.4509       
+## avg_box_defenders                    0.0015       0.5593       
+## cover0_rate                         -0.0073      -2.5768    ***
+## cover1_rate                          0.0039       1.3193       
+## cover2_rate                          0.0039       1.5251      .
+## cover3_rate                          0.0014       0.5194       
+## cover4_rate                         -0.0038      -1.4501      .
+## cover6_rate                          0.0012       0.4480       
+## two_man_rate                        -0.0007      -0.2727       
+## prevent_rate                        -0.0022      -0.9136       
+## home_attendance                     -0.0035      -1.3536       
+## roof_outdoors                       -0.0036      -0.5376       
+## posteam_type_home                    0.0173       3.8141    ***
+## offense_formation_EMPTY             -0.0169      -1.0899       
+## offense_formation_SHOTGUN           -0.0249      -1.7171      *
+## offense_formation_SINGLEBACK        -0.0177      -1.0854       
+## offense_formation_I_FORM            -0.0091      -0.4834       
+## is_winning                           0.0104       1.1848       
+## is_losing                            0.0161       2.0146     **
+## winning_score_diff                  -0.0155      -4.2263    ***
+## losing_score_diff                   -0.0035      -0.9202       
+## yardline_1_10                        0.0464       2.8365    ***
+## yardline_11_20                       0.0720       5.8373    ***
+## yardline_21_30                       0.0769       7.1823    ***
+## yardline_31_40                       0.0951       8.9881    ***
+## yardline_41_50                       0.0898       8.2660    ***
+## yardline_51_60                       0.0868       7.8069    ***
+## yardline_61_70                       0.0622       5.4895    ***
+## yardline_71_80                       0.0575       4.9873    ***
+## yardline_81_90                       0.0325       2.7655    ***
+## is_first_half                        0.0150       3.0531    ***
+## time_in_half                        -0.0035      -1.1999       
+## starter_QB_short_completions_12w       0.0065       1.8724      *
+## starter_QB_medium_completions_12w       0.0002       0.0574       
+## starter_QB_deep_completions_12w      -0.0036      -1.1103       
+## starter_RB_grades_pass_block_12w      -0.0013      -0.4953       
+## starter_RB_attempts_12w             -0.0005      -0.1768       
+## starter_RB_short_receptions_12w      -0.0025      -0.9330       
+## starter_RB_medium_receptions_12w      -0.0015      -0.6564       
+## starter_RB_deep_receptions_12w      -0.0005      -0.2099       
+## starter_WR1_grades_pass_block_12w      -0.0028      -1.1832       
+## starter_WR1_grades_run_block_12w       0.0044       1.1499       
+## starter_WR1_short_receptions_12w      -0.0055      -2.0088     **
+## starter_WR1_medium_receptions_12w       0.0037       1.2188       
+## starter_WR1_deep_receptions_12w       0.0059       2.2158     **
+## starter_WR2_grades_pass_block_12w       0.0031       1.3117       
+## starter_WR2_grades_run_block_12w      -0.0011      -0.2922       
+## starter_WR2_short_receptions_12w      -0.0049      -1.8047      *
+## starter_WR2_medium_receptions_12w       0.0034       1.1517       
+## starter_WR2_deep_receptions_12w       0.0048       1.8026      *
+## starter_WR3_grades_pass_block_12w      -0.0012      -0.5021       
+## starter_WR3_grades_run_block_12w      -0.0018      -0.4961       
+## starter_WR3_short_receptions_12w      -0.0047      -1.6489      *
+## starter_WR3_medium_receptions_12w       0.0043       1.4343       
+## starter_WR3_deep_receptions_12w       0.0045       1.6737      *
+## starter_TE1_grades_pass_block_12w      -0.0007      -0.2248       
+## starter_TE1_grades_run_block_12w       0.0040       1.0887       
+## starter_TE1_short_receptions_12w       0.0033       1.1505       
+## starter_TE1_medium_receptions_12w       0.0043       1.3777       
+## starter_TE1_deep_receptions_12w      -0.0033      -1.2286       
+## starter_OL_grades_pass_block_12w       0.0047       1.0077       
+## starter_OL_grades_run_block_12w      -0.0039      -0.7562       
+## starter_DL1_grades_defense_12w       0.0029       0.9000       
+## starter_DL2_grades_defense_12w       0.0005       0.1534       
+## starter_DL3_grades_defense_12w      -0.0025      -0.7681       
+## starter_DL4_grades_defense_12w      -0.0010      -0.3777       
+## starter_LB1_grades_defense_12w      -0.0041      -1.3189       
+## starter_LB2_grades_defense_12w      -0.0027      -0.8461       
+## starter_LB3_grades_defense_12w      -0.0005      -0.1705       
+## starter_LB4_grades_defense_12w      -0.0001      -0.0214       
+## starter_CB1_grades_defense_12w       0.0002       0.0630       
+## starter_CB2_grades_defense_12w      -0.0039      -1.1086       
+## starter_CB3_grades_defense_12w      -0.0030      -1.1223       
+## starter_S1_grades_defense_12w       -0.0003      -0.0942       
+## starter_S2_grades_defense_12w        0.0033       0.9976       
+## starter_S3_grades_defense_12w       -0.0036      -1.4739      .
+## 
+## Significance codes: 0 &#39;***&#39; 0.01 &#39;**&#39; 0.05 &#39;*&#39; 0.1 &#39;.&#39; 0.15
+## 
+## Regular Players: Variables with VIF &gt; 5:
+##                  vegas_wp         prev_shotgun_rate              shotgun_rate 
+##                  7.330559                  6.673485                 13.520260 
+##                empty_rate   offense_formation_EMPTY offense_formation_SHOTGUN 
+##                 10.523672                  6.902759                  9.718511 
+## 
+## Starter Players: Variables with VIF &gt; 5:
+##                        vegas_wp               prev_shotgun_rate 
+##                        6.950305                        6.867320 
+##                    shotgun_rate                      empty_rate 
+##                       13.781386                       10.729718 
+##         offense_formation_EMPTY       offense_formation_SHOTGUN 
+##                        5.969115                        8.255461 
+## starter_OL_grades_run_block_12w 
+##                        5.324121 
+## 
+## Regular Players Probit Model Results (Robust Statistics)
+## Variable                        Coefficient      z-value    Sig
+## ----------------------------------------------------------------- 
+## (Intercept)                         -0.5833     -10.8629    ***
+## ydstogo                             -0.4819     -54.0187    ***
+## posteam_timeouts_remaining           0.0183       2.4508     **
+## defteam_timeouts_remaining           0.0283       3.7641    ***
+## rush_attempt                         0.2532      14.4229    ***
+## week                                -0.0166      -2.1270     **
+## temp                                 0.0017       0.2076       
+## wind                                -0.0093      -1.0986       
+## vegas_wp                            -0.0350      -2.0426     **
+## spread_line                         -0.0148      -2.3053     **
+## total_line                           0.0142       1.6040      .
+## p_player_26_punting_grades_grades_punter_12w      -0.0256      -3.6653    ***
+## k_player_25_field_goals_grades_grades_fgep_kicker_12w       0.0285       3.8766    ***
+## defteam_prev_game_off_4th_success       0.0032       0.4891       
+## defteam_prev_game_off_4th_fail      -0.0041      -0.6194       
+## down4_pct                            0.0015       0.2082       
+## prep_days                           -0.0137      -2.1305     **
+## overall_win_pct                      0.0252       2.6225    ***
+## team_win_pct                         0.0610       5.9099    ***
+## prev_win_pct                         0.0116       1.3580       
+## prev_shotgun_rate                   -0.0097      -0.5907       
+## prev_singleback_rate                -0.0196      -1.4654      .
+## prev_empty_rate                     -0.0034      -0.3685       
+## prev_iform_rate                     -0.0010      -0.0858       
+## prev_shotgun_success                 0.0090       1.0855       
+## prev_singleback_success             -0.0119      -1.2836       
+## prev_empty_success                   0.0021       0.2716       
+## prev_iform_success                   0.0040       0.5403       
+## prev_stop_rate_run                  -0.0084      -1.1275       
+## prev_stop_rate_pass                 -0.0115      -1.5223      .
+## shotgun_rate                         0.0194       0.8305       
+## singleback_rate                     -0.0032      -0.2647       
+## empty_rate                           0.0123       0.5965       
+## iform_rate                           0.0062       0.6223       
+## shotgun_success                     -0.0238      -3.1826    ***
+## singleback_success                   0.0103       1.5282      .
+## empty_success                       -0.0020      -0.2981       
+## iform_success                       -0.0053      -0.7455       
+## def_stop_rate_run                   -0.0082      -1.1322       
+## def_stop_rate_pass                  -0.0053      -0.6959       
+## avg_pass_rushers                    -0.0018      -0.2296       
+## avg_box_defenders                    0.0059       0.7523       
+## cover0_rate                         -0.0280      -3.3267    ***
+## cover1_rate                          0.0041       0.4677       
+## cover2_rate                          0.0143       1.9313      *
+## cover3_rate                          0.0041       0.5387       
+## cover4_rate                         -0.0068      -0.8755       
+## cover6_rate                          0.0013       0.1725       
+## two_man_rate                        -0.0035      -0.4742       
+## prevent_rate                        -0.0047      -0.6483       
+## home_attendance                     -0.0115      -1.5535      .
+## roof_outdoors                       -0.0174      -0.9130       
+## posteam_type_home                    0.0535       4.1033    ***
+## offense_formation_EMPTY             -0.0163      -0.3509       
+## offense_formation_SHOTGUN           -0.0372      -0.8528       
+## offense_formation_SINGLEBACK        -0.0355      -0.7525       
+## offense_formation_I_FORM             0.0092       0.1680       
+## is_winning                           0.0357       1.4138       
+## is_losing                            0.0326       1.4148       
+## winning_score_diff                  -0.0282      -2.6408    ***
+## losing_score_diff                    0.0019       0.1704       
+## yardline_1_10                        0.1197       2.2831     **
+## yardline_11_20                       0.2043       5.6228    ***
+## yardline_21_30                       0.2392       8.0435    ***
+## yardline_31_40                       0.2706       9.2722    ***
+## yardline_41_50                       0.2635       8.7652    ***
+## yardline_51_60                       0.2566       8.3224    ***
+## yardline_61_70                       0.1896       6.0185    ***
+## yardline_71_80                       0.1831       5.7066    ***
+## yardline_81_90                       0.1236       3.7800    ***
+## is_first_half                        0.0371       2.6073    ***
+## time_in_half                        -0.0124      -1.4625      .
+## QB_short_completions_12w             0.0126       1.2186       
+## QB_medium_completions_12w            0.0316       2.8573    ***
+## QB_deep_completions_12w              0.0017       0.1848       
+## RB_grades_pass_block_12w             0.0051       0.7393       
+## RB_attempts_12w                     -0.0079      -1.1184       
+## RB_short_receptions_12w             -0.0058      -0.8063       
+## RB_medium_receptions_12w            -0.0065      -0.9764       
+## RB_deep_receptions_12w               0.0068       1.0237       
+## WR1_grades_pass_block_12w           -0.0002      -0.0324       
+## WR1_grades_run_block_12w            -0.0011      -0.1459       
+## WR1_short_receptions_12w            -0.0129      -1.6464      *
+## WR1_medium_receptions_12w           -0.0017      -0.1978       
+## WR1_deep_receptions_12w              0.0176       2.2788     **
+## WR2_grades_pass_block_12w           -0.0029      -0.4283       
+## WR2_grades_run_block_12w             0.0255       2.8921    ***
+## WR2_short_receptions_12w            -0.0202      -2.4248     **
+## WR2_medium_receptions_12w            0.0117       1.3138       
+## WR2_deep_receptions_12w              0.0123       1.5685      .
+## WR3_grades_pass_block_12w           -0.0014      -0.1964       
+## WR3_grades_run_block_12w            -0.0053      -0.5815       
+## WR3_short_receptions_12w             0.0079       0.8965       
+## WR3_medium_receptions_12w           -0.0012      -0.1345       
+## WR3_deep_receptions_12w              0.0155       1.9958     **
+## TE1_grades_pass_block_12w           -0.0038      -0.3883       
+## TE1_grades_run_block_12w             0.0033       0.3381       
+## TE1_short_receptions_12w             0.0162       1.9373      *
+## TE1_medium_receptions_12w            0.0077       0.8859       
+## TE1_deep_receptions_12w             -0.0084      -1.1239       
+## OL_grades_pass_block_12w             0.0190       2.3456     **
+## OL_grades_run_block_12w             -0.0051      -0.6544       
+## DL1_grades_defense_12w              -0.0074      -1.0830       
+## DL2_grades_defense_12w              -0.0066      -0.8451       
+## DL3_grades_defense_12w              -0.0250      -2.3281     **
+## DL4_grades_defense_12w              -0.0203      -1.9353      *
+## LB1_grades_defense_12w              -0.0021      -0.3034       
+## LB2_grades_defense_12w              -0.0225      -2.9432    ***
+## LB3_grades_defense_12w               0.0024       0.2119       
+## LB4_grades_defense_12w              -0.0287      -2.9962    ***
+## CB1_grades_defense_12w              -0.0178      -2.4964     **
+## CB2_grades_defense_12w              -0.0209      -2.9425    ***
+## CB3_grades_defense_12w              -0.0148      -1.8453      *
+## S1_grades_defense_12w               -0.0161      -2.3897     **
+## S2_grades_defense_12w               -0.0076      -1.0918       
+## S3_grades_defense_12w               -0.0163      -2.0159     **
+## 
+## Significance codes: 0 &#39;***&#39; 0.01 &#39;**&#39; 0.05 &#39;*&#39; 0.1 &#39;.&#39; 0.15
+## 
+## Starter Players Probit Model Results (Robust Statistics)
+## Variable                        Coefficient      z-value    Sig
+## ----------------------------------------------------------------- 
+## (Intercept)                         -0.5923     -11.8937    ***
+## ydstogo                             -0.4765     -55.0172    ***
+## posteam_timeouts_remaining           0.0178       2.3881     **
+## defteam_timeouts_remaining           0.0277       3.6938    ***
+## rush_attempt                         0.2430      13.9709    ***
+## week                                -0.0139      -1.7817      *
+## temp                                 0.0002       0.0190       
+## wind                                -0.0108      -1.2692       
+## vegas_wp                            -0.0006      -0.0388       
+## spread_line                         -0.0141      -2.1812     **
+## total_line                           0.0238       2.6807    ***
+## p_player_26_punting_grades_grades_punter_12w      -0.0241      -3.4417    ***
+## k_player_25_field_goals_grades_grades_fgep_kicker_12w       0.0298       4.0122    ***
+## defteam_prev_game_off_4th_success       0.0046       0.7026       
+## defteam_prev_game_off_4th_fail      -0.0028      -0.4206       
+## down4_pct                            0.0009       0.1195       
+## prep_days                           -0.0137      -2.1191     **
+## overall_win_pct                      0.0253       2.6152    ***
+## team_win_pct                         0.0634       6.0670    ***
+## prev_win_pct                         0.0138       1.5768      .
+## prev_shotgun_rate                   -0.0094      -0.5649       
+## prev_singleback_rate                -0.0179      -1.3037       
+## prev_empty_rate                     -0.0049      -0.5350       
+## prev_iform_rate                      0.0012       0.1007       
+## prev_shotgun_success                 0.0075       0.8908       
+## prev_singleback_success             -0.0112      -1.1957       
+## prev_empty_success                   0.0026       0.3354       
+## prev_iform_success                   0.0052       0.6970       
+## prev_stop_rate_run                  -0.0090      -1.2164       
+## prev_stop_rate_pass                 -0.0141      -1.9153      *
+## shotgun_rate                         0.0323       1.3651       
+## singleback_rate                      0.0011       0.0911       
+## empty_rate                           0.0227       1.0889       
+## iform_rate                           0.0080       0.7849       
+## shotgun_success                     -0.0227      -3.0052    ***
+## singleback_success                   0.0070       1.0344       
+## empty_success                       -0.0005      -0.0756       
+## iform_success                       -0.0063      -0.8893       
+## def_stop_rate_run                   -0.0124      -1.7367      *
+## def_stop_rate_pass                  -0.0131      -1.7625      *
+## avg_pass_rushers                    -0.0025      -0.3252       
+## avg_box_defenders                    0.0034       0.4403       
+## cover0_rate                         -0.0223      -2.7028    ***
+## cover1_rate                          0.0107       1.2642       
+## cover2_rate                          0.0121       1.6543      *
+## cover3_rate                          0.0027       0.3565       
+## cover4_rate                         -0.0104      -1.3756       
+## cover6_rate                          0.0029       0.3942       
+## two_man_rate                        -0.0021      -0.2957       
+## prevent_rate                        -0.0056      -0.7859       
+## home_attendance                     -0.0088      -1.1769       
+## roof_outdoors                       -0.0097      -0.5060       
+## posteam_type_home                    0.0476       3.6498    ***
+## offense_formation_EMPTY             -0.0070      -0.1628       
+## offense_formation_SHOTGUN           -0.0273      -0.6795       
+## offense_formation_SINGLEBACK        -0.0543      -1.2088       
+## offense_formation_I_FORM            -0.0382      -0.7342       
+## is_winning                           0.0294       1.1639       
+## is_losing                            0.0464       2.0250     **
+## winning_score_diff                  -0.0397      -3.7809    ***
+## losing_score_diff                   -0.0067      -0.5985       
+## yardline_1_10                        0.1187       2.2750     **
+## yardline_11_20                       0.2060       5.7441    ***
+## yardline_21_30                       0.2398       8.1975    ***
+## yardline_31_40                       0.2696       9.3863    ***
+## yardline_41_50                       0.2596       8.7759    ***
+## yardline_51_60                       0.2548       8.4045    ***
+## yardline_61_70                       0.1860       5.9849    ***
+## yardline_71_80                       0.1759       5.5566    ***
+## yardline_81_90                       0.1160       3.5870    ***
+## is_first_half                        0.0409       2.8887    ***
+## time_in_half                        -0.0105      -1.2473       
+## starter_QB_short_completions_12w       0.0184       1.8435      *
+## starter_QB_medium_completions_12w       0.0014       0.1278       
+## starter_QB_deep_completions_12w      -0.0107      -1.1353       
+## starter_RB_grades_pass_block_12w      -0.0031      -0.4293       
+## starter_RB_attempts_12w             -0.0024      -0.3225       
+## starter_RB_short_receptions_12w      -0.0072      -0.9395       
+## starter_RB_medium_receptions_12w      -0.0043      -0.6431       
+## starter_RB_deep_receptions_12w      -0.0007      -0.0974       
+## starter_WR1_grades_pass_block_12w      -0.0081      -1.1989       
+## starter_WR1_grades_run_block_12w       0.0138       1.2336       
+## starter_WR1_short_receptions_12w      -0.0166      -2.0982     **
+## starter_WR1_medium_receptions_12w       0.0109       1.2429       
+## starter_WR1_deep_receptions_12w       0.0168       2.1777     **
+## starter_WR2_grades_pass_block_12w       0.0088       1.3005       
+## starter_WR2_grades_run_block_12w      -0.0016      -0.1426       
+## starter_WR2_short_receptions_12w      -0.0149      -1.8938      *
+## starter_WR2_medium_receptions_12w       0.0099       1.1555       
+## starter_WR2_deep_receptions_12w       0.0140       1.8041      *
+## starter_WR3_grades_pass_block_12w      -0.0022      -0.3299       
+## starter_WR3_grades_run_block_12w      -0.0035      -0.3438       
+## starter_WR3_short_receptions_12w      -0.0126      -1.5473      .
+## starter_WR3_medium_receptions_12w       0.0116       1.3386       
+## starter_WR3_deep_receptions_12w       0.0133       1.7273      *
+## starter_TE1_grades_pass_block_12w      -0.0018      -0.1992       
+## starter_TE1_grades_run_block_12w       0.0126       1.1668       
+## starter_TE1_short_receptions_12w       0.0092       1.1119       
+## starter_TE1_medium_receptions_12w       0.0121       1.3497       
+## starter_TE1_deep_receptions_12w      -0.0092      -1.1915       
+## starter_OL_grades_pass_block_12w       0.0132       0.9791       
+## starter_OL_grades_run_block_12w      -0.0117      -0.7889       
+## starter_DL1_grades_defense_12w       0.0075       0.7906       
+## starter_DL2_grades_defense_12w       0.0002       0.0170       
+## starter_DL3_grades_defense_12w      -0.0073      -0.7602       
+## starter_DL4_grades_defense_12w      -0.0040      -0.5052       
+## starter_LB1_grades_defense_12w      -0.0116      -1.2912       
+## starter_LB2_grades_defense_12w      -0.0085      -0.9220       
+## starter_LB3_grades_defense_12w      -0.0018      -0.2237       
+## starter_LB4_grades_defense_12w      -0.0002      -0.0323       
+## starter_CB1_grades_defense_12w      -0.0007      -0.0681       
+## starter_CB2_grades_defense_12w      -0.0102      -1.0078       
+## starter_CB3_grades_defense_12w      -0.0094      -1.2140       
+## starter_S1_grades_defense_12w       -0.0007      -0.0664       
+## starter_S2_grades_defense_12w        0.0079       0.8475       
+## starter_S3_grades_defense_12w       -0.0092      -1.3046       
+## 
+## Significance codes: 0 &#39;***&#39; 0.01 &#39;**&#39; 0.05 &#39;*&#39; 0.1 &#39;.&#39; 0.15
+## 
+## 
+## --- Model Comparison Summary ---
+## OLS Regular Players R-squared: 0.1228 
+## OLS Starter Players R-squared: 0.1212 
+## OLS Regular Players Adj R-squared: 0.1204 
+## OLS Starter Players Adj R-squared: 0.1189 
+## 
+## Probit Regular Players AIC: 52644.28 
+## Probit Starter Players AIC: 52726.16 
+## Probit Regular Players McFadden&#39;s Pseudo R²: 0.1015 
+## Probit Starter Players McFadden&#39;s Pseudo R²: 0.1001 
+## 
+## 
+## =================================================================
 ## Analyzing dataset: processed_predict_cctd1_starters_off_tds.csv_predict_cctd1_players_off_tds.csv.csv.gz 
 ## =================================================================
 ## 
@@ -4444,75 +4980,93 @@ Starter Players</h1>
 <pre><code>##                                                                                                 Dataset
 ## 1           processed_predict_cctd1_starters_off_grades.csv_predict_cctd1_players_off_grades.csv.csv.gz
 ## 2             processed_predict_cctd1_starters_off_yards.csv_predict_cctd1_players_off_yards.csv.csv.gz
-## 3                 processed_predict_cctd1_starters_off_tds.csv_predict_cctd1_players_off_tds.csv.csv.gz
-## 4 processed_predict_cctd1_starters_off_first_downs.csv_predict_cctd1_players_off_first_downs.csv.csv.gz
-## 5             processed_predict_cctd1_starters_def_stops.csv_predict_cctd1_players_def_stops.csv.csv.gz
-## 6           processed_predict_cctd1_starters_def_grades.csv_predict_cctd1_players_def_grades.csv.csv.gz
-## 7         processed_predict_cctd1_starters_def_tackles.csv_predict_cctd1_players_def_tackles.csv.csv.gz
-## 8       processed_predict_cctd1_starters_def_pressure.csv_predict_cctd1_players_def_pressure.csv.csv.gz
+## 3 processed_predict_cctd1_starters_off_completions.csv_predict_cctd1_players_off_completions.csv.csv.gz
+## 4                 processed_predict_cctd1_starters_off_tds.csv_predict_cctd1_players_off_tds.csv.csv.gz
+## 5 processed_predict_cctd1_starters_off_first_downs.csv_predict_cctd1_players_off_first_downs.csv.csv.gz
+## 6             processed_predict_cctd1_starters_def_stops.csv_predict_cctd1_players_def_stops.csv.csv.gz
+## 7           processed_predict_cctd1_starters_def_grades.csv_predict_cctd1_players_def_grades.csv.csv.gz
+## 8         processed_predict_cctd1_starters_def_tackles.csv_predict_cctd1_players_def_tackles.csv.csv.gz
+## 9       processed_predict_cctd1_starters_def_pressure.csv_predict_cctd1_players_def_pressure.csv.csv.gz
 ##   Regular_OLS_R2 Starter_OLS_R2 Regular_OLS_Adj_R2 Starter_OLS_Adj_R2
 ## 1         0.1220         0.1206             0.1199             0.1185
 ## 2         0.1228         0.1214             0.1205             0.1190
-## 3         0.1219         0.1209             0.1196             0.1187
-## 4         0.1221         0.1209             0.1199             0.1186
-## 5         0.1225         0.1212             0.1200             0.1187
-## 6         0.1221         0.1209             0.1199             0.1187
-## 7         0.1216         0.1207             0.1196             0.1186
-## 8         0.1217         0.1207             0.1198             0.1188
+## 3         0.1228         0.1212             0.1204             0.1189
+## 4         0.1219         0.1209             0.1196             0.1187
+## 5         0.1221         0.1209             0.1199             0.1186
+## 6         0.1225         0.1212             0.1200             0.1187
+## 7         0.1221         0.1209             0.1199             0.1187
+## 8         0.1216         0.1207             0.1196             0.1186
+## 9         0.1217         0.1207             0.1198             0.1188
 ##   Regular_Probit_AIC Starter_Probit_AIC Regular_Probit_McFadden
 ## 1           52662.54           52735.46                  0.1009
 ## 2           52640.15           52719.44                  0.1016
-## 3           52680.27           52731.89                  0.1008
-## 4           52669.58           52737.12                  0.1010
-## 5           52672.01           52738.68                  0.1012
-## 6           52666.44           52729.41                  0.1010
-## 7           52673.38           52726.57                  0.1006
-## 8           52657.04           52704.53                  0.1005
+## 3           52644.28           52726.16                  0.1015
+## 4           52680.27           52731.89                  0.1008
+## 5           52669.58           52737.12                  0.1010
+## 6           52672.01           52738.68                  0.1012
+## 7           52666.44           52729.41                  0.1010
+## 8           52673.38           52726.57                  0.1006
+## 9           52657.04           52704.53                  0.1005
 ##   Starter_Probit_McFadden
 ## 1                  0.0996
 ## 2                  0.1003
-## 3                  0.0999
-## 4                  0.0998
-## 5                  0.1001
-## 6                  0.0999
-## 7                  0.0997
-## 8                  0.0997</code></pre>
+## 3                  0.1001
+## 4                  0.0999
+## 5                  0.0998
+## 6                  0.1001
+## 7                  0.0999
+## 8                  0.0997
+## 9                  0.0997</code></pre>
 <pre><code>## 
 ## 
 ##  ========================================================================================================================</code></pre>
 <pre><code>## QB PASS DEPTH T-VALUES IN OUTCOME MODELS</code></pre>
 <pre><code>## ========================================================================================================================</code></pre>
-<pre><code>## Dataset                        Model Type           QB Variable     Short      Medium     Deep      
-## ----------------------------------------------------------------------------------------------- 
-## Off Gradesoff Grades           Regular Model        grades          0.684      1.951*     0.917     
-## Off Gradesoff Grades           Starter Model        grades          0.376      0.215      0.152     
-## Off Yardsoff Yards             Regular Model        yards           1.648*     3.143***   -0.137    
-## Off Yardsoff Yards             Starter Model        yards           1.816*     0.587      -1.531.   
-## Off Tdsoff Tds                 Regular Model        touchdowns      1.827*     0.795      2.516**   
-## Off Tdsoff Tds                 Starter Model        touchdowns      0.125      -0.917     0.334     
-## Off First Downsoff First Downs Regular Model        touchdowns      2.062**    0.815      1.923*    
-## Off First Downsoff First Downs Starter Model        touchdowns      0.342      -1.080     -0.271    
+<pre><code>## 
+## ====================================================================================================
+## QB PASS DEPTH T-VALUES IN OUTCOME MODELS
+## ====================================================================================================
+## 
+## 
+## | Dataset                      | Model Type         | QB Variable   | Short      | Medium     | Deep       |
+## |------------------------------|--------------------|---------------|------------|------------|------------|
+## | Off Gradesoff Grades         | Regular Model      | grades        | 0.684      | 1.951*     | 0.917      |
+## | Off Gradesoff Grades         | Starter Model      | grades        | 0.376      | 0.215      | 0.152      |
+## | Off Yardsoff Yards           | Regular Model      | yards         | 1.648*     | 3.143***   | -0.137     |
+## | Off Yardsoff Yards           | Starter Model      | yards         | 1.816*     | 0.587      | -1.531.    |
+## | Off Completionsoff Completions | Regular Model      | completions   | 1.387      | 2.736***   | 0.232      |
+## | Off Completionsoff Completions | Starter Model      | completions   | 1.872*     | 0.057      | -1.110     |
+## | Off Tdsoff Tds               | Regular Model      | touchdowns    | 1.827*     | 0.795      | 2.516**    |
+## | Off Tdsoff Tds               | Starter Model      | touchdowns    | 0.125      | -0.917     | 0.334      |
+## | Off First Downsoff First Downs | Regular Model      | touchdowns    | 2.062**    | 0.815      | 1.923*     |
+## | Off First Downsoff First Downs | Starter Model      | touchdowns    | 0.342      | -1.080     | -0.271     |
+## |------------------------------|--------------------|---------------|------------|------------|------------|
 ## 
 ## Significance codes: 0 &#39;***&#39; 0.01 &#39;**&#39; 0.05 &#39;*&#39; 0.1 &#39;.&#39; 0.15
 ## 
 ## Note: T-values shown with significance stars. Higher absolute t-values indicate
 ## stronger statistical significance. Positive values suggest better conversion rates
-## for passes at that depth, while negative values suggest worse conversion rates.</code></pre>
+## for passes at that depth, while negative values suggest worse conversion rates.
+## 
+## QB depth table saved to: tables/thirddown_qb_depth.txt</code></pre>
 <pre><code>## 
-## 
-##  ======================================================================================================================== 
+## ====================================================================================================
 ## SUMMARY: AVERAGE QB PASS DEPTH T-VALUES BY MODEL TYPE
-## ======================================================================================================================== 
+## ====================================================================================================
 ## 
-## Model Type           Avg Short       Avg Medium      Avg Deep       
-## ---------------------------------------------------------------------- 
-## Regular Model        1.555           1.676           1.305          
-## Starter Model        0.665           -0.299          -0.329         
-## ---------------------------------------------------------------------- 
-## Overall Average      1.110           0.689           0.488          
+## 
+## | Model Type                | Avg Short       | Avg Medium      | Avg Deep        |
+## |---------------------------|-----------------|-----------------|-----------------|
+## | Regular Model             |           1.521 |           1.888 |           1.090 |
+## | Starter Model             |           0.906 |          -0.228 |          -0.485 |
+## |---------------------------|-----------------|-----------------|-----------------|
+## | Overall Average           |           1.214 |           0.830 |           0.302 |
+## |---------------------------|-----------------|-----------------|-----------------|
 ## 
 ## Note: Higher average t-values suggest stronger positive effects of quarterback
-## performance at that pass depth on conversion success across models.</code></pre>
+## performance at that pass depth on conversion success across models.
+## 
+## QB summary table saved to: tables/thirddown_qb_summary.txt</code></pre>
 
 
 

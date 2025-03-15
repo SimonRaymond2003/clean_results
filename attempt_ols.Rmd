@@ -321,6 +321,7 @@ analyze_attempt_models <- function(select_file) {
 datasets <- c(
   "processed_predict_ccfd_off_grades.csv_v2.csv.gz",
   "processed_predict_ccfd_off_yards.csv_v2.csv.gz",
+  "processed_predict_ccfd_off_completions.csv_v2.csv.gz",
   "processed_predict_ccfd_off_tds.csv_v2.csv.gz",
   "processed_predict_ccfd_off_first_downs.csv_v2.csv.gz",
   "processed_predict_ccfd_def_stops.csv_v2.csv.gz",
@@ -571,32 +572,123 @@ for (model_name in offense_models) {
   }
 }
 
-# Display the table
-cat("\n\n", paste(rep("=", 100), collapse=""), "\n")
-cat("QB PASSING DEPTH T-VALUES ACROSS OFFENSIVE MODELS\n")
-cat(paste(rep("=", 100), collapse=""), "\n\n")
+# Create a more visually appealing table with clear formatting
+formatted_table <- character()
 
-# Print a more easily readable table
-cat("Table of QB Passing Depths T-Values:\n\n")
+# Add fancy header
+header <- paste0(
+  "\n", paste(rep("=", 100), collapse=""), "\n",
+  "QB PASSING DEPTH T-VALUES ACROSS OFFENSIVE MODELS\n",
+  paste(rep("=", 100), collapse=""), "\n\n"
+)
+formatted_table <- c(formatted_table, header)
 
-# Create column headers with depth and model 
-cat(sprintf("%-30s %-15s %-10s %-10s %-10s\n", "Model", "Variable", "Short", "Medium", "Deep"))
-cat(paste(rep("-", 80), collapse=""), "\n")
+# Format table headers with better spacing and dividers
+col_header <- sprintf("| %-28s | %-15s | %-10s | %-10s | %-10s |", 
+    "Model", "Variable", "Short", "Medium", "Deep")
+divider <- paste0("|", paste(rep("-", 30), collapse=""), 
+                 "|", paste(rep("-", 17), collapse=""),
+                 "|", paste(rep("-", 12), collapse=""),
+                 "|", paste(rep("-", 12), collapse=""),
+                 "|", paste(rep("-", 12), collapse=""), "|")
+
+formatted_table <- c(formatted_table, col_header, divider)
 
 # Loop through each model
 for (model in unique(qb_t_values$Model)) {
   # Get subset of data for this model
   model_data <- qb_t_values[qb_t_values$Model == model, ]
   
-  # Print each row
+  # Clean up model name for display
+  display_model <- gsub("off_model_ols_", "", model)
+  display_model <- gsub(".csv", "", display_model)
+  display_model <- tools::toTitleCase(gsub("_", " ", display_model))
+  
+  # Print each row with improved formatting
   for (i in 1:nrow(model_data)) {
-    cat(sprintf("%-30s %-15s %-10.3f %-10.3f %-10.3f\n", 
-               model, 
-               model_data$Variable[i],
-               model_data$Short[i], 
-               model_data$Medium[i], 
-               model_data$Deep[i]))
+    # Get p-values for significance stars
+    if (exists(model)) {
+      model_obj <- get(model)
+      robust_stats <- coeftest(model_obj, vcov = vcovHC(model_obj, type = "HC0"))
+      
+      # Find the matching coefficients
+      var_type <- gsub("QB_", "", model_data$Variable[i])
+      short_pattern <- paste0("starter_QB_short_", var_type)
+      medium_pattern <- paste0("starter_QB_medium_", var_type)
+      deep_pattern <- paste0("starter_QB_deep_", var_type)
+      
+      short_idx <- grep(short_pattern, rownames(robust_stats))
+      medium_idx <- grep(medium_pattern, rownames(robust_stats))
+      deep_idx <- grep(deep_pattern, rownames(robust_stats))
+      
+      # Add significance stars based on p-values
+      short_stars <- ""
+      medium_stars <- ""
+      deep_stars <- ""
+      
+      if (length(short_idx) > 0) {
+        p_val <- robust_stats[short_idx, "Pr(>|t|)"]
+        short_stars <- ifelse(p_val < 0.01, "***",
+                     ifelse(p_val < 0.05, "**",
+                     ifelse(p_val < 0.1, "*",
+                     ifelse(p_val < 0.15, ".", ""))))
+      }
+      
+      if (length(medium_idx) > 0) {
+        p_val <- robust_stats[medium_idx, "Pr(>|t|)"]
+        medium_stars <- ifelse(p_val < 0.01, "***",
+                      ifelse(p_val < 0.05, "**",
+                      ifelse(p_val < 0.1, "*",
+                      ifelse(p_val < 0.15, ".", ""))))
+      }
+      
+      if (length(deep_idx) > 0) {
+        p_val <- robust_stats[deep_idx, "Pr(>|t|)"]
+        deep_stars <- ifelse(p_val < 0.01, "***",
+                    ifelse(p_val < 0.05, "**",
+                    ifelse(p_val < 0.1, "*",
+                    ifelse(p_val < 0.15, ".", ""))))
+      }
+      
+      # Format t-values with significance stars
+      short_fmt <- ifelse(is.na(model_data$Short[i]), "NA", 
+                          sprintf("%.3f%s", model_data$Short[i], short_stars))
+      medium_fmt <- ifelse(is.na(model_data$Medium[i]), "NA", 
+                           sprintf("%.3f%s", model_data$Medium[i], medium_stars))
+      deep_fmt <- ifelse(is.na(model_data$Deep[i]), "NA", 
+                         sprintf("%.3f%s", model_data$Deep[i], deep_stars))
+    } else {
+      # If model not found, just show raw values
+      short_fmt <- ifelse(is.na(model_data$Short[i]), "NA", sprintf("%.3f", model_data$Short[i]))
+      medium_fmt <- ifelse(is.na(model_data$Medium[i]), "NA", sprintf("%.3f", model_data$Medium[i]))
+      deep_fmt <- ifelse(is.na(model_data$Deep[i]), "NA", sprintf("%.3f", model_data$Deep[i]))
+    }
+    
+    # Format row with table borders
+    formatted_row <- sprintf("| %-28s | %-15s | %-10s | %-10s | %-10s |",
+                display_model,
+                model_data$Variable[i],
+                short_fmt, medium_fmt, deep_fmt)
+    
+    formatted_table <- c(formatted_table, formatted_row)
   }
 }
-```
 
+# Add footer with significance explanation
+footer <- c(
+  divider,
+  "\nSignificance codes: 0 '***' 0.01 '**' 0.05 '*' 0.1 '.' 0.15",
+  "\nNote: T-values shown with significance stars. Higher absolute t-values indicate",
+  "stronger statistical significance. Positive values suggest better conversion rates",
+  "for passes at that depth, while negative values suggest worse conversion rates.\n"
+)
+formatted_table <- c(formatted_table, footer)
+
+# Print the formatted table to console
+cat(paste(formatted_table, collapse = "\n"))
+
+# Save the formatted table to a text file
+dir.create("tables", showWarnings = FALSE)
+writeLines(formatted_table, "tables/attempt_ols_qb_depth.txt")
+cat("\nQB depth table saved to: tables/attempt_ols_qb_depth.txt\n")
+```

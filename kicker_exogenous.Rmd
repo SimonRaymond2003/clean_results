@@ -527,12 +527,35 @@ create_football_heatmap <- function(t_matrix, player_type) {
     )
 }
 
+# Create directory for plots if it doesn't exist
+dir.create("plots", showWarnings = FALSE)
+
 # Create and display heatmaps with new design
 punter_heatmap <- create_football_heatmap(punter_matrix, "Punter")
 print(punter_heatmap)
 
+# Save punter heatmap to file with high resolution
+ggsave(
+  "plots/punter_field_position_heatmap.png", 
+  plot = punter_heatmap, 
+  width = 12, 
+  height = 8, 
+  dpi = 300
+)
+cat("\nPunter heatmap saved to: plots/punter_field_position_heatmap.png\n")
+
 kicker_heatmap <- create_football_heatmap(kicker_matrix, "Kicker")
 print(kicker_heatmap)
+
+# Save kicker heatmap to file with high resolution
+ggsave(
+  "plots/kicker_field_position_heatmap.png", 
+  plot = kicker_heatmap, 
+  width = 12, 
+  height = 8, 
+  dpi = 300
+)
+cat("\nKicker heatmap saved to: plots/kicker_field_position_heatmap.png\n")
 
 cat("\nAnalysis complete!\n")
 ```
