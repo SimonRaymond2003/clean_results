@@ -8,6 +8,7 @@ QB PASSING DEPTH T-VALUES ACROSS OFFENSIVE MODELS
 |------------------------------|-----------------|------------|------------|------------|
 | Off Grades                   | QB_grades       | 1.575.     | 1.657*     | 1.562.     |
 | Off Yards                    | QB_yards        | 0.627      | 1.538.     | 1.866*     |
+| Off Completions              | QB_completions  | -0.078     | 1.893*     | 1.389      |
 | Off Tds                      | QB_touchdowns   | 1.899*     | 1.852*     | 1.603.     |
 | Off First Downs              | QB_touchdowns   | 1.766*     | 1.696*     | 1.684*     |
 |------------------------------|-----------------|------------|------------|------------|

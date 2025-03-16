@@ -6,16 +6,16 @@ QB PASS DEPTH T-VALUES IN OUTCOME MODELS
 
 | Dataset                      | Model Type         | QB Variable   | Short      | Medium     | Deep       |
 |------------------------------|--------------------|---------------|------------|------------|------------|
-| Offense Grades               | Player Model       | grades        | 2.453**    | -0.296     | -1.558.    |
-| Offense Grades               | Starter Model      | grades        | 2.025**    | -1.266     | -0.863     |
+| Offense Grades               | Player Model       | grades        | 2.451**    | -0.298     | -1.560.    |
+| Offense Grades               | Starter Model      | grades        | 2.022**    | -1.259     | -0.857     |
 | Offense Yards                | Player Model       | yards         | 1.520.     | 0.505      | -1.687*    |
 | Offense Yards                | Starter Model      | yards         | 1.641.     | 2.441**    | -3.343***  |
 | Offense Completions          | Player Model       | completions   | 2.268**    | 0.160      | -2.332**   |
 | Offense Completions          | Starter Model      | completions   | 2.023**    | 1.983**    | -2.898***  |
 | Offense Tds                  | Player Model       | touchdowns    | 0.415      | 0.073      | -1.515.    |
 | Offense Tds                  | Starter Model      | touchdowns    | 3.052***   | -1.314     | -1.504.    |
-| Offense First Downs          | Player Model       | touchdowns    | 0.434      | 0.037      | -1.520.    |
-| Offense First Downs          | Starter Model      | touchdowns    | 3.095***   | -1.094     | -1.494.    |
+| Offense First Downs          | Player Model       | touchdowns    | 0.432      | 0.045      | -1.528.    |
+| Offense First Downs          | Starter Model      | touchdowns    | 3.103***   | -1.097     | -1.488.    |
 |------------------------------|--------------------|---------------|------------|------------|------------|
 
 Significance codes: 0 '***' 0.01 '**' 0.05 '*' 0.1 '.' 0.15

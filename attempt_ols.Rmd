@@ -508,7 +508,8 @@ cat("\nSignificance codes: 0 '***' 0.01 '**' 0.05 '*' 0.1 '.' 0.15\n")
 # Code to extract QB variables and their t-values across offensive models
 # Define the offensive models to analyze with correct names including .csv
 offense_models <- c("off_model_ols_off_grades.csv", "off_model_ols_off_yards.csv", 
-                   "off_model_ols_off_tds.csv", "off_model_ols_off_first_downs.csv")
+                   "off_model_ols_off_completions.csv", "off_model_ols_off_tds.csv", 
+                   "off_model_ols_off_first_downs.csv")
 
 # Create a data frame to store results
 qb_t_values <- data.frame(
@@ -691,4 +692,40 @@ cat(paste(formatted_table, collapse = "\n"))
 dir.create("tables", showWarnings = FALSE)
 writeLines(formatted_table, "tables/attempt_ols_qb_depth.txt")
 cat("\nQB depth table saved to: tables/attempt_ols_qb_depth.txt\n")
+
+# BONUS: Create a visualization of the QB depth t-values
+if (requireNamespace("ggplot2", quietly = TRUE)) {
+  library(ggplot2)
+  
+  # Reshape data for plotting
+  plot_data <- reshape2::melt(qb_t_values, 
+                              id.vars = c("Variable", "Model"),
+                              measure.vars = c("Short", "Medium", "Deep"),
+                              variable.name = "Depth",
+                              value.name = "t_value")
+  
+  # Clean up model names for display
+  plot_data$Model_Name <- gsub("off_model_ols_", "", plot_data$Model)
+  plot_data$Model_Name <- gsub(".csv", "", plot_data$Model_Name)
+  plot_data$Model_Name <- tools::toTitleCase(gsub("_", " ", plot_data$Model_Name))
+  
+  # Create the plot
+  p <- ggplot(plot_data, aes(x = Depth, y = t_value, fill = Depth)) +
+    geom_bar(stat = "identity", position = "dodge") +
+    facet_grid(Model_Name ~ Variable) +
+    labs(title = "QB Passing Depth t-values Across Offensive Models",
+         subtitle = "Higher absolute t-values indicate stronger statistical significance",
+         x = "Pass Depth",
+         y = "t-value") +
+    theme_minimal() +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1),
+          legend.position = "bottom",
+          strip.text.y = element_text(angle = 0))
+  
+  # Save the plot
+  ggsave("tables/qb_depth_t_values.png", p, width = 10, height = 8)
+  cat("\nPlot saved to: tables/qb_depth_t_values.png\n")
+} else {
+  cat("\nggplot2 package not available for creating visualization\n")
+}
 ```

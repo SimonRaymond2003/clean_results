@@ -14,7 +14,7 @@
 
 <title>attempt_ols with starter players</title>
 
-<script src="site_libs/header-attrs-2.22/header-attrs.js"></script>
+<script src="site_libs/header-attrs-2.29/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/flatly.min.css" rel="stylesheet" />
@@ -3023,6 +3023,7 @@ div.tocify {
 <pre><code>## MODEL SUMMARY RESULTS</code></pre>
 <pre><code>## ====================================================================================================</code></pre>
 <pre><code>##                Dataset OLS R² OLS Adj. R² Probit AIC Probit Pseudo R²
+##                 &lt;char&gt;  &lt;num&gt;       &lt;num&gt;      &lt;num&gt;            &lt;num&gt;
 ## 1:      Off Grades.csv 0.2444      0.2390   20361.06           0.2593
 ## 2:       Off Yards.csv 0.2443      0.2387   20377.72           0.2594
 ## 3: Off Completions.csv 0.2441      0.2385   20385.78           0.2591
@@ -3088,6 +3089,7 @@ div.tocify {
 ## Significance codes: 0 &#39;***&#39; 0.01 &#39;**&#39; 0.05 &#39;*&#39; 0.1 &#39;.&#39; 0.15</code></pre>
 <pre><code>## Processing model: off_model_ols_off_grades.csv 
 ## Processing model: off_model_ols_off_yards.csv 
+## Processing model: off_model_ols_off_completions.csv 
 ## Processing model: off_model_ols_off_tds.csv 
 ## Processing model: off_model_ols_off_first_downs.csv</code></pre>
 <pre><code>## 
@@ -3100,6 +3102,7 @@ div.tocify {
 ## |------------------------------|-----------------|------------|------------|------------|
 ## | Off Grades                   | QB_grades       | 1.575.     | 1.657*     | 1.562.     |
 ## | Off Yards                    | QB_yards        | 0.627      | 1.538.     | 1.866*     |
+## | Off Completions              | QB_completions  | -0.078     | 1.893*     | 1.389      |
 ## | Off Tds                      | QB_touchdowns   | 1.899*     | 1.852*     | 1.603.     |
 ## | Off First Downs              | QB_touchdowns   | 1.766*     | 1.696*     | 1.684*     |
 ## |------------------------------|-----------------|------------|------------|------------|
@@ -3111,6 +3114,8 @@ div.tocify {
 ## for passes at that depth, while negative values suggest worse conversion rates.</code></pre>
 <pre><code>## 
 ## QB depth table saved to: tables/attempt_ols_qb_depth.txt</code></pre>
+<pre><code>## 
+## Plot saved to: tables/qb_depth_t_values.png</code></pre>
 
 
 

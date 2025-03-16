@@ -124,6 +124,7 @@ no_correction_models <- list()
 datasets <- list(
   list(outcome = "processed_predict_ccafd_off_grades.csv.csv.gz"),
   list(outcome = "processed_predict_ccafd_off_yards.csv.csv.gz"),
+  list(outcome = "processed_predict_ccafd_off_completions.csv.csv.gz"),
   list(outcome = "processed_predict_ccafd_off_tds.csv.csv.gz"),
   list(outcome = "processed_predict_ccafd_off_first_downs.csv.csv.gz"),
   list(outcome = "processed_predict_ccafd_def_stops.csv.csv.gz"),
