@@ -547,266 +547,157 @@ cat("\nNote: GIMR values are shown as coefficient (t-value). A significant GIMR 
 cat("the presence of selection bias. All models control for multiple relevant variables as shown\n")
 cat("in the detailed model outputs above.\n")
 
-# Initialize a data frame to store QB t-values from outcome models
-qb_outcome_tvalues <- data.frame(
-  Dataset = character(),
-  ModelType = character(),
-  QB_Type = character(),
-  Short = numeric(),
-  Medium = numeric(),
-  Deep = numeric(),
-  stringsAsFactors = FALSE
-)
+# Find all datasets that were processed
+all_outcome_datasets <- names(all_outcome_models)
 
-# After all datasets are processed, extract QB variables from outcome models
-cat("\n\n", paste(rep("=", 120), collapse=""), "\n")
-cat("QB PASS DEPTH T-VALUES IN OUTCOME MODELS\n")
-cat(paste(rep("=", 120), collapse=""), "\n\n")
-
-# Find offensive models that were processed
-offense_datasets <- grep("Offense", names(all_outcome_models), value = TRUE)
-
-for (dataset_name in offense_datasets) {
+# Create research economics style table for each model
+for (dataset_name in all_outcome_datasets) {
   models <- all_outcome_models[[dataset_name]]
   
-  for (model_type in c("player", "starter")) {
-    model <- models[[model_type]]
-    
-    # Get robust statistics
-    robust_stats <- coeftest(model, vcov = vcovHC(model, type = "HC0"))
-    coef_names <- rownames(robust_stats)
-    t_values <- robust_stats[, "t value"]
-    
-    # Extract QB variable types (grades, yards, touchdowns, etc.)
-    qb_types <- unique(gsub("^.*QB_(short|medium|deep)_([^_]+).*$", "\\2", 
-                           grep("QB_(short|medium|deep)", coef_names, value = TRUE)))
-    
-    # For each QB variable type, extract t-values for short, medium, deep
-    for (qb_type in qb_types) {
-      short_pattern <- paste0("QB_short_", qb_type)
-      medium_pattern <- paste0("QB_medium_", qb_type)
-      deep_pattern <- paste0("QB_deep_", qb_type)
-      
-      # For starter models, add the prefix
-      if (model_type == "starter") {
-        short_pattern <- paste0("starter_", short_pattern)
-        medium_pattern <- paste0("starter_", medium_pattern)
-        deep_pattern <- paste0("starter_", deep_pattern)
-      }
-      
-      # Find matching t-values
-      short_idx <- grep(short_pattern, coef_names)
-      medium_idx <- grep(medium_pattern, coef_names)
-      deep_idx <- grep(deep_pattern, coef_names)
-      
-      short_t <- if(length(short_idx) > 0) t_values[short_idx] else NA
-      medium_t <- if(length(medium_idx) > 0) t_values[medium_idx] else NA
-      deep_t <- if(length(deep_idx) > 0) t_values[deep_idx] else NA
-      
-      # Only add to results if any of the pass depths were found
-      if (!all(is.na(c(short_t, medium_t, deep_t)))) {
-        qb_outcome_tvalues <- rbind(qb_outcome_tvalues, data.frame(
-          Dataset = dataset_name,
-          ModelType = ifelse(model_type == "player", "Player Model", "Starter Model"),
-          QB_Type = qb_type,
-          Short = short_t,
-          Medium = medium_t,
-          Deep = deep_t,
-          stringsAsFactors = FALSE
-        ))
-      }
-    }
-  }
-}
-
-# If we found any QB variables, display the results
-if (nrow(qb_outcome_tvalues) > 0) {
-  # Create a more visually appealing table with clear formatting
+  # Create a visually appealing table with clear formatting
   formatted_table <- character()
   
   # Add fancy header
   header <- paste0(
     "\n", paste(rep("=", 100), collapse=""), "\n",
-    "QB PASS DEPTH T-VALUES IN OUTCOME MODELS\n",
+    "MODEL RESULTS: ", dataset_name, "\n",
     paste(rep("=", 100), collapse=""), "\n\n"
   )
   formatted_table <- c(formatted_table, header)
   
-  # Format table headers with better spacing and dividers
-  col_header <- sprintf("| %-28s | %-18s | %-13s | %-10s | %-10s | %-10s |", 
-      "Dataset", "Model Type", "QB Variable", "Short", "Medium", "Deep")
-  divider <- paste0("|", paste(rep("-", 30), collapse=""), 
-                   "|", paste(rep("-", 20), collapse=""),
-                   "|", paste(rep("-", 15), collapse=""),
-                   "|", paste(rep("-", 12), collapse=""),
-                   "|", paste(rep("-", 12), collapse=""),
-                   "|", paste(rep("-", 12), collapse=""), "|")
+  # Format table headers with spacing and dividers
+  col_header <- sprintf("%-40s %-25s %-25s", 
+      "", "Player Model", "Starter Model")
+  divider <- paste(rep("-", 90), collapse="")
   
   formatted_table <- c(formatted_table, col_header, divider)
   
-  # Format and add each row with significance stars
-  for (i in 1:nrow(qb_outcome_tvalues)) {
-    # Add significance stars
-    short_stars <- ""
-    medium_stars <- ""
-    deep_stars <- ""
-    
-    # Extract p-values from the robust statistics for the same coefficients
-    if (!is.na(qb_outcome_tvalues$Short[i])) {
-      model_type <- ifelse(qb_outcome_tvalues$ModelType[i] == "Player Model", "player", "starter")
-      dataset <- qb_outcome_tvalues$Dataset[i]
-      model <- all_outcome_models[[dataset]][[model_type]]
-      robust_stats <- coeftest(model, vcov = vcovHC(model, type = "HC0"))
-      
-      # Find the matching coefficient
-      short_pattern <- paste0(
-        ifelse(model_type == "starter", "starter_", ""),
-        "QB_short_", qb_outcome_tvalues$QB_Type[i]
-      )
-      medium_pattern <- paste0(
-        ifelse(model_type == "starter", "starter_", ""),
-        "QB_medium_", qb_outcome_tvalues$QB_Type[i]
-      )
-      deep_pattern <- paste0(
-        ifelse(model_type == "starter", "starter_", ""),
-        "QB_deep_", qb_outcome_tvalues$QB_Type[i]
-      )
-      
-      short_idx <- grep(short_pattern, rownames(robust_stats))
-      medium_idx <- grep(medium_pattern, rownames(robust_stats))
-      deep_idx <- grep(deep_pattern, rownames(robust_stats))
-      
-      # Add significance stars based on p-values
-      if (length(short_idx) > 0) {
-        p_val <- robust_stats[short_idx, "Pr(>|t|)"]
-        short_stars <- ifelse(p_val < 0.01, "***",
-                     ifelse(p_val < 0.05, "**",
-                     ifelse(p_val < 0.1, "*",
-                     ifelse(p_val < 0.15, ".", ""))))
-      }
-      
-      if (length(medium_idx) > 0) {
-        p_val <- robust_stats[medium_idx, "Pr(>|t|)"]
-        medium_stars <- ifelse(p_val < 0.01, "***",
-                      ifelse(p_val < 0.05, "**",
-                      ifelse(p_val < 0.1, "*",
-                      ifelse(p_val < 0.15, ".", ""))))
-      }
-      
-      if (length(deep_idx) > 0) {
-        p_val <- robust_stats[deep_idx, "Pr(>|t|)"]
-        deep_stars <- ifelse(p_val < 0.01, "***",
-                    ifelse(p_val < 0.05, "**",
-                    ifelse(p_val < 0.1, "*",
-                    ifelse(p_val < 0.15, ".", ""))))
-      }
-    }
-    
-    # Format t-values with significance stars
-    short_fmt <- ifelse(is.na(qb_outcome_tvalues$Short[i]), "NA", 
-                        sprintf("%.3f%s", qb_outcome_tvalues$Short[i], short_stars))
-    medium_fmt <- ifelse(is.na(qb_outcome_tvalues$Medium[i]), "NA", 
-                         sprintf("%.3f%s", qb_outcome_tvalues$Medium[i], medium_stars))
-    deep_fmt <- ifelse(is.na(qb_outcome_tvalues$Deep[i]), "NA", 
-                       sprintf("%.3f%s", qb_outcome_tvalues$Deep[i], deep_stars))
-    
-    # Format row with table borders
-    formatted_row <- sprintf("| %-28s | %-18s | %-13s | %-10s | %-10s | %-10s |",
-                qb_outcome_tvalues$Dataset[i],
-                qb_outcome_tvalues$ModelType[i],
-                qb_outcome_tvalues$QB_Type[i],
-                short_fmt, medium_fmt, deep_fmt)
-    
-    formatted_table <- c(formatted_table, formatted_row)
+  # Variables of Interest section
+  formatted_table <- c(formatted_table, "\nVariables of Interest:")
+  
+  # Function to get significance stars
+  get_stars <- function(p_val) {
+    ifelse(p_val < 0.01, "***",
+    ifelse(p_val < 0.05, "**",
+    ifelse(p_val < 0.1, "*",
+    ifelse(p_val < 0.15, ".", ""))))
   }
   
-  # Add footer with significance explanation
+  # Function to format coefficient with t-value and stars
+  format_coef <- function(model, var_pattern) {
+    if (is.null(model)) return("    -    ")
+    robust_stats <- coeftest(model, vcov = vcovHC(model, type = "HC0"))
+    idx <- grep(var_pattern, rownames(robust_stats))
+    if (length(idx) == 0) return("    -    ")
+    coef <- robust_stats[idx, "Estimate"]
+    t_val <- robust_stats[idx, "t value"]
+    p_val <- robust_stats[idx, "Pr(>|t|)"]
+    stars <- get_stars(p_val)
+    sprintf("%.3f (%.2f)%s", coef, t_val, stars)
+  }
+  
+  # QB depth variables
+  qb_vars <- c("QB Short" = "QB_short", "QB Medium" = "QB_medium", "QB Deep" = "QB_deep")
+  for (var_name in names(qb_vars)) {
+    player_val <- format_coef(models$player, qb_vars[var_name])
+    starter_val <- format_coef(models$starter, paste0("starter_", qb_vars[var_name]))
+    formatted_table <- c(formatted_table, 
+      sprintf("%-40s %-25s %-25s", var_name, player_val, starter_val))
+  }
+  
+  # GIMR
+  player_gimr <- format_coef(models$player, "GIMR")
+  starter_gimr <- format_coef(models$starter, "GIMR")
+  formatted_table <- c(formatted_table,
+    sprintf("%-40s %-25s %-25s", "GIMR", player_gimr, starter_gimr))
+  
+  # Control Variables section
+  formatted_table <- c(formatted_table, "\nControl Variables:")
+  
+  # Game situation controls
+  control_vars <- list(
+    "Game Situation" = "^(ydstogo|timeouts|week|time)",
+    "Environmental" = "(temp|wind|roof|attendance)",
+    "Coach Chars" = "coach",
+    "Team Stats" = "team_"
+  )
+  
+  for (var_name in names(control_vars)) {
+    player_has <- any(grepl(control_vars[[var_name]], names(models$player$coefficients)))
+    starter_has <- any(grepl(control_vars[[var_name]], names(models$starter$coefficients)))
+    formatted_table <- c(formatted_table,
+      sprintf("%-40s %-25s %-25s", var_name, 
+              ifelse(player_has, "✓", "x"),
+              ifelse(starter_has, "✓", "x")))
+  }
+  
+  # Players section
+  formatted_table <- c(formatted_table, "\nPlayers:")
+  
+  # Determine types (grades, yards, etc) from dataset name
+  metric_type <- tolower(gsub(".*_([^_]+)$", "\\1", dataset_name))
+  
+  # Check if model is offense or defense focused
+  is_offense_focused <- grepl("Offense", dataset_name)
+  
+  # For offense-focused models, offense gets "general" and defense gets specific metric
+  # For defense-focused models, defense gets "general" and offense gets specific metric
+  offense_metric <- ifelse(is_offense_focused, "general", metric_type)
+  defense_metric <- ifelse(is_offense_focused, metric_type, "general")
+  
+  # Offense/Defense Players
+  formatted_table <- c(formatted_table,
+    sprintf("%-40s %-25s %-25s", "Offense Players", 
+            ifelse(any(grepl("^QB|^RB|^WR|^TE|^OL", names(models$player$coefficients))), 
+                  paste0("✓ (", offense_metric, ")"), "x"),
+            "x"))
+  formatted_table <- c(formatted_table,
+    sprintf("%-40s %-25s %-25s", "Defense Players",
+            ifelse(any(grepl("^DL|^LB|^CB|^S", names(models$player$coefficients))),
+                  paste0("✓ (", defense_metric, ")"), "x"),
+            "x"))
+  
+  # Starters section  
+  formatted_table <- c(formatted_table, "\nStarters:")
+  formatted_table <- c(formatted_table,
+    sprintf("%-40s %-25s %-25s", "Offense Starters", "x",
+            ifelse(any(grepl("^starter.*QB|^starter.*RB|^starter.*WR|^starter.*TE|^starter.*OL", 
+                   names(models$starter$coefficients))), 
+                   paste0("✓ (", offense_metric, ")"), "x")))
+  formatted_table <- c(formatted_table,
+    sprintf("%-40s %-25s %-25s", "Defense Starters", "x",
+            ifelse(any(grepl("^starter.*DL|^starter.*LB|^starter.*CB|^starter.*S",
+                   names(models$starter$coefficients))),
+                   paste0("✓ (", defense_metric, ")"), "x")))
+  
+  # Fixed Effects section
+  formatted_table <- c(formatted_table, "\nFixed Effects:")
+  formatted_table <- c(formatted_table,
+    sprintf("%-40s %-25s %-25s", "Season/Team", 
+            ifelse(any(grepl("year.*team", names(models$player$coefficients))), "✓", "x"),
+            ifelse(any(grepl("year.*team", names(models$starter$coefficients))), "✓", "x")))
+  formatted_table <- c(formatted_table,
+    sprintf("%-40s %-25s %-25s", "Coach", 
+            ifelse(any(grepl("^Chuck_|^Bruce_|^Sean_", names(models$player$coefficients))), "✓", "x"),
+            ifelse(any(grepl("^Chuck_|^Bruce_|^Sean_", names(models$starter$coefficients))), "✓", "x")))
+  
+  # Add footer
   footer <- c(
     divider,
     "\nSignificance codes: 0 '***' 0.01 '**' 0.05 '*' 0.1 '.' 0.15",
-    "\nNote: T-values shown with significance stars. Higher absolute t-values indicate",
-    "stronger statistical significance. Positive values suggest better conversion rates",
-    "for passes at that depth, while negative values suggest worse conversion rates.\n"
+    "Note: For variables of interest, coefficients are shown with t-values in parentheses",
+    "      For control variables, ✓ indicates inclusion, x indicates exclusion",
+    "      When indicated, (type) shows the specific metric used\n"
   )
   formatted_table <- c(formatted_table, footer)
   
-  # Print the formatted table to console
+  # Print the formatted table
   cat(paste(formatted_table, collapse = "\n"))
   
-  # Save the formatted table to a text file
+  # Save the formatted table
+  table_filename <- paste0("tables/heckman_", tolower(gsub(" ", "_", dataset_name)), ".txt")
   dir.create("tables", showWarnings = FALSE)
-  writeLines(formatted_table, "tables/heckman_qb_depth.txt")
-  cat("\nQB depth table saved to: tables/heckman_qb_depth.txt\n")
-} else {
-  cat("No QB pass depth variables found in any of the outcome models.\n")
-}
-
-# Create a summary table showing average t-values by QB depth across models
-if (nrow(qb_outcome_tvalues) > 0) {
-  # Create a more visually appealing summary table
-  summary_table <- character()
-  
-  # Add fancy header
-  header <- paste0(
-    "\n", paste(rep("=", 100), collapse=""), "\n",
-    "SUMMARY: AVERAGE QB PASS DEPTH T-VALUES BY MODEL TYPE\n",
-    paste(rep("=", 100), collapse=""), "\n\n"
-  )
-  summary_table <- c(summary_table, header)
-  
-  # Calculate averages by model type
-  avg_by_model <- aggregate(
-    cbind(Short, Medium, Deep) ~ ModelType, 
-    data = qb_outcome_tvalues, 
-    FUN = function(x) mean(x, na.rm = TRUE)
-  )
-  
-  # Format table headers with better spacing and dividers
-  col_header <- sprintf("| %-25s | %-15s | %-15s | %-15s |", 
-      "Model Type", "Avg Short", "Avg Medium", "Avg Deep")
-  divider <- paste0("|", paste(rep("-", 27), collapse=""), 
-                   "|", paste(rep("-", 17), collapse=""),
-                   "|", paste(rep("-", 17), collapse=""),
-                   "|", paste(rep("-", 17), collapse=""), "|")
-  
-  summary_table <- c(summary_table, col_header, divider)
-  
-  # Add each row with improved formatting
-  for (i in 1:nrow(avg_by_model)) {
-    formatted_row <- sprintf("| %-25s | %15.3f | %15.3f | %15.3f |",
-                avg_by_model$ModelType[i],
-                avg_by_model$Short[i],
-                avg_by_model$Medium[i],
-                avg_by_model$Deep[i])
-    
-    summary_table <- c(summary_table, formatted_row)
-  }
-  
-  # Calculate overall averages
-  overall_avg <- colMeans(qb_outcome_tvalues[, c("Short", "Medium", "Deep")], na.rm = TRUE)
-  
-  # Add overall average row with divider
-  summary_table <- c(summary_table, divider)
-  overall_row <- sprintf("| %-25s | %15.3f | %15.3f | %15.3f |",
-              "Overall Average",
-              overall_avg["Short"],
-              overall_avg["Medium"],
-              overall_avg["Deep"])
-  summary_table <- c(summary_table, overall_row, divider)
-  
-  # Add footer with explanation
-  footer <- c(
-    "\nNote: Higher average t-values suggest stronger positive effects of quarterback",
-    "performance at that pass depth on conversion success across models.\n"
-  )
-  summary_table <- c(summary_table, footer)
-  
-  # Print the formatted summary table to console
-  cat(paste(summary_table, collapse = "\n"))
-  
-  # Save the formatted summary table to a text file
-  dir.create("tables", showWarnings = FALSE)
-  writeLines(summary_table, "tables/heckman_qb_summary.txt")
-  cat("\nQB summary table saved to: tables/heckman_qb_summary.txt\n")
+  writeLines(formatted_table, table_filename)
+  cat("\nTable saved to:", table_filename, "\n")
 }
 ```

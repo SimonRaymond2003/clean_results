@@ -1,0 +1,39 @@
+
+====================================================================================================
+MODEL RESULTS: Defense Grades
+====================================================================================================
+
+
+                                         Player Model              Starter Model            
+------------------------------------------------------------------------------------------
+
+Variables of Interest:
+QB Short                                     -                         -                    
+QB Medium                                    -                         -                    
+QB Deep                                      -                         -                    
+GIMR                                     0.046 (2.00)**            0.047 (2.05)**           
+
+Control Variables:
+Game Situation                           ✓                       ✓                      
+Environmental                            ✓                       ✓                      
+Coach Chars                              x                         x                        
+Team Stats                               ✓                       ✓                      
+
+Players:
+Offense Players                          ✓ (defense grades)      x                        
+Defense Players                          ✓ (general)             x                        
+
+Starters:
+Offense Starters                         x                         ✓ (defense grades)     
+Defense Starters                         x                         ✓ (general)            
+
+Fixed Effects:
+Season/Team                              ✓                       ✓                      
+Coach                                    x                         x                        
+------------------------------------------------------------------------------------------
+
+Significance codes: 0 '***' 0.01 '**' 0.05 '*' 0.1 '.' 0.15
+Note: For variables of interest, coefficients are shown with t-values in parentheses
+      For control variables, ✓ indicates inclusion, x indicates exclusion
+      When indicated, (type) shows the specific metric used
+

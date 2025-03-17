@@ -1,0 +1,39 @@
+
+====================================================================================================
+MODEL RESULTS: Offense Tds
+====================================================================================================
+
+
+                                         Player Model              Starter Model            
+------------------------------------------------------------------------------------------
+
+Variables of Interest:
+QB Short                                 0.003 (0.29)              0.030 (2.85)***          
+QB Medium                                -0.000 (-0.02)            -0.015 (-1.34)           
+QB Deep                                  -0.014 (-1.54).           -0.015 (-1.63).          
+GIMR                                     0.056 (2.36)**            0.051 (2.17)**           
+
+Control Variables:
+Game Situation                           ✓                       ✓                      
+Environmental                            ✓                       ✓                      
+Coach Chars                              x                         x                        
+Team Stats                               ✓                       ✓                      
+
+Players:
+Offense Players                          ✓ (general)             x                        
+Defense Players                          ✓ (offense tds)         x                        
+
+Starters:
+Offense Starters                         x                         ✓ (general)            
+Defense Starters                         x                         ✓ (offense tds)        
+
+Fixed Effects:
+Season/Team                              ✓                       ✓                      
+Coach                                    x                         x                        
+------------------------------------------------------------------------------------------
+
+Significance codes: 0 '***' 0.01 '**' 0.05 '*' 0.1 '.' 0.15
+Note: For variables of interest, coefficients are shown with t-values in parentheses
+      For control variables, ✓ indicates inclusion, x indicates exclusion
+      When indicated, (type) shows the specific metric used
+
